@@ -1,0 +1,10 @@
+{
+  "data_uid": "3abe4a16a4fb17d7", 
+  "data_name": "ck-tensorrt", 
+  "dict": {
+    "url": "git@github.com:dividiti/ck-tensorrt.git", 
+    "shared": "git"
+  }, 
+  "data_alias": "ck-tensorrt", 
+  "data_uoa": "ck-tensorrt"
+}
