@@ -1,0 +1,54 @@
+{
+  "check_exit_status": "yes", 
+  "customize": {
+    "extra_dir": "", 
+    "git_src_dir": "",
+    "install_env": {
+      "JETSON_BRANCH": "master",
+      "JETSON_URL": "https://github.com/dusty-nv/jetson-inference",
+      "NVCCFLAGS": "-D_FORCE_INLINES -Wno-deprecated-gpu-targets"
+    }, 
+    "params": {
+      "cpu_only": 0, 
+      "debug": 0, 
+      "use_clblas": 0, 
+      "use_clblast": 0, 
+      "use_cuda": 1, 
+      "use_greentea": 0, 
+      "use_leveldb": 0,
+      "use_lmdb": 0,
+      "use_opencv": 0
+    }, 
+    "skip_file_check": "yes", 
+    "use_git_revision": "yes", 
+    "version": "trunk"
+  }, 
+  "deps": {
+    "compiler-extra": {
+      "local": "yes", 
+      "name": "C++ compiler", 
+      "sort": 15, 
+      "tags": "compiler,lang-cpp"
+    }
+  },
+  "end_full_path": {
+    "linux": "build/aarch64/bin/imagenet-console"
+  }, 
+  "need_cpu_info": "yes", 
+  "only_for_host_os_tags": [
+    "linux"
+  ], 
+  "only_for_target_os_tags": [
+    "linux"
+  ], 
+  "package_extra_name": " (cuda)", 
+  "process_script": "install", 
+  "suggested_path": "lib-jetson-inference-dusty-nv-master-cuda",
+  "tags": [
+    "lib", 
+    "jetson",
+    "insterence",
+    "nvmaster",
+    "vcuda"
+  ]
+}
