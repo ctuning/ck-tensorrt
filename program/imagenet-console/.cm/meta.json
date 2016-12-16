@@ -19,7 +19,7 @@
       "local": "yes",
       "name": "Jetson Inference library",
       "sort": 8,
-      "tags": "lib,jetson,inference"
+      "tags": "jetson-insterence"
     }
   },
   "compiler_add_include_as_env_from_deps": [
@@ -74,6 +74,9 @@
     "XCT_REPEAT_MAIN": "1"
   },
   "skip_bin_ext": "yes",
+  "source_files": [
+    "imagenet-console.cpp"
+  ],
   "tags": [
     "imagenet-console",
     "demo"

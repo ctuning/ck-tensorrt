@@ -46,8 +46,7 @@
   "suggested_path": "lib-jetson-inference-dusty-nv-master-cuda",
   "tags": [
     "lib", 
-    "jetson",
-    "insterence",
+    "jetson-insterence",
     "nvmaster",
     "vcuda"
   ]
