@@ -4,12 +4,12 @@
 
 ## Introduction
 
-[CK-Tensorrt](https://github.com/dividiti/ck-tensorrt) is an open framework for
+[CK-TensorRT](https://github.com/dividiti/ck-tensorrt) is an open framework for
 collaborative and reproducible optimisation of convolutional neural networks for Jetson TX1.
 It's based on the [Deep Inference](https://github.com/dusty-nv/jetson-inference) framework from the
 Dustin Franklin ([Jetson Developer @NVIDIA](https://github.com/dusty-nv)) and
 the [Collective Knowledge](http://cknowledge.org) framework from the [cTuning
-Foundation](http://ctuning.org). In essence, CK-Tensorrt is simply a suite of
+Foundation](http://ctuning.org). In essence, CK-TensorRT is simply a suite of
 convenient wrappers for building, evaluating and optimising performance of
 Jetson Inference runtime library for Jetson TX1.
 
@@ -35,7 +35,7 @@ $ sudo apt install coreutils \
                    python-pip
 ```
 
-### Installing CK-Tensorrt dependencies
+### Installing CK-TensorRT dependencies
 TBD
 
 ### Installing CK
@@ -45,40 +45,21 @@ $ sudo pip install ck
 $ ck version
 ```
 
-### Installing CK-Tensorrt repository
+### Installing CK-TensorRT repository
 
 ```
 $ ck pull repo:ck-tensorrt --url=https://github.com/dividiti/ck-tensorrt
 ```
 
-### Building CK-Tensorrt and all dependencies via CK
+### Building CK-TensorRT and all dependencies via CK
 
-The first time you run Tensorrt benchmark, CK will
-build and install all missing dependencies for your machine,
-download required data sets and will start benchmark:
+The first time you run the TensorRT benchmark, CK will
+build and install all missing dependencies on your machine,
+download the required data sets and start the benchmark:
 
 ```
 $ ck run program:imagenet-console
 ```
-
-## Preliminary results
-
-### Compare accuracy of 4 CNNs on Jetson TX1
-
-TBD
-
-we compare the Top-1 and Top-5 accuracy of 4 CNNs:
-
-- [AlexNet](https://github.com/BVLC/caffe/tree/master/models/bvlc_alexnet)
-- [SqueezeNet 1.0](https://github.com/DeepScale/SqueezeNet/tree/master/SqueezeNet_v1.0)
-- [SqueezeNet 1.1](https://github.com/DeepScale/SqueezeNet/tree/master/SqueezeNet_v1.1)
-- [GoogleNet](https://github.com/BVLC/caffe/tree/master/models/bvlc_googlenet)
-
-on the [Imagenet validation set](http://academictorrents.com/details/5d6d0df7ed81efd49ca99ea4737e0ae5e3a5f2e5) (50,000 images).
-
-We have thus independently verified that on this data set [SqueezeNet](https://arxiv.org/abs/1602.07360) matches (and even slightly exceeds) the accuracy of [AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf).
-
-The experimental data is stored in the main CK-Caffe repository under '[experiment](https://github.com/dividiti/ck-caffe/tree/master/experiment)'.
 
 ## Related projects and initiatives
 
@@ -96,6 +77,6 @@ We use crowd-benchmarking and crowd-tuning of such realistic workloads across di
 [open academic and industrial R&D challenges](https://github.com/ctuning/ck/wiki/Research-and-development-challenges.mediawiki) - 
 join this community effort!
 
-## Related Publications with long term vision
+## Related publications with long term vision
 
 * <a href="https://github.com/ctuning/ck/wiki/Publications">All references with BibTex</a>
