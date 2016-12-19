@@ -108,4 +108,9 @@ def setup(i):
        cus['path_lib']=os.path.join(pi,'lib')
        cus['path_include']=os.path.join(pi,'include')
 
+    if cus.get('path_lib','')!='':
+       s+='export LD_LIBRARY_PATH="'+cus['path_lib']+'":$LD_LIBRARY_PATH\n'
+       s+='export LIBRARY_PATH="'+cus['path_lib']+'":$LIBRARY_PATH\n\n'
+
+
     return {'return':0, 'bat':s}
