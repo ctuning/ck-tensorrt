@@ -6,7 +6,7 @@
     "install_env": {
       "JETSON_BRANCH": "master",
       "JETSON_URL": "https://github.com/dusty-nv/jetson-inference",
-      "NVCCFLAGS": "-D_FORCE_INLINES -Wno-deprecated-gpu-targets"
+      "NVCCFLAGS": "-Wno-deprecated-gpu-targets"
     }, 
     "params": {
       "cpu_only": 0, 
@@ -24,11 +24,23 @@
     "version": "trunk"
   }, 
   "deps": {
+    "compiler": {
+      "local": "yes",
+      "name": "CUDA compiler",
+      "sort": 10,
+      "tags": "compiler,lang-c-cuda"
+    },
     "compiler-extra": {
       "local": "yes", 
       "name": "C++ compiler", 
       "sort": 15, 
       "tags": "compiler,lang-cpp"
+    },
+    "cmake": {
+      "local": "yes",
+      "name": "cmake",
+      "sort": 20,
+      "tags": "tool,cmake"
     }
   },
   "end_full_path": {
@@ -41,13 +53,12 @@
   "only_for_target_os_tags": [
     "linux"
   ], 
-  "package_extra_name": " (cuda)", 
   "process_script": "install", 
-  "suggested_path": "lib-jetson-inference-dusty-nv-master-cuda",
+  "suggested_path": "lib-jetson-inference",
   "tags": [
-    "lib", 
-    "jetson-insterence",
-    "nvmaster",
+    "lib",
+    "jetson-inference",
+    "vmaster",
     "vcuda"
   ]
 }
