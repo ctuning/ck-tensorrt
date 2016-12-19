@@ -1,0 +1,20 @@
+{
+  "auto_detect": "yes",
+  "customize": {
+    "check_that_exists": "yes",
+    "env_prefix": "CK_ENV_LIB_JETSON_INFERENCE",
+    "limit_recursion_dir_search": {
+      "linux": 2
+    },
+    "soft_file": {
+      "linux": "libjetson-inference.so"
+    }
+  },
+  "soft_name": "Jetson-inference library",
+  "tags": [
+    "lib",
+    "jetson",
+    "inference",
+    "jetson-inference"
+  ]
+}

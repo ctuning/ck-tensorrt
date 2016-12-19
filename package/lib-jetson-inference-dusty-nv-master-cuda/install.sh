@@ -81,3 +81,17 @@ if [ "${?}" != "0" ] ; then
   echo "Error: Building jetson-inference failed!"
   exit 1
 fi
+
+################################################################################
+echo ""
+echo "Installing jetson-inference in '${INSTALL_DIR}' ..."
+
+cp -r ${JETSON_BLD_DIR}/aarch64/* ${INSTALL_DIR}
+if [ "${?}" != "0" ] ; then
+  echo "Error: Installing jetson-inference failed!"
+  exit 1
+fi
+
+################################################################################
+echo ""
+echo "Installed jetson-inference in '${INSTALL_DIR}'."
