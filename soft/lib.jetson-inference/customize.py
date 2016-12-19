@@ -64,7 +64,6 @@ def setup(i):
     cus=i.get('customize',{})
     fp=cus.get('full_path','')
 
-    p0=os.path.basename(fp)
     p1=os.path.dirname(fp)
     pi=os.path.dirname(p1)
 
@@ -104,13 +103,15 @@ def setup(i):
        # TBD
        return {'return':1, 'error':'not yet supported ...'}
 
-    else:
-       cus['path_lib']=os.path.join(pi,'lib')
-       cus['path_include']=os.path.join(pi,'include')
+    cus['dynamic_lib']=os.path.basename(fp)
+    env[ep+'_DYNAMIC_NAME']=cus.get('dynamic_lib','')
 
-    if cus.get('path_lib','')!='':
-       s+='export LD_LIBRARY_PATH="'+cus['path_lib']+'":$LD_LIBRARY_PATH\n'
-       s+='export LIBRARY_PATH="'+cus['path_lib']+'":$LIBRARY_PATH\n\n'
+    cus['path_lib']=os.path.join(pi,'lib')
+    cus['path_include']=os.path.join(pi,'include')
 
+    r = ck.access({'action': 'lib_path_export_script', 'module_uoa': 'os', 'host_os_dict': hosd,
+      'lib_path': cus.get('path_lib','')})
+    if r['return']>0: return r
+    s += r['script']
 
     return {'return':0, 'bat':s}
