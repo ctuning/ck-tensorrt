@@ -28,11 +28,8 @@ export JETSON_BLD_DIR=${INSTALL_DIR}/bld
 export CK_ENV_COMPILER_CUDA=/usr/local/cuda
 
 ################################################################################
-echo "Removing dir '${JETSON_SRC_DIR}'"
-rm -rf ${JETSON_SRC_DIR}
-
-echo "Removing dir '${JETSON_BLD_DIR}'"
-rm -rf ${JETSON_BLD_DIR}
+echo "Cleaning dir '${INSTALL_DIR}'"
+rm -rf ${INSTALL_DIR}/*
 
 ################################################################################
 echo "Creating dir '${JETSON_SRC_DIR}'"
@@ -68,8 +65,6 @@ echo ""
 echo "Configuring jetson-inference in '${JETSON_BLD_DIR}' ..."
 
 cd ${JETSON_BLD_DIR}
-
-#export CK_ENV_COMPILER_CUDA=/usr/local/cuda
 cmake ${JETSON_SRC_DIR} \
   -DCMAKE_BUILD_TYPE=${CK_ENV_CMAKE_BUILD_TYPE:-Release} \
   -DCUDA_TOOLKIT_ROOT_DIR="${CK_ENV_COMPILER_CUDA}" \
