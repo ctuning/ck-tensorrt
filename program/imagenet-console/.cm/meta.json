@@ -12,20 +12,27 @@
     "compiler": {
       "local": "yes",
       "name": "C++ compiler",
-      "sort": 0,
+      "sort": 10,
       "tags": "compiler,lang-cpp"
     },
     "cuda-compiler": {
       "local": "yes",
       "name": "CUDA compiler",
-      "sort": 10,
+      "sort": 20,
       "tags": "compiler,lang-c-cuda"
     },
     "lib-jetson-inference": {
       "local": "yes",
       "name": "Jetson Inference library",
-      "sort": 8,
+      "sort": 30,
       "tags": "lib,jetson-inference"
+    },
+    "caffemodel": {
+      "force_target_as_host": "yes",
+      "local": "yes",
+      "name": "Caffe model (net and weights)",
+      "sort": 40,
+      "tags": "caffemodel"
     }
   },
   "compiler_add_include_as_env_from_deps": [
