@@ -105,6 +105,7 @@ def setup(i):
        return {'return':1, 'error':'not yet supported ...'}
 
     else:
-       cus['path_lib']=p1
+       cus['path_lib']=os.path.join(pi,'lib')
+       cus['path_include']=os.path.join(pi,'include')
 
     return {'return':0, 'bat':s}
