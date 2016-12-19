@@ -44,7 +44,7 @@
   "compiler_env": "CK_CXX",
   "compiler_flags_as_env": "$<<CK_COMPILER_FLAG_CPP11>>$",
   "data_name": "imagenet-console",
-  "extra_ld_vars": "$<<CK_ENV_COMPILER_CUDA_LIB>>$/libcudart.so $<<CK_ENV_LIB_JETSON_INFERENCE_LIB>>$/libjetson-inference.so $<<CK_ENV_LIB_GLOG_LFLAG>>$ $<<CK_ENV_LIB_BOOST_LFLAG_SYSTEM>>$ $<<CK_ENV_LIB_OPENCV_LFLAG_IMGPROC>>$ $<<CK_ENV_LIB_OPENCV_LFLAG_HIGHGUI>>$ $<<CK_ENV_LIB_OPENCV_LFLAG_CORE>>$ $<<CK_EXTRA_LIB_Z>>$ $<<CK_EXTRA_LIB_LOG>>$ $<<CK_EXTRA_LIB_M>>$ $<<CK_ENV_LIB_STDCPP_STATIC>>$",
+  "extra_ld_vars": "$<<CK_ENV_COMPILER_CUDA_LIB>>$/libcudart.so",
   "main_language": "cpp",
   "print_files_after_run": [
     "tmp-output1.tmp",
