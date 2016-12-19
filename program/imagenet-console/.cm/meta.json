@@ -15,22 +15,29 @@
       "sort": 0,
       "tags": "compiler,lang-cpp"
     },
+    "cuda-compiler": {
+      "local": "yes",
+      "name": "CUDA compiler",
+      "sort": 10,
+      "tags": "compiler,lang-c-cuda"
+    },
     "lib-jetson-inference": {
       "local": "yes",
       "name": "Jetson Inference library",
       "sort": 8,
-      "tags": "jetson-insterence"
+      "tags": "lib,jetson-inference"
     }
   },
   "compiler_add_include_as_env_from_deps": [
     "CK_ENV_LIB_STDCPP_INCLUDE",
     "CK_ENV_LIB_STDCPP_INCLUDE_EXTRA",
-    "CK_ENV_LIB_CAFFE_EXTRA_INCLUDE"
+    "CK_ENV_LIB_JETSON_INFERENCE_INCLUDE",
+    "CK_ENV_COMPILER_CUDA_INCLUDE"
   ],
   "compiler_env": "CK_CXX",
-  "compiler_flags_as_env": "",
+  "compiler_flags_as_env": "$<<CK_COMPILER_FLAG_CPP11>>$",
   "data_name": "imagenet-console",
-  "extra_ld_vars": "$<<CK_ENV_LIB_GLOG_LFLAG>>$ $<<CK_ENV_LIB_BOOST_LFLAG_SYSTEM>>$ $<<CK_ENV_LIB_OPENCV_LFLAG_IMGPROC>>$ $<<CK_ENV_LIB_OPENCV_LFLAG_HIGHGUI>>$ $<<CK_ENV_LIB_OPENCV_LFLAG_CORE>>$ $<<CK_EXTRA_LIB_Z>>$ $<<CK_EXTRA_LIB_LOG>>$ $<<CK_EXTRA_LIB_M>>$ $<<CK_ENV_LIB_STDCPP_STATIC>>$",
+  "extra_ld_vars": "$<<CK_ENV_COMPILER_CUDA_LIB>>$/libcudart.so $<<CK_ENV_LIB_JETSON_INFERENCE_LIB>>$/libjetson-inference.so $<<CK_ENV_LIB_GLOG_LFLAG>>$ $<<CK_ENV_LIB_BOOST_LFLAG_SYSTEM>>$ $<<CK_ENV_LIB_OPENCV_LFLAG_IMGPROC>>$ $<<CK_ENV_LIB_OPENCV_LFLAG_HIGHGUI>>$ $<<CK_ENV_LIB_OPENCV_LFLAG_CORE>>$ $<<CK_EXTRA_LIB_Z>>$ $<<CK_EXTRA_LIB_LOG>>$ $<<CK_EXTRA_LIB_M>>$ $<<CK_ENV_LIB_STDCPP_STATIC>>$",
   "main_language": "cpp",
   "print_files_after_run": [
     "tmp-output1.tmp",
