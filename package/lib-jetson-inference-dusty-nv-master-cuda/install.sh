@@ -18,6 +18,15 @@ export JETSON_PKG_DIR=${PACKAGE_DIR}
 export JETSON_SRC_DIR=${INSTALL_DIR}/src
 export JETSON_BLD_DIR=${INSTALL_DIR}/bld
 
+#export CUDA_CUDART_LIBRARY=/usr/local/cuda
+#export CUDA_TOOLKIT_INCLUDE=/usr/local/cuda/include
+#export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda
+#export PATH=$PATH:/usr/local/cuda/bin
+#export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib:/usr/local/lib
+#export CPLUS_INCLUDE_PATH=/usr/local/cuda/include
+
+export CK_ENV_COMPILER_CUDA=/usr/local/cuda
+
 ################################################################################
 echo "Removing dir '${JETSON_SRC_DIR}'"
 rm -rf ${JETSON_SRC_DIR}
@@ -59,6 +68,8 @@ echo ""
 echo "Configuring jetson-inference in '${JETSON_BLD_DIR}' ..."
 
 cd ${JETSON_BLD_DIR}
+
+#export CK_ENV_COMPILER_CUDA=/usr/local/cuda
 cmake ${JETSON_SRC_DIR} \
   -DCMAKE_BUILD_TYPE=${CK_ENV_CMAKE_BUILD_TYPE:-Release} \
   -DCUDA_TOOLKIT_ROOT_DIR="${CK_ENV_COMPILER_CUDA}" \
