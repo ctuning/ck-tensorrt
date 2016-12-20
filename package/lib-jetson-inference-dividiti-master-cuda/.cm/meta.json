@@ -1,0 +1,59 @@
+{
+  "check_exit_status": "yes",
+  "customize": {
+    "extra_dir": "",
+    "git_src_dir": "",
+    "install_env": {
+      "JETSON_BRANCH": "master",
+      "JETSON_URL": "https://github.com/dividiti/jetson-inference",
+      "NVCCFLAGS": "-Wno-deprecated-gpu-targets"
+    },
+    "skip_file_check": "yes",
+    "use_git_revision": "yes",
+    "version": "trunk"
+  },
+  "deps": {
+    "cmake": {
+      "local": "yes",
+      "name": "cmake",
+      "sort": 20,
+      "tags": "tool,cmake"
+    },
+    "compiler": {
+      "local": "yes",
+      "name": "CUDA compiler",
+      "sort": 10,
+      "tags": "compiler,lang-c-cuda"
+    },
+    "compiler-extra": {
+      "add_to_path": "yes",
+      "local": "yes",
+      "name": "C++ compiler",
+      "sort": 15,
+      "tags": "compiler,lang-cpp"
+    }
+  },
+  "end_full_path": {
+    "linux": "lib/libjetson-inference.so"
+  },
+  "need_cpu_info": "yes",
+  "only_for_host_os_tags": [
+    "linux"
+  ],
+  "only_for_target_os_tags": [
+    "linux"
+  ],
+  "process_script": "install",
+  "soft_uoa": "428380f09d31096d",
+  "suggested_path": "lib-jetson-inference-dividiti",
+  "tags": [
+    "lib",
+    "jetson-inference",
+    "dividiti",
+    "vmaster",
+    "vcuda"
+  ],
+    "use_scripts_from_another_entry": {
+    "data_uoa": "0ba9e4ed581ffa1e"
+  }
+}
