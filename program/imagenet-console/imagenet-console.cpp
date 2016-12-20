@@ -62,7 +62,12 @@ int main( int argc, char** argv )
 	
 
 	// create imageNet
-	imageNet* net = imageNet::Create();
+	imageNet* net = imageNet::Create(
+				caffe_model_value,
+				caffe_weights_value,
+				imagenet_mean_bin_value,
+				imagenet_synset_words_txt_value
+				);
 
 	if( !net )
 	{
