@@ -101,3 +101,4 @@ fi
 ################################################################################
 echo ""
 echo "Installed jetson-inference in '${INSTALL_DIR}'."
+exit 0

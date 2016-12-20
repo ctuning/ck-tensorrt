@@ -45,10 +45,12 @@
   ],
   "process_script": "install",
   "soft_uoa": "428380f09d31096d",
-  "suggested_path": "lib-jetson-inference",
+  "suggested_path": "lib-jetson-inference-nvidia",
   "tags": [
     "lib",
     "jetson-inference",
+    "dusty-nv",
+    "nvidia",
     "vmaster",
     "vcuda"
   ]
