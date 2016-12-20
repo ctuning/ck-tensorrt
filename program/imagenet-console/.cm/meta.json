@@ -34,11 +34,18 @@
       "sort": 40,
       "tags": "dataset,imagenet,aux"
     },
+    "dataset-imagenet-val": {
+      "force_target_as_host": "yes",
+      "local": "yes",
+      "name": "ImageNet dataset (val)",
+      "sort": 50,
+      "tags": "dataset,imagenet,val"
+    },
     "caffemodel": {
       "force_target_as_host": "yes",
       "local": "yes",
       "name": "Caffe model (net and weights)",
-      "sort": 40,
+      "sort": 60,
       "tags": "caffemodel"
     }
   },
