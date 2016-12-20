@@ -61,8 +61,8 @@
   "extra_ld_vars": "$<<CK_ENV_COMPILER_CUDA_LIB>>$/libcudart.so",
   "main_language": "cpp",
   "print_files_after_run": [
-    "tmp-output1.tmp",
-    "tmp-output2.tmp"
+    "stdout.log",
+    "stderr.log"
   ],
   "process_in_tmp": "yes",
   "program": "yes",
@@ -83,15 +83,12 @@
           "data_uoa": "569404c41618603a",
           "script_name": "preprocess"
         },
-        "run_cmd_main": "$#BIN_FILE#$ $<<CK_CAFFE_IMAGENET_MEAN_BIN>>$ $<<CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT>>$ $#dataset_path#$$#dataset_filename#$",
-        "run_cmd_out1": "tmp-output1.tmp",
-        "run_cmd_out2": "tmp-output2.tmp",
+        "run_cmd_main": "$#BIN_FILE#$ $#dataset_path#$$#dataset_filename#$",
+        "run_cmd_out1": "stdout.log",
+        "run_cmd_out2": "stderr.log",
         "run_correctness_output_files": [
-          "tmp-output.tmp",
-          "tmp-output2.tmp"
         ],
         "run_output_files": [
-          "tmp-output.tmp",
           "tmp-ck-timer.json"
         ]
       }
