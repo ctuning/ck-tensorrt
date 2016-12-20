@@ -74,11 +74,15 @@
       ],
       "ignore_return_code": "no",
       "run_time": {
-        "fine_grain_timer_file": "tmp-ck-timer.json",
+        "fine_grain_timer_file": "results.json",
         "params": {
           "caffemodel_key": "deploy",
           "classification": "yes"
         },
+        "post_process_via_ck": "yes",
+        "post_process_cmds": [
+          "python $#src_path_local#$postprocess.py"
+        ],
         "pre_process_via_ck": {
           "data_uoa": "569404c41618603a",
           "script_name": "preprocess"
@@ -89,7 +93,7 @@
         "run_correctness_output_files": [
         ],
         "run_output_files": [
-          "tmp-ck-timer.json"
+          "results.json"
         ]
       }
     }
