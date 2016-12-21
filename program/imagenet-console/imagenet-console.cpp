@@ -57,27 +57,27 @@ int main( int argc, char** argv )
 
 	printf("\n\n");
 
-	// retrieve filename argument
-	const char* imgFilename = NULL;
+	// get image path
+	const char* imgPath = NULL;
 	char* imagenet_val_path = NULL;
 	if( argc == 2 )
 	{
-		imgFilename = argv[1];
+		imgPath = argv[1];
 	}
 	else if( argc == 1 )
 	{
 		const char* imagenet_val_file = "ILSVRC2012_val_00020869.JPEG";
 		imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(imagenet_val_file) + 2);
 		sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
-		imgFilename = imagenet_val_path;
+		imgPath = imagenet_val_path;
 	}
 	else
 	{
-		printf("Usage: %s [path to image]", argv[0]);
+		printf("Usage: %s [image path]", argv[0]);
 		printf(" (by default, a random file from \'%s\')\n", imagenet_val_dir_val);
 		return 0;
 	}
-	printf("[imagenet-console]  image: \'%s\'\n", imgFilename);
+	printf("[imagenet-console]  image path: \'%s\'\n", imgPath);
 
 
 	// create imageNet
@@ -100,24 +100,24 @@ int main( int argc, char** argv )
 	int    imgWidth  = 0;
 	int    imgHeight = 0;
 		
-	if( !loadImageRGBA(imgFilename, (float4**)&imgCPU, (float4**)&imgCUDA, &imgWidth, &imgHeight) )
+	if( !loadImageRGBA(imgPath, (float4**)&imgCPU, (float4**)&imgCUDA, &imgWidth, &imgHeight) )
 	{
-		printf("failed to load image '%s'\n", imgFilename);
+		printf("failed to load image '%s'\n", imgPath);
 		return 0;
 	}
 
 	float confidence = 0.0f;
 	
 	// classify image
-	const int img_class = net->Classify(imgCUDA, imgWidth, imgHeight, &confidence);
+	const int imgClass = net->Classify(imgCUDA, imgWidth, imgHeight, &confidence);
 	
-	if( img_class < 0 )
+	if( imgClass < 0 )
 	{
-		printf("imagenet-console:  failed to classify '%s'  (result=%i)\n", imgFilename, img_class);
+		printf("imagenet-console:  failed to classify '%s'  (result=%i)\n", imgPath, imgClass);
 	}
 	else
 	{
-		printf("imagenet-console:  '%s' -> %2.5f%% class #%i (%s)\n", imgFilename, confidence * 100.0f, img_class, net->GetClassDesc(img_class));
+		printf("imagenet-console:  '%s' -> %2.5f%% class #%i (%s)\n", imgPath, confidence * 100.0f, imgClass, net->GetClassDesc(imgClass));
 	}
 	
 	printf("\nshutting down...\n");
