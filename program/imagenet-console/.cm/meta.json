@@ -29,29 +29,29 @@
     }
   },
   "run_deps": {
+    "caffemodel": {
+      "force_target_as_host": "yes",
+      "local": "yes",
+      "name": "Caffe model (net and weights)",
+      "sort": 40,
+      "tags": "caffemodel"
+    },
     "dataset-imagenet-aux": {
       "force_target_as_host": "yes",
-      "only_for_cmd": [
-        "imagenet-val"
-      ], 
       "local": "yes",
       "name": "ImageNet dataset (aux)",
-      "sort": 40,
+      "sort": 50,
       "tags": "dataset,imagenet,aux"
     },
     "dataset-imagenet-val": {
       "force_target_as_host": "yes",
       "local": "yes",
       "name": "ImageNet dataset (val)",
-      "sort": 50,
-      "tags": "dataset,imagenet,val"
-    },
-    "caffemodel": {
-      "force_target_as_host": "yes",
-      "local": "yes",
-      "name": "Caffe model (net and weights)",
+      "only_for_cmd": [
+        "imagenet-val"
+      ],
       "sort": 60,
-      "tags": "caffemodel"
+      "tags": "dataset,imagenet,val"
     }
   },
   "compiler_add_include_as_env_from_deps": [
