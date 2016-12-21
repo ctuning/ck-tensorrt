@@ -8,12 +8,11 @@
 #include "cudaFont.h"
 
 
-
 // main entry point
 int main( int argc, char** argv )
 {
 	// print environment variables set by CK
-	printf("imagenet-console\n  ck-env:\n");
+	printf("[imagenet-console]  ck-env:\n");
 
 	const char * caffe_model_var = "CK_CAFFE_MODEL";
 	const char * caffe_model_val = getenv(caffe_model_var);
@@ -22,6 +21,10 @@ int main( int argc, char** argv )
 	const char * caffe_weights_var = "CK_ENV_MODEL_CAFFE_WEIGHTS";
 	const char * caffe_weights_val = getenv(caffe_weights_var);
 	printf("    %s=\"%s\"\n", caffe_weights_var, caffe_weights_val ? caffe_weights_val : "?");
+
+	const char * imagenet_val_dir_var = "CK_ENV_DATASET_IMAGENET_VAL";
+	const char * imagenet_val_dir_val = getenv(imagenet_val_dir_var);
+	printf("    %s=\"%s\"\n", imagenet_val_dir_var, imagenet_val_dir_val ? imagenet_val_dir_val : "?");
 
 	const char * imagenet_mean_bin_var = "CK_CAFFE_IMAGENET_MEAN_BIN";
 	const char * imagenet_mean_bin_val = getenv(imagenet_mean_bin_var);
@@ -47,23 +50,35 @@ int main( int argc, char** argv )
 
 
 	// print command line arguments
-	printf("imagenet-console\n  args (%i):", argc);
+	printf("[imagenet-console]  args (%i):", argc);
 
 	for( int i=0; i < argc; i++ )
 		printf("\n    [%i] %s", i, argv[i]);
 
 	printf("\n\n");
-	
-	
+
 	// retrieve filename argument
-	if( argc < 2 )
+	const char* imgFilename = NULL;
+	char* imagenet_val_path = NULL;
+	if( argc == 2 )
 	{
-		printf("imagenet-console:   input image filename required\n");
+		imgFilename = argv[1];
+	}
+	else if( argc == 1 )
+	{
+		const char* imagenet_val_file = "ILSVRC2012_val_00020869.JPEG";
+		imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(imagenet_val_file) + 2);
+		sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
+		imgFilename = imagenet_val_path;
+	}
+	else
+	{
+		printf("Usage: %s [path to image]", argv[0]);
+		printf(" (by default, a random file from \'%s\')\n", imagenet_val_dir_val);
 		return 0;
 	}
-	
-	const char* imgFilename = argv[1];
-	
+	printf("[imagenet-console]  image: \'%s\'\n", imgFilename);
+
 
 	// create imageNet
 	imageNet* net = imageNet::Create(
@@ -108,5 +123,6 @@ int main( int argc, char** argv )
 	printf("\nshutting down...\n");
 	CUDA(cudaFreeHost(imgCPU));
 	delete net;
+	if (imagenet_val_path) { free(imagenet_val_path); }
 	return 0;
 }
