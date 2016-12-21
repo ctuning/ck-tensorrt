@@ -31,6 +31,10 @@ int main( int argc, char** argv )
 	const char * imagenet_synset_words_txt_value = getenv(imagenet_synset_words_txt);
 	printf("    %s=\"%s\"\n", imagenet_synset_words_txt, imagenet_synset_words_txt_value ? imagenet_synset_words_txt_value : "?");
 
+	const char * imagenet_val_txt = "CK_CAFFE_IMAGENET_VAL_TXT";
+	const char * imagenet_val_txt_value = getenv(imagenet_val_txt);
+	printf("    %s=\"%s\"\n", imagenet_val_txt, imagenet_val_txt_value ? imagenet_val_txt_value : "?");
+
 	const char * caffe_iterations = "CK_CAFFE_ITERATIONS";
 	const char * caffe_iterations_value = getenv(caffe_iterations);
 	printf("    %s=%s\n", caffe_iterations, caffe_iterations_value ? caffe_iterations_value : "?");
