@@ -29,13 +29,19 @@ def ck_postprocess(i):
     imagenet_aux_dict_env=imagenet_aux_dict.get('env',{})
     d['CK_CAFFE_IMAGENET_VAL_TXT']=imagenet_aux_dict_env.get('CK_CAFFE_IMAGENET_VAL_TXT','')
 
-    # Load ImageNet validation set labels.
-    if d['CK_CAFFE_IMAGENET_VAL_TXT']!='':
-        image_to_synset_map = {}
+    # Only defined for the imagenet-val cmd.
+    imagenet_val=deps.get('dataset-imagenet-val',{})
+    imagenet_val_dict=imagenet_val.get('dict',{})
+    imagenet_val_dict_env=imagenet_val_dict.get('env',{})
+    d['CK_ENV_DATASET_IMAGENET_VAL']=imagenet_val_dict_env.get('CK_ENV_DATASET_IMAGENET_VAL','')
+
+    # For the imagenet-val command, load ImageNet validation set labels.
+    if d['CK_ENV_DATASET_IMAGENET_VAL']!='':
         with open(d['CK_CAFFE_IMAGENET_VAL_TXT']) as imagenet_val_txt:
+            image_to_synset_map = {}
             for image_synset in imagenet_val_txt:
                 (image, synset) = image_synset.split()
-                image_to_synset_map[image] = synset
+                image_to_synset_map[image] = int(synset)
 
     # Load imagenet-console output as list.
     r=ck.load_text_file({'text_file':'stdout.log', 'split_to_list':'yes'})
@@ -83,10 +89,18 @@ def ck_postprocess(i):
             d['execution_time'] = 0.0 # built-in CK key
 
     d['all_predictions'] = sorted(d['all_predictions'], key=lambda k: k['probability'], reverse=True)
-    # FIXME: A placeholder for things to come (see below).
-    d['best_prediction']['is top?'] = 'yes' if d['all_predictions'][0]['class']==d['best_prediction']['class'] else 'no'
-    # TODO: Check against the label assigned to this image (once we know what that is).
-    # TODO: Set 'accuracy_top1' and 'accuracy_top5' to 'yes' or 'no' accordingly.
+    # For the imagenet-val command, set 'accuracy_top1' and 'accuracy_top5' to 'yes' or 'no'.
+    if d['CK_ENV_DATASET_IMAGENET_VAL']!='':
+        best_prediction = d['best_prediction']
+        best_prediction['class_correct'] = image_to_synset_map.get(best_prediction['file_name'],-1)
+        for n in [1,5]:
+            top_n_accuracy = 'accuracy_top'+str(n)
+            top_n_predictions = d['all_predictions'][0:n]
+            best_prediction[top_n_accuracy] = 'no'
+            for prediction in top_n_predictions:
+                if prediction['class']==best_prediction['class_correct']:
+                    best_prediction[top_n_accuracy] = 'yes'
+                    break
 
     rr={}
     rr['return']=0
