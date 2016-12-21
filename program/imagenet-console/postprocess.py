@@ -63,15 +63,20 @@ def ck_postprocess(i):
             d['post_processed'] = 'yes'
             d['execution_time'] = 0.0 # built-in CK key
 
+    d['all_predictions'] = sorted(d['all_predictions'], key=lambda k: k['probability'], reverse=True)
+    # FIXME: A placeholder for things to come (see below).
+    d['best_prediction']['is top?'] = 'yes' if d['all_predictions'][0]['class']==d['best_prediction']['class'] else 'no'
+    # TODO: Check against the label assigned to this image (once we know what that is).
+    # TODO: Set 'accuracy_top1' and 'accuracy_top5' to 'yes' or 'no' accordingly.
+
     rr={}
     rr['return']=0
     if d.get('post_processed','')=='yes':
-       # Save to file.
-       r=ck.save_json_to_file({'json_file':'results.json', 'dict':d})
-       if r['return']>0: return r
+      r=ck.save_json_to_file({'json_file':'results.json', 'dict':d})
+      if r['return']>0: return r
     else:
-       rr['return']=1
-       rr['error']='failed to match best prediction in imagenet-console output!'
+      rr['return']=1
+      rr['error']='failed to match best prediction in imagenet-console output!'
 
     return rr
 
