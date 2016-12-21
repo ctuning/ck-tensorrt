@@ -2,7 +2,7 @@
   "check_exit_status": "yes",
   "customize": {
     "extra_dir": "",
-    "git_src_dir": "",
+    "git_src_dir": "src",
     "install_env": {
       "JETSON_BRANCH": "master",
       "JETSON_URL": "https://github.com/dusty-nv/jetson-inference",
