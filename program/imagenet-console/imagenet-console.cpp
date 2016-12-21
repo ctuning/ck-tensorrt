@@ -66,7 +66,7 @@ int main( int argc, char** argv )
 	}
 	else if( argc == 1 )
 	{
-		const char* imagenet_val_file = "ILSVRC2012_val_00020869.JPEG";
+		const char* imagenet_val_file = "ILSVRC2012_val_00002212.JPEG"; // 00002212 with AlexNet: top1="no", top5="yes"
 		imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(imagenet_val_file) + 2);
 		sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
 		imgPath = imagenet_val_path;
@@ -87,6 +87,7 @@ int main( int argc, char** argv )
 				imagenet_mean_bin_val,
 				imagenet_synset_words_txt_val
 				);
+	net->EnableProfiler();
 
 	if( !net )
 	{

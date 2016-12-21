@@ -53,9 +53,26 @@ def ck_postprocess(i):
     r=ck.load_text_file({'text_file':'stdout.log', 'split_to_list':'yes'})
     if r['return']>0: return r
 
-    # Collect info about all and best predictions from imagenet-console output.
+    # Collect info from imagenet-console output:
+    # profiling, all predictions and the best one.
+    d['profiling']=[]
     d['all_predictions']=[]
     for line in r['lst']:
+        # Match layer profiling info in e.g.:
+        # "[GIE]  layer conv5 + relu5 - 1.918315 ms"
+        # "[GIE]  layer network time - 45.530819 ms"
+        profiling_regex = \
+            '\[GIE\]  layer ' + \
+            '(?P<layer>[\ \w_+]*)' + \
+            ' - ' + \
+            '(?P<time_ms>\d+\.\d+)(\s)*ms'
+        match = re.search(profiling_regex, line)
+        if match:
+            info = {}
+            info['layer'] = match.group('layer')
+            info['time_ms'] = match.group('time_ms')
+            d['profiling'].append(info)
+
         # Match prediction info in e.g.:
         # "class 0287 - 0.049164  (lynx, catamount)"
         # "class 0673 - 1.000000  (mouse, computer mouse)" (yes, with GoogleNet!)
