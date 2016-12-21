@@ -30,11 +30,12 @@ def ck_postprocess(i):
     d['CK_CAFFE_IMAGENET_VAL_TXT']=imagenet_aux_dict_env.get('CK_CAFFE_IMAGENET_VAL_TXT','')
 
     # Load ImageNet validation set labels.
-    image_to_synset_map = {}
-    with open(d['CK_CAFFE_IMAGENET_VAL_TXT']) as imagenet_val_txt:
-        for image_synset in imagenet_val_txt:
-            (image, synset) = image_synset.split()
-            image_to_synset_map[image] = synset
+    if d['CK_CAFFE_IMAGENET_VAL_TXT']!='':
+        image_to_synset_map = {}
+        with open(d['CK_CAFFE_IMAGENET_VAL_TXT']) as imagenet_val_txt:
+            for image_synset in imagenet_val_txt:
+                (image, synset) = image_synset.split()
+                image_to_synset_map[image] = synset
 
     # Load imagenet-console output as list.
     r=ck.load_text_file({'text_file':'stdout.log', 'split_to_list':'yes'})
