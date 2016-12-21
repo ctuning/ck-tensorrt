@@ -14,20 +14,27 @@ import sys
 def ck_postprocess(i):
     ck=i['ck_kernel']
     env=i.get('env',{})
+    deps=i.get('deps',{})
 
     d={}
 
     # Collect env vars of interest.
     d['REAL_ENV_CK_CAFFE_MODEL']=env.get('CK_CAFFE_MODEL','')
-    # FIXME: Is not set?
+    # FIXME: Is not set? (Hence, collecting the same var via the deps below.)
     d['REAL_ENV_CK_CAFFE_IMAGENET_VAL_TXT']=env.get('CK_CAFFE_IMAGENET_VAL_TXT','')
 
+    # Collect deps of interest.
+    imagenet_aux=deps.get('dataset-imagenet-aux',{})
+    imagenet_aux_dict=imagenet_aux.get('dict',{})
+    imagenet_aux_dict_env=imagenet_aux_dict.get('env',{})
+    d['CK_CAFFE_IMAGENET_VAL_TXT']=imagenet_aux_dict_env.get('CK_CAFFE_IMAGENET_VAL_TXT','')
+
     # Load ImageNet validation set labels.
-#    image_to_synset_map = {}
-#    with open(d['REAL_ENV_CK_CAFFE_IMAGENET_VAL_TXT']) as imagenet_val_txt:
-#        for image_synset in imagenet_val_txt:
-#            (image, synset) = image_synset.split()
-#            image_to_synset_map[image] = synset
+    image_to_synset_map = {}
+    with open(d['CK_CAFFE_IMAGENET_VAL_TXT']) as imagenet_val_txt:
+        for image_synset in imagenet_val_txt:
+            (image, synset) = image_synset.split()
+            image_to_synset_map[image] = synset
 
     # Load imagenet-console output as list.
     r=ck.load_text_file({'text_file':'stdout.log', 'split_to_list':'yes'})
