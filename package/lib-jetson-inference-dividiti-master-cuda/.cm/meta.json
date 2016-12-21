@@ -13,24 +13,24 @@
     "version": "trunk"
   },
   "deps": {
-    "cmake": {
-      "local": "yes",
-      "name": "cmake",
-      "sort": 20,
-      "tags": "tool,cmake"
-    },
     "compiler": {
       "local": "yes",
-      "name": "CUDA compiler",
+      "name": "C++ compiler",
       "sort": 10,
-      "tags": "compiler,lang-c-cuda"
+      "tags": "compiler,lang-cpp"
     },
     "compiler-extra": {
       "add_to_path": "yes",
       "local": "yes",
-      "name": "C++ compiler",
-      "sort": 15,
-      "tags": "compiler,lang-cpp"
+      "name": "CUDA compiler",
+      "sort": 20,
+      "tags": "compiler,lang-c-cuda"
+    },
+    "cmake": {
+      "local": "yes",
+      "name": "cmake",
+      "sort": 30,
+      "tags": "tool,cmake"
     }
   },
   "end_full_path": {
