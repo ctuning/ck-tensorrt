@@ -26,9 +26,14 @@
       "name": "Jetson Inference library",
       "sort": 30,
       "tags": "lib,jetson-inference"
-    },
+    }
+  },
+  "run_deps": {
     "dataset-imagenet-aux": {
       "force_target_as_host": "yes",
+      "only_for_cmd": [
+        "imagenet-val"
+      ], 
       "local": "yes",
       "name": "ImageNet dataset (aux)",
       "sort": 40,
