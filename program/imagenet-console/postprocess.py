@@ -28,6 +28,7 @@ def ck_postprocess(i):
     imagenet_aux_dict=imagenet_aux.get('dict',{})
     imagenet_aux_dict_env=imagenet_aux_dict.get('env',{})
     d['CK_CAFFE_IMAGENET_VAL_TXT']=imagenet_aux_dict_env.get('CK_CAFFE_IMAGENET_VAL_TXT','')
+    d['CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT']=imagenet_aux_dict_env.get('CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT','')
 
     # Only defined for the imagenet-val cmd.
     imagenet_val=deps.get('dataset-imagenet-val',{})
@@ -42,6 +43,11 @@ def ck_postprocess(i):
             for image_synset in imagenet_val_txt:
                 (image, synset) = image_synset.split()
                 image_to_synset_map[image] = int(synset)
+        with open(d['CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT']) as imagenet_synset_words_txt:
+            synset_list = []
+            for n00000000_synset in imagenet_synset_words_txt:
+                synset = n00000000_synset[10:-1]
+                synset_list.append(synset)
 
     # Load imagenet-console output as list.
     r=ck.load_text_file({'text_file':'stdout.log', 'split_to_list':'yes'})
@@ -75,7 +81,7 @@ def ck_postprocess(i):
             '(\s)*->(\s)*' + \
             '(?P<probability_pc>\d+\.\d+)%' + \
             '(\s)*class(\s)*#(?P<class>\d+)(\s*)' + \
-            '\((?P<synset>[\w\s,]*)\)'
+            '\((?P<synset>[\w\s,\']*)\)'
         match = re.search(best_prediction_regex, line)
         if match:
             info = {}
@@ -93,6 +99,7 @@ def ck_postprocess(i):
     if d['CK_ENV_DATASET_IMAGENET_VAL']!='':
         best_prediction = d['best_prediction']
         best_prediction['class_correct'] = image_to_synset_map.get(best_prediction['file_name'],-1)
+        best_prediction['synset_correct'] = synset_list[best_prediction['class_correct']]
         for n in [1,5]:
             top_n_accuracy = 'accuracy_top'+str(n)
             top_n_predictions = d['all_predictions'][0:n]
