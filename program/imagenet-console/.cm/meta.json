@@ -60,10 +60,7 @@
   "data_name": "imagenet-console",
   "extra_ld_vars": "$<<CK_ENV_COMPILER_CUDA_LIB>>$/libcudart.so",
   "main_language": "cpp",
-  "print_files_after_run": [
-    "stdout.log",
-    "stderr.log"
-  ],
+  "print_files_after_run": [],
   "process_in_tmp": "yes",
   "program": "yes",
   "run_cmds": {
