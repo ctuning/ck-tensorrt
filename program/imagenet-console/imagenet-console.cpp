@@ -21,7 +21,7 @@ int classifyImageRGBA(imageNet* net, const char* imgPath)
 	if( !loadImageRGBA(imgPath, (float4**)&imgCPU, (float4**)&imgCUDA, &imgWidth, &imgHeight) )
 	{
 		printf("failed to load image '%s'\n", imgPath);
-		return 1;
+		return EXIT_FAILURE;
 	}
 
 	float confidence = 0.0f;
@@ -40,13 +40,15 @@ int classifyImageRGBA(imageNet* net, const char* imgPath)
 
 	CUDA(cudaFreeHost(imgCPU));
 
-	return 0;
+	return EXIT_SUCCESS;
 }
 
 
 // main entry point
 int main( int argc, char** argv )
 {
+	int retval = EXIT_SUCCESS;
+
 	// print environment variables set by CK
 	printf("[imagenet-console]  ck-env:\n");
 
@@ -110,35 +112,31 @@ int main( int argc, char** argv )
 	if( !net )
 	{
 		printf("imagenet-console:   failed to initialize imageNet\n");
-		return 0;
+		return EXIT_FAILURE;
 	}
 
-	// get image path
-	const char* imgPath = NULL;
-	char* imagenet_val_path = NULL;
+	// classify a single image or all images in $CK_ENV_DATASET_IMAGENET_VAL
 	if( argc == 2 )
 	{
-		imgPath = argv[1];
+		const char* imgPath = argv[1];
+		retval = classifyImageRGBA(net, imgPath);
 	}
 	else if( argc == 1 )
 	{
 		const char* imagenet_val_file = "ILSVRC2012_val_00002212.JPEG"; // 00002212 with AlexNet: top1="no", top5="yes"
-		imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(imagenet_val_file) + 2);
+		char* imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(imagenet_val_file) + 2);
 		sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
-		imgPath = imagenet_val_path;
+		retval = classifyImageRGBA(net, imagenet_val_path);
+		free(imagenet_val_path);
 	}
 	else
 	{
-		printf("Usage: %s [image path]", argv[0]);
-		printf(" (by default, a random file from \'%s\')\n", imagenet_val_dir_val);
-		return 0;
+		printf("Usage: %s [path]", argv[0]);
+		printf(" (by default, all files in \'%s\' dir)\n", imagenet_val_dir_val);
+		retval = EXIT_FAILURE;
 	}
-	printf("[imagenet-console]  image path: \'%s\'\n", imgPath);
-
-	const int rv = classifyImageRGBA(net, imgPath);
-	if (imagenet_val_path) { free(imagenet_val_path); }
 	
 	printf("\nshutting down...\n");
 	delete net;
-	return rv;
+	return retval;
 }
