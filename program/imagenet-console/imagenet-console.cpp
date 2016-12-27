@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include <dirent.h>
 
 int classifyImageRGBA(imageNet* net, const char* imgPath)
 {
@@ -125,11 +126,35 @@ int main( int argc, char** argv )
 	}
 	else if( argc == 1 )
 	{
-		const char* imagenet_val_file = "ILSVRC2012_val_00002212.JPEG"; // 00002212 with AlexNet: top1="no", top5="yes"
-		char* imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(imagenet_val_file) + 2);
-		sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
-		retval = classifyImageRGBA(net, imagenet_val_path);
-		free(imagenet_val_path);
+		DIR* dir;
+		struct dirent* ent;
+		if( (dir = opendir(imagenet_val_dir_val)) )
+		{
+			const char* sample_imagenet_val_file = "ILSVRC2012_val_00002212.JPEG"; // 00002212 with AlexNet: top1="no", top5="yes"
+			char* imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(sample_imagenet_val_file) + 2);
+			size_t num_images = 0;
+			while( (ent = readdir(dir)) && (num_images < max_images) )
+			{
+				const char* imagenet_val_file = ent->d_name;
+				if( strlen(imagenet_val_file) < strlen(sample_imagenet_val_file) )
+				{
+					// skip '.' and '..'
+					continue;
+				}
+				sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
+				retval = classifyImageRGBA(net, imagenet_val_path);
+				if (retval == EXIT_FAILURE)
+				{
+					return retval;
+				}
+				num_images++;
+			}
+			closedir(dir);
+			free(imagenet_val_path);
+		} else {
+			printf("imagenet-console:   failed to open directory \'%s\'\n", imagenet_val_dir_var);
+			retval = EXIT_FAILURE;
+		}
 	}
 	else
 	{
