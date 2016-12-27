@@ -111,7 +111,7 @@ def ck_postprocess(i):
         # Match the most likely prediction in e.g.:
         # "imagenet-console: '<file path>' -> 33.05664% class #331 (hare)"
         best_prediction_regex = \
-            'imagenet-console:(\s+)' + \
+            '\[imagenet-console\](\s+)' + \
             '\'(?P<file_path>[\w\./_-]*)\'' + \
             '(\s)*->(\s)*' + \
             '(?P<probability_pc>\d+\.\d+)%' + \
