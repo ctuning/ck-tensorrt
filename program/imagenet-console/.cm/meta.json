@@ -1,12 +1,7 @@
 {
   "backup_data_uid": "5e23a492b9138354",
   "build_compiler_vars": {
-    "ANDROID_USE_OPENMP": "ON",
-    "BLAS": "Open",
-    "CPU_ONLY": "ON",
-    "USE_LMDB": "ON",
-    "USE_OPENCV": "ON",
-    "XOPENME": ""
+    "CK_TENSORRT_ENABLE_PROFILER": "1"
   },
   "compile_deps": {
     "compiler": {
@@ -130,7 +125,7 @@
     }
   },
   "run_vars": {
-    "XCT_REPEAT_MAIN": "1"
+    "CK_TENSORRT_MAX_IMAGES": "50000"
   },
   "skip_bin_ext": "yes",
   "source_files": [

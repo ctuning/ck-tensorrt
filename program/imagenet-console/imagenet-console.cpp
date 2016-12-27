@@ -107,7 +107,9 @@ int main( int argc, char** argv )
 				imagenet_mean_bin_val,
 				imagenet_synset_words_txt_val
 				);
+#if( 1 == CK_TENSORRT_ENABLE_PROFILER )
 	net->EnableProfiler();
+#endif
 
 	if( !net )
 	{
