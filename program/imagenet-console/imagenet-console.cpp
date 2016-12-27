@@ -1,11 +1,47 @@
 /*
- * http://github.com/dusty-nv/jetson-inference
+ * Based on http://github.com/dusty-nv/jetson-inference
  */
 
 #include "imageNet.h"
 
 #include "loadImage.h"
 #include "cudaFont.h"
+
+#include <string>
+
+
+int classifyImageRGBA(imageNet* net, const char* imgPath)
+{
+	// load image from disk
+	float* imgCPU    = NULL;
+	float* imgCUDA   = NULL;
+	int    imgWidth  = 0;
+	int    imgHeight = 0;
+
+	if( !loadImageRGBA(imgPath, (float4**)&imgCPU, (float4**)&imgCUDA, &imgWidth, &imgHeight) )
+	{
+		printf("failed to load image '%s'\n", imgPath);
+		return 1;
+	}
+
+	float confidence = 0.0f;
+
+	// classify image
+	const int imgClass = net->Classify(imgCUDA, imgWidth, imgHeight, &confidence);
+
+	if( imgClass < 0 )
+	{
+		printf("imagenet-console:  failed to classify '%s'  (result=%i)\n", imgPath, imgClass);
+	}
+	else
+	{
+		printf("imagenet-console:  '%s' -> %2.5f%% class #%i (%s)\n", imgPath, confidence * 100.0f, imgClass, net->GetClassDesc(imgClass));
+	}
+
+	CUDA(cudaFreeHost(imgCPU));
+
+	return 0;
+}
 
 
 // main entry point
@@ -46,6 +82,11 @@ int main( int argc, char** argv )
 	const char * caffe_batch_size_val = getenv(caffe_batch_size_var);
 	printf("    %s=%s\n", caffe_batch_size_var, caffe_batch_size_val ? caffe_batch_size_val : "?");
 
+	const char * tensorrt_max_images_var = "CK_TENSORRT_MAX_IMAGES";
+	const char * tensorrt_max_images_val = getenv(tensorrt_max_images_var);
+	const size_t max_images = tensorrt_max_images_val ? std::stoi(tensorrt_max_images_val) : 1;
+	printf("    %s=%ld\n", tensorrt_max_images_var, max_images);
+
 	printf("\n\n");
 
 
@@ -56,6 +97,21 @@ int main( int argc, char** argv )
 		printf("\n    [%i] %s", i, argv[i]);
 
 	printf("\n\n");
+
+	// create imageNet
+	imageNet* net = imageNet::Create(
+				caffe_model_val,
+				caffe_weights_val,
+				imagenet_mean_bin_val,
+				imagenet_synset_words_txt_val
+				);
+	net->EnableProfiler();
+
+	if( !net )
+	{
+		printf("imagenet-console:   failed to initialize imageNet\n");
+		return 0;
+	}
 
 	// get image path
 	const char* imgPath = NULL;
@@ -79,51 +135,10 @@ int main( int argc, char** argv )
 	}
 	printf("[imagenet-console]  image path: \'%s\'\n", imgPath);
 
-
-	// create imageNet
-	imageNet* net = imageNet::Create(
-				caffe_model_val,
-				caffe_weights_val,
-				imagenet_mean_bin_val,
-				imagenet_synset_words_txt_val
-				);
-	net->EnableProfiler();
-
-	if( !net )
-	{
-		printf("imagenet-console:   failed to initialize imageNet\n");
-		return 0;
-	}
-	
-	// load image from file on disk
-	float* imgCPU    = NULL;
-	float* imgCUDA   = NULL;
-	int    imgWidth  = 0;
-	int    imgHeight = 0;
-		
-	if( !loadImageRGBA(imgPath, (float4**)&imgCPU, (float4**)&imgCUDA, &imgWidth, &imgHeight) )
-	{
-		printf("failed to load image '%s'\n", imgPath);
-		return 0;
-	}
-
-	float confidence = 0.0f;
-	
-	// classify image
-	const int imgClass = net->Classify(imgCUDA, imgWidth, imgHeight, &confidence);
-	
-	if( imgClass < 0 )
-	{
-		printf("imagenet-console:  failed to classify '%s'  (result=%i)\n", imgPath, imgClass);
-	}
-	else
-	{
-		printf("imagenet-console:  '%s' -> %2.5f%% class #%i (%s)\n", imgPath, confidence * 100.0f, imgClass, net->GetClassDesc(imgClass));
-	}
+	const int rv = classifyImageRGBA(net, imgPath);
+	if (imagenet_val_path) { free(imagenet_val_path); }
 	
 	printf("\nshutting down...\n");
-	CUDA(cudaFreeHost(imgCPU));
 	delete net;
-	if (imagenet_val_path) { free(imagenet_val_path); }
-	return 0;
+	return rv;
 }
