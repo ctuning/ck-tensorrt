@@ -59,11 +59,11 @@ def ck_postprocess(i):
     d['all_predictions']=[]
     for line in r['lst']:
         # Match layer profiling info in e.g.:
-        # "[GIE]  layer conv5 + relu5 - 1.918315 ms"
+        # "[GIE]  layer inception_3a/3x3_reduce + inception_3a/relu_3x3_reduce||inception_3a/5x5_reduce + inception_3a/relu_5x5_reduce - 1.747789 ms"
         # "[GIE]  layer network time - 45.530819 ms"
         profiling_regex = \
             '\[GIE\]  layer ' + \
-            '(?P<layer>[\ \w_+]*)' + \
+            '(?P<layer>[\ \w_+/|]*)' + \
             ' - ' + \
             '(?P<time_ms>\d+\.\d+)(\s)*ms'
         match = re.search(profiling_regex, line)
