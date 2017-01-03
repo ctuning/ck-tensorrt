@@ -54,7 +54,7 @@ int main( int argc, char** argv )
     int exit_status = EXIT_SUCCESS;
 
     // print environment variables set by CK
-    printf("[imagenet-console]  ck-env:\n");
+    printf("\n[imagenet-console]  ck-env:\n");
 
     const char * caffe_model_var = "CK_CAFFE_MODEL";
     const char * caffe_model_val = getenv(caffe_model_var);
@@ -93,11 +93,9 @@ int main( int argc, char** argv )
     const size_t max_images = tensorrt_max_images_val ? std::stoi(tensorrt_max_images_val) : 1;
     printf("     %s=%ld\n", tensorrt_max_images_var, max_images);
 
-    printf("\n\n");
-
 
     // print command line arguments
-    printf("[imagenet-console]  args (%i):", argc);
+    printf("\n[imagenet-console]  args (%i):", argc);
 
     for( int i = 0; i < argc; i++ )
         printf("\n     [%i] %s", i, argv[i]);
@@ -117,7 +115,7 @@ int main( int argc, char** argv )
 
     if( !net )
     {
-        printf("[imagenet-console]  failed to initialize imageNet\n");
+        printf("\n[imagenet-console]  failed to initialize imageNet\n");
         return EXIT_FAILURE;
     }
 
@@ -156,18 +154,18 @@ int main( int argc, char** argv )
             closedir(dir);
             free(imagenet_val_path);
         } else {
-            printf("[imagenet-console]  failed to open directory \'%s\'\n", imagenet_val_dir_var);
+            printf("\n[imagenet-console]  failed to open directory \'%s\'\n", imagenet_val_dir_var);
             exit_status = EXIT_FAILURE;
         }
     }
     else
     {
-        printf("Usage: %s [path]", argv[0]);
+        printf("\n[imagenet-console]  usage: %s [path]", argv[0]);
         printf(" (by default, all files in \'%s\' dir)\n", imagenet_val_dir_val);
         exit_status = EXIT_FAILURE;
     }
 
-    printf("\nshutting down...\n");
+    printf("\n[imagenet-console]  shutting down...\n");
     delete net;
     return exit_status;
 }
