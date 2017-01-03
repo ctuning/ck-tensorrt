@@ -61,22 +61,29 @@ class Logger : public ILogger
 class Profiler : public IProfiler
 {
 private:
-    cJSON * cjson;
+    cJSON * dict;
+    cJSON * per_layer_info;
+    unsigned int index;
 
 public:
     Profiler()
     {
-        // Allocate object.
-        cjson = cJSON_CreateObject();
+        // Create main dictionary.
+        dict = cJSON_CreateObject();
+        // Create per layer info list.
+        per_layer_info = cJSON_CreateArray();
+        cJSON_AddItemToObject(dict, "per_layer_info", per_layer_info);
+        // Init layer index.
+        index = 0;
     }
 
     ~Profiler()
     {
-        // Print object to stderr. TODO: Save directly to file.
-        const char * cjson_serialized = cJSON_Print(cjson);
-        std::cerr << cjson_serialized << std::endl;
-        // Deallocate object.
-        cJSON_Delete(cjson);
+        // Print dict to stderr. TODO: Save directly to file.
+        const char * dict_serialized = cJSON_Print(dict);
+        std::cerr << dict_serialized << std::endl;
+        // Deallocate dict.
+        cJSON_Delete(dict);
     }
 
     typedef std::pair<std::string, float> Record;
@@ -91,14 +98,14 @@ public:
             record->second += ms;
 
 #if (1 == CK_TENSORRT_ENABLE_CJSON)
-        cJSON * layerTimingArray = cJSON_GetObjectItem(cjson, layerName);
-        if (!layerTimingArray)
-        {
-            layerTimingArray = cJSON_CreateArray();
-            cJSON_AddItemToObject(cjson, layerName, layerTimingArray);
-        }
-        cJSON * layerTimingItem = cJSON_CreateNumber(ms);
-        cJSON_AddItemToArray(layerTimingArray, layerTimingItem);
+        cJSON * new_layer_info = cJSON_CreateObject();
+        cJSON * name = cJSON_CreateString(layerName);
+        cJSON * index = cJSON_CreateNumber(this->index++);
+        cJSON * time_ms = cJSON_CreateNumber(ms);
+        cJSON_AddItemToObject(new_layer_info, "name", name);
+        cJSON_AddItemToObject(new_layer_info, "index", index);
+        cJSON_AddItemToObject(new_layer_info, "time_ms", time_ms);
+        cJSON_AddItemToArray(per_layer_info, new_layer_info);
 #endif
     } // reportLayerTime()
 
