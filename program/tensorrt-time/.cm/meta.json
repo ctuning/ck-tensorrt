@@ -1,1 +1,88 @@
-{}
+{
+  "backup_data_uid": "5e23a492b9138354",
+  "build_compiler_vars": {
+    "CK_TENSORRT_ENABLE_PROFILER": "1"
+  },
+  "compile_deps": {
+    "compiler": {
+      "local": "yes",
+      "name": "C++ compiler",
+      "sort": 10,
+      "tags": "compiler,lang-cpp"
+    },
+    "cuda-compiler": {
+      "local": "yes",
+      "name": "CUDA compiler",
+      "sort": 20,
+      "tags": "compiler,lang-c-cuda"
+    }
+  },
+  "run_deps": {
+    "caffemodel": {
+      "force_target_as_host": "yes",
+      "local": "yes",
+      "name": "Caffe model (net and weights)",
+      "sort": 40,
+      "tags": "caffemodel"
+    },
+    "dataset-imagenet-aux": {
+      "force_target_as_host": "yes",
+      "local": "yes",
+      "name": "ImageNet dataset (aux)",
+      "sort": 50,
+      "tags": "dataset,imagenet,aux"
+    }
+  },
+  "compiler_add_include_as_env_from_deps": [
+    "CK_ENV_LIB_STDCPP_INCLUDE",
+    "CK_ENV_LIB_STDCPP_INCLUDE_EXTRA",
+    "CK_ENV_LIB_JETSON_INFERENCE_INCLUDE",
+    "CK_ENV_COMPILER_CUDA_INCLUDE"
+  ],
+  "compiler_env": "CK_CXX",
+  "compiler_flags_as_env": "$<<CK_COMPILER_FLAG_CPP11>>$",
+  "data_name": "tensorrt-time",
+  "extra_ld_vars": "$<<CK_ENV_COMPILER_CUDA_LIB>>$/libcudart.so -lnvinfer -lnvcaffe_parser",
+  "main_language": "cpp",
+  "print_files_after_run": [],
+  "process_in_tmp": "yes",
+  "program": "yes",
+  "run_cmds": {
+    "default": {
+      "ignore_return_code": "no",
+      "run_time": {
+        "fine_grain_timer_file": "results.json",
+        "params": {
+          "caffemodel_key": "deploy"
+        },
+        "post_process_via_ck": "yes",
+        "post_process_cmds": [],
+        "pre_process_via_ck": {
+          "data_uoa": "569404c41618603a",
+          "script_name": "preprocess"
+        },
+        "run_cmd_main": "$#BIN_FILE#$",
+        "run_cmd_out1": "stdout.log",
+        "run_cmd_out2": "stderr.log",
+        "run_correctness_output_files": [
+        ],
+        "run_output_files": [
+          "results.json"
+        ]
+      }
+    }
+  },
+  "run_vars": {
+    "CK_CAFFE_BATCH_SIZE": "8"
+  },
+  "skip_bin_ext": "yes",
+  "source_files": [
+    "tensorrt-time.cpp"
+  ],
+  "tags": [
+    "tensorrt-time",
+    "demo"
+  ],
+  "target_file": "tensorrt-time",
+  "version": "1.0.0"
+}

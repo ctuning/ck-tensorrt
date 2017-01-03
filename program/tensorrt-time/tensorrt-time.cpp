@@ -176,7 +176,7 @@ int main(int argc, char** argv)
     int exit_status = EXIT_SUCCESS;
 
     // Print environment variables set by CK.
-    printf("[tensorrt-time]  CK settings detected:\n");
+    printf("\n[tensorrt-time]  CK settings detected:\n");
 
     const char * caffe_model_var = "CK_CAFFE_MODEL";
     const char * caffe_model_val = getenv(caffe_model_var);
@@ -199,24 +199,24 @@ int main(int argc, char** argv)
     printf("     %s=\"%s\"\n", caffe_model_output_blob_name_var,
                                caffe_model_output_blob_name_val ? caffe_model_output_blob_name_val : "?");
 
-    const char * tensorrt_batch_size_var = "CK_TENSORRT_BATCH_SIZE";
-    const char * tensorrt_batch_size_val = getenv(tensorrt_batch_size_var);
-    printf("     %s=\"%s\"\n", tensorrt_batch_size_var,
-                               tensorrt_batch_size_val ? tensorrt_batch_size_val : "?");
+    const char * caffe_batch_size_var = "CK_CAFFE_BATCH_SIZE";
+    const char * caffe_batch_size_val = getenv(caffe_batch_size_var);
+    printf("     %s=\"%s\"\n", caffe_batch_size_var,
+                               caffe_batch_size_val ? caffe_batch_size_val : "?");
 
     // Print configuration variables inferred.
-    printf("[tensorrt-time]  TensorRT settings inferred:\n");
+    printf("\n[tensorrt-time]  TensorRT settings inferred:\n");
     const char * tensorrt_input_blob_name = caffe_model_input_blob_name_val ? caffe_model_input_blob_name_val : "data";
     printf("     TENSORRT_INPUT_BLOB_NAME=\"%s\"\n", tensorrt_input_blob_name);
 
     const char * tensorrt_output_blob_name = caffe_model_output_blob_name_val ? caffe_model_output_blob_name_val : "prob";
     printf("     TENSORRT_OUTPUT_BLOB_NAME=\"%s\"\n", tensorrt_output_blob_name);
 
-    const size_t tensorrt_batch_size = tensorrt_batch_size_val ? std::stoi(tensorrt_batch_size_val) : 1;
+    const size_t tensorrt_batch_size = caffe_batch_size_val ? std::stoi(caffe_batch_size_val) : 1;
     printf("     TENSORRT_BATCH_SIZE=%ld\n", tensorrt_batch_size);
 
     // Print the basic engine info.
-    std::cout << "[tensorrt-time]  Building and running a TensorRT engine \n";
+    std::cout << "\n[tensorrt-time]  Building and running a TensorRT engine \n";
     std::cout << "for \'" << caffe_weights_val << "\' \n";
     std::cout << "with the batch size of " << tensorrt_batch_size << std::endl;
 
@@ -234,9 +234,10 @@ int main(int argc, char** argv)
     // Run inference with zero data to measure performance.
     timeInference(engine, tensorrt_batch_size, tensorrt_input_blob_name, tensorrt_output_blob_name);
 
+    std::cout << "\n[tensorrt-time]  Printing per layer timing info...\n";
     gProfiler.printLayerTimes();
 
-    std::cout << "\nshutting down...\n";
+    std::cout << "\n[tensorrt-time]  Shutting down...\n";
     engine->destroy();
     infer->destroy();
     return exit_status;
