@@ -13,6 +13,8 @@
 
 int classifyImageRGBA(imageNet* net, const char* imgPath)
 {
+    int exit_status = EXIT_SUCCESS;
+
     // load image from disk
     float* imgCPU    = NULL;
     float* imgCUDA   = NULL;
@@ -22,33 +24,34 @@ int classifyImageRGBA(imageNet* net, const char* imgPath)
     if( !loadImageRGBA(imgPath, (float4**)&imgCPU, (float4**)&imgCUDA, &imgWidth, &imgHeight) )
     {
         printf("[imagenet-console]  failed to load image '%s'\n", imgPath);
-        return EXIT_FAILURE;
-    }
-
-    float confidence = 0.0f;
-
-    // classify image
-    const int imgClass = net->Classify(imgCUDA, imgWidth, imgHeight, &confidence);
-
-    if( imgClass < 0 )
-    {
-        printf("[imagenet-console]  failed to classify '%s'  (result=%i)\n", imgPath, imgClass);
+        exit_status = EXIT_FAILURE;
     }
     else
     {
-        printf("[imagenet-console]  '%s' -> %2.5f%% class #%i (%s)\n", imgPath, confidence * 100.0f, imgClass, net->GetClassDesc(imgClass));
+        // classify image
+        float confidence = 0.0f;
+        const int imgClass = net->Classify(imgCUDA, imgWidth, imgHeight, &confidence);
+
+        if( imgClass < 0 )
+        {
+            printf("[imagenet-console]  failed to classify '%s'  (result=%i)\n", imgPath, imgClass);
+            exit_status = EXIT_FAILURE;
+        }
+        else
+        {
+            printf("[imagenet-console]  '%s' -> %2.5f%% class #%i (%s)\n", imgPath, confidence * 100.0f, imgClass, net->GetClassDesc(imgClass));
+        }
+        CUDA(cudaFreeHost(imgCPU));
     }
 
-    CUDA(cudaFreeHost(imgCPU));
-
-    return EXIT_SUCCESS;
+    return exit_status;
 }
 
 
 // main entry point
 int main( int argc, char** argv )
 {
-    int retval = EXIT_SUCCESS;
+    int exit_status = EXIT_SUCCESS;
 
     // print environment variables set by CK
     printf("[imagenet-console]  ck-env:\n");
@@ -122,7 +125,7 @@ int main( int argc, char** argv )
     if( argc == 2 )
     {
         const char* imgPath = argv[1];
-        retval = classifyImageRGBA(net, imgPath);
+        exit_status = classifyImageRGBA(net, imgPath);
     }
     else if( argc == 1 )
     {
@@ -143,10 +146,10 @@ int main( int argc, char** argv )
                 }
                 printf("\n[imagenet-console]  classifying image #%ld out of %ld\n", num_images+1, max_images);
                 sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
-                retval = classifyImageRGBA(net, imagenet_val_path);
-                if (retval == EXIT_FAILURE)
+                exit_status = classifyImageRGBA(net, imagenet_val_path);
+                if (exit_status == EXIT_FAILURE)
                 {
-                    return retval;
+                    return exit_status;
                 }
                 num_images++;
             }
@@ -154,17 +157,17 @@ int main( int argc, char** argv )
             free(imagenet_val_path);
         } else {
             printf("[imagenet-console]  failed to open directory \'%s\'\n", imagenet_val_dir_var);
-            retval = EXIT_FAILURE;
+            exit_status = EXIT_FAILURE;
         }
     }
     else
     {
         printf("Usage: %s [path]", argv[0]);
         printf(" (by default, all files in \'%s\' dir)\n", imagenet_val_dir_val);
-        retval = EXIT_FAILURE;
+        exit_status = EXIT_FAILURE;
     }
 
     printf("\nshutting down...\n");
     delete net;
-    return retval;
+    return exit_status;
 }
