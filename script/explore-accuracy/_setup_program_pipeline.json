@@ -20,6 +20,5 @@
   "compile_only_once":"yes",
   "skip_calibration":"yes",
 
-  "skip_flatten":"yes",
   "skip_print_timers":"yes"
 }

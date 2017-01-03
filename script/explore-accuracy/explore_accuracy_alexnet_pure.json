@@ -1,0 +1,23 @@
+{
+  "iterations":1,
+  "repetitions":1,
+
+  "pipeline_update":{
+    "run_vars":{
+      "CK_TENSORRT_MAX_IMAGES":5
+    }
+  },
+
+  "record":"yes",
+  "record_repo":"local",
+  "record_uoa":"imagenet-val-accuracy-tensorrt-1.0-alexnet-pure",
+  "record_failed":"yes",
+  "record_params":{
+    "search_point_by_features":"no"
+  },
+
+  "skip_flatten":"yes",
+  "skip_stat_analysis":"yes",
+  
+  "tags":["imagenet-val", "accuracy", "tensorrt", "v1.0", "bvlc", "alexnet", "pure"]
+}
