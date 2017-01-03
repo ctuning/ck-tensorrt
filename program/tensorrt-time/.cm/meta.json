@@ -1,8 +1,11 @@
 {
   "backup_data_uid": "5e23a492b9138354",
   "build_compiler_vars": {
-    "CK_TENSORRT_ENABLE_PROFILER": "1"
-  },
+    "CK_TENSORRT_ENABLE_CJSON": 1,
+    "CK_TENSORRT_ENABLE_FP16": 1,
+    "CK_TENSORRT_ENABLE_PROFILER": 1,
+    "CK_TENSORRT_ITERATIONS": 1
+   },
   "compile_deps": {
     "compiler": {
       "local": "yes",
@@ -15,6 +18,12 @@
       "name": "CUDA compiler",
       "sort": 20,
       "tags": "compiler,lang-c-cuda"
+    },
+    "lib-cjson": {
+      "local": "yes",
+      "name": "cJSON library",
+      "sort": 30,
+      "tags": "lib,cjson"
     }
   },
   "run_deps": {
@@ -24,13 +33,6 @@
       "name": "Caffe model (net and weights)",
       "sort": 40,
       "tags": "caffemodel"
-    },
-    "dataset-imagenet-aux": {
-      "force_target_as_host": "yes",
-      "local": "yes",
-      "name": "ImageNet dataset (aux)",
-      "sort": 50,
-      "tags": "dataset,imagenet,aux"
     }
   },
   "compiler_add_include_as_env_from_deps": [

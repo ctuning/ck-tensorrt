@@ -19,10 +19,13 @@
 #include <time.h>
 #include <cuda_runtime_api.h>
 
+#if (1 == CK_TENSORRT_ENABLE_CJSON)
+#include <cJSON.h>
+#endif
+
 
 #include "NvInfer.h"
 #include "NvCaffeParser.h"
-
 
 using namespace nvinfer1;
 using namespace nvcaffeparser1;
@@ -40,7 +43,7 @@ using namespace nvcaffeparser1;
 
 // NB: Using multiple timing iterations takes away the ability
 // to assess the minimum execution time, performance variability, etc.
-static const int TIMING_ITERATIONS = 1;
+static const int TIMING_ITERATIONS = CK_TENSORRT_ITERATIONS;
 
 
 // Logger for GIE info/warning/errors.
@@ -55,8 +58,27 @@ class Logger : public ILogger
 
 
 // Profiler for GIE layers.
-struct Profiler : public IProfiler
+class Profiler : public IProfiler
 {
+private:
+    cJSON * cjson;
+
+public:
+    Profiler()
+    {
+        // Allocate object.
+        cjson = cJSON_CreateObject();
+    }
+
+    ~Profiler()
+    {
+        // Print object to stderr. TODO: Save directly to file.
+        const char * cjson_serialized = cJSON_Print(cjson);
+        std::cerr << cjson_serialized << std::endl;
+        // Deallocate object.
+        cJSON_Delete(cjson);
+    }
+
     typedef std::pair<std::string, float> Record;
     std::vector<Record> mProfile;
 
@@ -67,17 +89,32 @@ struct Profiler : public IProfiler
             mProfile.push_back(std::make_pair(layerName, ms));
         else
             record->second += ms;
-    }
+
+#if (1 == CK_TENSORRT_ENABLE_CJSON)
+        cJSON * layerTimingArray = cJSON_GetObjectItem(cjson, layerName);
+        if (!layerTimingArray)
+        {
+            layerTimingArray = cJSON_CreateArray();
+            cJSON_AddItemToObject(cjson, layerName, layerTimingArray);
+        }
+        cJSON * layerTimingItem = cJSON_CreateNumber(ms);
+        cJSON_AddItemToArray(layerTimingArray, layerTimingItem);
+#endif
+    } // reportLayerTime()
 
     void printLayerTimes()
     {
-        float totalTime = 0;
-        for (size_t i = 0; i < mProfile.size(); i++)
+        float totalTime = 0.0f;
+        for (size_t i = 0; i < mProfile.size(); ++i)
         {
-            printf("%-40.40s %4.3fms\n", mProfile[i].first.c_str(), mProfile[i].second / TIMING_ITERATIONS);
+            printf("%-40.40s %4.3f ms\n", mProfile[i].first.c_str(), mProfile[i].second / TIMING_ITERATIONS);
             totalTime += mProfile[i].second;
         }
-        printf("Time over all layers: %4.3f\n", totalTime / TIMING_ITERATIONS);
+        printf("Total time: %4.3f\n", totalTime / TIMING_ITERATIONS);
+
+#if (1 == CK_TENSORRT_ENABLE_CJSON)
+
+#endif
     }
 
 } gProfiler;
