@@ -13,10 +13,12 @@ import sys
 
 def ck_postprocess(i):
     ck=i['ck_kernel']
+    rt=i['run_time']
     env=i.get('env',{})
     deps=i.get('deps',{})
 
     d={}
+    d['debug']=rt['params'].get('debug','no')
 
     # Collect env vars of interest.
     d['REAL_ENV_CK_CAFFE_MODEL']=env.get('CK_CAFFE_MODEL','')
@@ -74,22 +76,41 @@ def ck_postprocess(i):
             info_per_image['properties']['size_bytes'] = match.group('image_size_bytes')
             # Prepare to match layer profiling, all predictions and the best one.
             info_per_image['all_predictions'] = []
-            info_per_image['profiling'] = []
+            info_per_image['per_layer_info'] = []
+            # Reset timer. NB: 'time_fw_ms' is the sum of all per layer timings.
+            time_fw_ms = 0.0
+            # Reset layer index.
+            index = 0
 
         # Match layer profiling info in e.g.:
         # "[GIE]  layer inception_3a/3x3_reduce + inception_3a/relu_3x3_reduce||inception_3a/5x5_reduce + inception_3a/relu_5x5_reduce - 1.747789 ms"
         # "[GIE]  layer network time - 45.530819 ms"
         profiling_regex = \
             '\[GIE\]  layer ' + \
-            '(?P<layer>[\ \w_+/|]*)' + \
+            '(?P<name>[\ \w_+/|]*)' + \
             ' - ' + \
             '(?P<time_ms>\d+\.\d+)(\s)*ms'
         match = re.search(profiling_regex, line)
         if match:
-            info = {}
-            info['layer'] = match.group('layer')
-            info['time_ms'] = match.group('time_ms')
-            info_per_image['profiling'].append(info)
+            name = match.group('name')
+            time_ms = float(match.group('time_ms'))
+            if name=='network time':
+                # NB: Unlike 'time_fw_ms', 'time_total_ms' is parsed from TensorRT's output.
+                # They should obviously match (and normally do).
+                info_per_image['time_total_ms'] = time_ms
+                info_per_image['time_total_s'] = time_ms * 1e-3
+            elif d['debug']=='yes':
+                time_fw_ms += time_ms
+                layer_info = {}
+                layer_info['name'] = name
+                layer_info['time_ms'] = time_ms
+                layer_info['index'] = index; index += 1
+                # Update optional keys for compatibility with CK-Caffe.
+                layer_info['time_s'] = layer_info['time_ms'] * 1e-3
+                layer_info['label'] = '%02d: %s' % (layer_info['index'], layer_info['name'])
+                layer_info['timestamp'] = '0101 00:00:00.000000' # FIXME: Add proper timestamp.
+                layer_info['direction'] = 'forward'
+                info_per_image['per_layer_info'].append(layer_info)
 
         # Match prediction info in e.g.:
         # "class 0287 - 0.049164  (lynx, catamount)"
@@ -140,10 +161,29 @@ def ck_postprocess(i):
                         if prediction['class']==best_prediction['class_correct']:
                             best_prediction[top_n_accuracy] = 'yes'
                             break
-            # Final match in per image info.
+            # If we are here, it's the final match in per image info.
+            if d['debug']=='yes':
+                # Finalize the execution time info.
+                # Execution time (ms).
+                info_per_image['time_fw_ms'] = time_fw_ms
+                info_per_image['time_bw_ms'] = 0.0
+                info_per_image['time_fwbw_ms'] = info_per_image['time_fw_ms'] + info_per_image['time_bw_ms']
+                info_per_image['time_total_ms_kernel_0'] = info_per_image['time_total_ms']
+                # Execution time (s).
+                info_per_image['time_fw_s'] = info_per_image['time_fw_ms'] * 1e-3
+                info_per_image['time_bw_s'] = info_per_image['time_bw_ms'] * 1e-3
+                info_per_image['time_fwbw_s'] = info_per_image['time_fwbw_ms'] * 1e-3
+                info_per_image['time_total_s_kernel_0'] = info_per_image['time_total_ms_kernel_0'] * 1e-3
+            else:
+                # Remove all predictions info.
+                info_per_image.pop('all_predictions', None)
+
+            # Finalize the per image time info.
             d['info_per_image'].append(info_per_image)
+
+            # Built-in CK keys.
+            d['execution_time'] = info_per_image['time_total_s']
             d['post_processed'] = 'yes'
-            d['execution_time'] = 0.0 # built-in CK key
 
     rr={}
     rr['return']=0

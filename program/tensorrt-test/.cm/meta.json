@@ -119,6 +119,36 @@
           "results.json"
         ]
       }
+    },
+    "imagenet-val-debug": {
+      "ignore_return_code": "no",
+      "run_time": {
+        "fine_grain_timer_file": "results.json",
+        "params": {
+          "caffemodel_key": "deploy",
+          "classification": "yes",
+          "debug": "yes"
+        },
+        "post_process_via_ck": "yes",
+        "post_process_cmds": [
+          "python $#src_path_local#$postprocess.py"
+        ],
+        "pre_process_via_ck": {
+          "data_uoa": "569404c41618603a",
+          "script_name": "preprocess"
+        },
+        "run_cmd_main": "$#BIN_FILE#$",
+        "run_cmd_out1": "stdout.log",
+        "run_cmd_out2": "stderr.log",
+        "run_set_env2": {
+          "CK_TENSORRT_MAX_IMAGES": "10"
+        },
+        "run_correctness_output_files": [
+        ],
+        "run_output_files": [
+          "results.json"
+        ]
+      }
     }
   },
   "run_vars": {
