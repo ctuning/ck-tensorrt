@@ -3,7 +3,7 @@
 
   "save_to_file":"_setup_program_pipeline_tmp.json",
 
-  "data_uoa":"imagenet-console",
+  "data_uoa":"tensorrt-test",
 
   "cmd_key":"imagenet-val",
 

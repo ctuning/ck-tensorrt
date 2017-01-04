@@ -1,5 +1,5 @@
 #
-# Convert raw output of the TensorRT imagenet-console
+# Convert raw output of the TensorRT tensorrt-test
 # program to the CK format.
 #
 # Developers:
@@ -49,11 +49,11 @@ def ck_postprocess(i):
                 synset = n00000000_synset[10:-1]
                 synset_list.append(synset)
 
-    # Load imagenet-console output as list.
+    # Load tensorrt-test output as list.
     r=ck.load_text_file({'text_file':'stdout.log', 'split_to_list':'yes'})
     if r['return']>0: return r
 
-    # Collect info from imagenet-console output per image:
+    # Collect info from tensorrt-test output per image:
     # image properties, layer profiling, all predictions and the best one.
     d['info_per_image'] = []
     for line in r['lst']:
@@ -109,9 +109,9 @@ def ck_postprocess(i):
             info_per_image['all_predictions'].append(info)
 
         # Match the most likely prediction in e.g.:
-        # "imagenet-console: '<file path>' -> 33.05664% class #331 (hare)"
+        # "tensorrt-test: '<file path>' -> 33.05664% class #331 (hare)"
         best_prediction_regex = \
-            '\[imagenet-console\](\s+)' + \
+            '\[tensorrt-test\](\s+)' + \
             '\'(?P<file_path>[\w\./_-]*)\'' + \
             '(\s)*->(\s)*' + \
             '(?P<probability_pc>\d+\.\d+)%' + \
@@ -151,7 +151,7 @@ def ck_postprocess(i):
         r=ck.save_json_to_file({'json_file':'results.json', 'dict':d})
         if r['return']>0: return r
     else:
-        rr['error']='failed to match best prediction in imagenet-console output!'
+        rr['error']='failed to match best prediction in tensorrt-test output!'
         rr['return']=1
 
     return rr

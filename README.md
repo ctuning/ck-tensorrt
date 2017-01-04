@@ -53,12 +53,12 @@ $ ck pull repo:ck-tensorrt --url=https://github.com/dividiti/ck-tensorrt
 
 ### Building CK-TensorRT and all dependencies via CK
 
-The first time you run the TensorRT benchmark, CK will
+The first time you run a TensorRT program (e.g. `tensorrt-test`), CK will
 build and install all missing dependencies on your machine,
 download the required data sets and start the benchmark:
 
 ```
-$ ck run program:imagenet-console
+$ ck run program:tensorrt-test
 ```
 
 ## Related projects and initiatives

@@ -57,7 +57,7 @@
   ],
   "compiler_env": "CK_CXX",
   "compiler_flags_as_env": "$<<CK_COMPILER_FLAG_CPP11>>$",
-  "data_name": "imagenet-console",
+  "data_name": "tensorrt-test",
   "extra_ld_vars": "$<<CK_ENV_COMPILER_CUDA_LIB>>$/libcudart.so",
   "main_language": "cpp",
   "print_files_after_run": [],
@@ -126,12 +126,12 @@
   },
   "skip_bin_ext": "yes",
   "source_files": [
-    "imagenet-console.cpp"
+    "tensorrt-test.cpp"
   ],
   "tags": [
-    "imagenet-console",
+    "tensorrt-test",
     "demo"
   ],
-  "target_file": "imagenet-console",
+  "target_file": "tensorrt-test",
   "version": "1.0.0"
 }

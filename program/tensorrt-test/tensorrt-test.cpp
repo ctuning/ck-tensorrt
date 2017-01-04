@@ -23,7 +23,7 @@ int classifyImageRGBA(imageNet* net, const char* imgPath)
 
     if( !loadImageRGBA(imgPath, (float4**)&imgCPU, (float4**)&imgCUDA, &imgWidth, &imgHeight) )
     {
-        printf("[imagenet-console]  failed to load image '%s'\n", imgPath);
+        printf("[tensorrt-test]  failed to load image '%s'\n", imgPath);
         exit_status = EXIT_FAILURE;
     }
     else
@@ -34,12 +34,12 @@ int classifyImageRGBA(imageNet* net, const char* imgPath)
 
         if( imgClass < 0 )
         {
-            printf("[imagenet-console]  failed to classify '%s'  (result=%i)\n", imgPath, imgClass);
+            printf("[tensorrt-test]  failed to classify '%s'  (result=%i)\n", imgPath, imgClass);
             exit_status = EXIT_FAILURE;
         }
         else
         {
-            printf("[imagenet-console]  '%s' -> %2.5f%% class #%i (%s)\n", imgPath, confidence * 100.0f, imgClass, net->GetClassDesc(imgClass));
+            printf("[tensorrt-test]  '%s' -> %2.5f%% class #%i (%s)\n", imgPath, confidence * 100.0f, imgClass, net->GetClassDesc(imgClass));
         }
         CUDA(cudaFreeHost(imgCPU));
     }
@@ -54,7 +54,7 @@ int main( int argc, char** argv )
     int exit_status = EXIT_SUCCESS;
 
     // print environment variables set by CK
-    printf("\n[imagenet-console]  ck-env:\n");
+    printf("\n[tensorrt-test]  ck-env:\n");
 
     const char * caffe_model_var = "CK_CAFFE_MODEL";
     const char * caffe_model_val = getenv(caffe_model_var);
@@ -95,7 +95,7 @@ int main( int argc, char** argv )
 
 
     // print command line arguments
-    printf("\n[imagenet-console]  args (%i):", argc);
+    printf("\n[tensorrt-test]  args (%i):", argc);
 
     for( int i = 0; i < argc; i++ )
         printf("\n     [%i] %s", i, argv[i]);
@@ -115,7 +115,7 @@ int main( int argc, char** argv )
 
     if( !net )
     {
-        printf("\n[imagenet-console]  failed to initialize imageNet\n");
+        printf("\n[tensorrt-test]  failed to initialize imageNet\n");
         return EXIT_FAILURE;
     }
 
@@ -142,7 +142,7 @@ int main( int argc, char** argv )
                     // skip '.' and '..'
                     continue;
                 }
-                printf("\n[imagenet-console]  classifying image #%ld out of %ld\n", num_images+1, max_images);
+                printf("\n[tensorrt-test]  classifying image #%ld out of %ld\n", num_images+1, max_images);
                 sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
                 exit_status = classifyImageRGBA(net, imagenet_val_path);
                 if (exit_status == EXIT_FAILURE)
@@ -154,18 +154,18 @@ int main( int argc, char** argv )
             closedir(dir);
             free(imagenet_val_path);
         } else {
-            printf("\n[imagenet-console]  failed to open directory \'%s\'\n", imagenet_val_dir_var);
+            printf("\n[tensorrt-test]  failed to open directory \'%s\'\n", imagenet_val_dir_var);
             exit_status = EXIT_FAILURE;
         }
     }
     else
     {
-        printf("\n[imagenet-console]  usage: %s [path]", argv[0]);
+        printf("\n[tensorrt-test]  usage: %s [path]", argv[0]);
         printf(" (by default, all files in \'%s\' dir)\n", imagenet_val_dir_val);
         exit_status = EXIT_FAILURE;
     }
 
-    printf("\n[imagenet-console]  shutting down...\n");
+    printf("\n[tensorrt-test]  shutting down...\n");
     delete net;
     return exit_status;
 }

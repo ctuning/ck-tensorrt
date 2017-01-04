@@ -65,7 +65,7 @@ def ck_postprocess(i):
         r=ck.save_json_to_file({'json_file':'results.json', 'dict':d})
         if r['return']>0: return r
     else:
-        rr['error']='failed to match best prediction in imagenet-console output!'
+        rr['error']='failed to match best prediction in tensorrt-time output!'
         rr['return']=1
 
     return rr
