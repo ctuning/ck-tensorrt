@@ -18,6 +18,7 @@ def ck_postprocess(i):
     deps=i.get('deps',{})
 
     d={}
+    d['execution_time']=0.0
     d['debug']=rt['params'].get('debug','no')
 
     # Collect env vars of interest.
@@ -50,6 +51,10 @@ def ck_postprocess(i):
             for n00000000_synset in imagenet_synset_words_txt:
                 synset = n00000000_synset[10:-1]
                 synset_list.append(synset)
+        top_n_list = [1,5]
+        for n in top_n_list:
+            top_n_accuracy = 'accuracy_top'+str(n)
+            d[top_n_accuracy] = 0
 
     # Load tensorrt-test output as list.
     r=ck.load_text_file({'text_file':'stdout.log', 'split_to_list':'yes'})
@@ -153,13 +158,14 @@ def ck_postprocess(i):
                 best_prediction = info_per_image['best_prediction']
                 best_prediction['class_correct'] = image_to_synset_map.get(best_prediction['file_name'],-1)
                 best_prediction['synset_correct'] = synset_list[best_prediction['class_correct']]
-                for n in [1,5]:
+                for n in top_n_list:
                     top_n_accuracy = 'accuracy_top'+str(n)
                     top_n_predictions = info_per_image['all_predictions'][0:n]
                     best_prediction[top_n_accuracy] = 'no'
                     for prediction in top_n_predictions:
                         if prediction['class']==best_prediction['class_correct']:
                             best_prediction[top_n_accuracy] = 'yes'
+                            d[top_n_accuracy] += 1
                             break
             # If we are here, it's the final match in per image info.
             if d['debug']=='yes':
@@ -182,12 +188,18 @@ def ck_postprocess(i):
             d['info_per_image'].append(info_per_image)
 
             # Built-in CK keys.
-            d['execution_time'] = info_per_image['time_total_s']
+            d['execution_time'] += info_per_image['time_total_s']
             d['post_processed'] = 'yes'
 
     rr={}
     rr['return']=0
     if d.get('post_processed','')=='yes':
+        if d['CK_ENV_DATASET_IMAGENET_VAL']!='':
+            num_images = len(d['info_per_image'])
+            scaling = 1.0 / num_images
+            for n in top_n_list:
+                 top_n_accuracy = 'accuracy_top'+str(n)
+                 d[top_n_accuracy] *= scaling
         r=ck.save_json_to_file({'json_file':'results.json', 'dict':d})
         if r['return']>0: return r
     else:
