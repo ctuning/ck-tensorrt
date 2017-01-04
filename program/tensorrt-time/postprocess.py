@@ -27,13 +27,34 @@ def ck_postprocess(i):
     if r['return']>0: return r
 
     # Update layer info similarly to Caffe output.
-    d['per_layer_info'] = r['dict']['per_layer_info']
-    for layer_info in d['per_layer_info']:
+    time_fw_ms = 0.0
+    for layer_info in r['dict']['per_layer_info']:
+        time_fw_ms += layer_info['time_ms']
         layer_info['direction'] = 'forward'
         layer_info['time_s'] = layer_info['time_ms'] * 1e-3
         layer_info['label'] = '%02d: %s' % (layer_info['index'], layer_info['name'])
-        # TODO: timestamp.
-    
+        # FIXME: Add proper timestamp.
+        layer_info['timestamp'] = '0101 00:00:00.000000'
+
+    # Execution time (ms).
+    d['time_fw_ms'] = time_fw_ms
+    d['time_bw_ms'] = 0.0
+    d['time_fwbw_ms'] = d['time_fw_ms'] + d['time_bw_ms']
+    d['time_total_ms'] = d['time_fwbw_ms']
+    d['time_total_ms_kernel_0'] = d['time_total_ms']
+    # Execution time (ms).
+    d['time_fw_s'] = d['time_fw_ms'] * 1e-3
+    d['time_bw_s'] = d['time_bw_ms'] * 1e-3
+    d['time_fwbw_s'] = d['time_fwbw_ms'] * 1e-3
+    d['time_total_s'] = d['time_total_ms'] * 1e-3
+    d['time_total_s_kernel_0'] = d['time_total_ms_kernel_0'] * 1e-3
+
+    # FIXME: Add memory consumption.
+    memory_bytes = 0
+    d['memory_bytes']  = memory_bytes
+    d['memory_kbytes'] = memory_bytes * 1e-3
+    d['memory_mbytes'] = memory_bytes * 1e-6
+
     d['post_processed'] = 'yes'
     d['execution_time'] = 0.0 # built-in CK key
 
