@@ -18,8 +18,6 @@
 
   "no_state_check":"yes",
 
-  "process_multi_keys":["##characteristics#compile#*"],
-
   "skip_calibration":"yes",
 
   "skip_print_timers":"yes"
