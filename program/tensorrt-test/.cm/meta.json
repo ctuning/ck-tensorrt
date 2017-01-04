@@ -122,7 +122,7 @@
     }
   },
   "run_vars": {
-    "CK_TENSORRT_MAX_IMAGES": "50"
+    "CK_TENSORRT_MAX_IMAGES": "50000"
   },
   "skip_bin_ext": "yes",
   "source_files": [
