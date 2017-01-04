@@ -18,5 +18,5 @@
 
   "process_multi_keys":["##characteristics#compile#*"],
   
-  "tags":["imagenet-val", "accuracy", "tensorrt", "v1.0", "bvlc", "alexnet"]
+  "tags":["imagenet-val", "accuracy", "tensorrt-1.0", "bvlc", "alexnet"]
 }

@@ -15,6 +15,8 @@
   "record_params":{
     "search_point_by_features":"no"
   },
-  
-  "tags":["imagenet-val", "accuracy", "tensorrt", "v1.0", "bvlc", "googlenet"]
+
+  "process_multi_keys":["##characteristics#compile#*"],
+
+  "tags":["imagenet-val", "accuracy", "tensorrt-1.0", "bvlc", "googlenet"]
 }
