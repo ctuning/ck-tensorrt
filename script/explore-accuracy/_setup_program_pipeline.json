@@ -7,7 +7,7 @@
 
   "cmd_key":"imagenet-val",
 
-  "speed":"yes",
+  "speed":"no",
   "energy":"no",
 
   "cpu_freq":"max",

@@ -3,8 +3,9 @@
   "repetitions":1,
 
   "pipeline_update":{
-    "run_vars":{
-      "CK_TENSORRT_MAX_IMAGES":5
+    "flags":"-O3",
+    "env":{
+      "CK_TENSORRT_MAX_IMAGES":50000
     }
   },
 
