@@ -31,11 +31,11 @@ def ck_postprocess(i):
     time_fw_ms = 0.0
     for layer_info in d['per_layer_info']:
         time_fw_ms += layer_info['time_ms']
-        layer_info['direction'] = 'forward'
+        # Update optional keys for compatibility with CK-Caffe.
         layer_info['time_s'] = layer_info['time_ms'] * 1e-3
         layer_info['label'] = '%02d: %s' % (layer_info['index'], layer_info['name'])
-        # FIXME: Add proper timestamp.
-        layer_info['timestamp'] = '0101 00:00:00.000000'
+        layer_info['timestamp'] = '0101 00:00:00.000000' # FIXME: Add proper timestamp.
+        layer_info['direction'] = 'forward'
 
     # Execution time (ms).
     d['time_fw_ms'] = time_fw_ms
@@ -43,7 +43,7 @@ def ck_postprocess(i):
     d['time_fwbw_ms'] = d['time_fw_ms'] + d['time_bw_ms']
     d['time_total_ms'] = d['time_fwbw_ms']
     d['time_total_ms_kernel_0'] = d['time_total_ms']
-    # Execution time (ms).
+    # Execution time (s).
     d['time_fw_s'] = d['time_fw_ms'] * 1e-3
     d['time_bw_s'] = d['time_bw_ms'] * 1e-3
     d['time_fwbw_s'] = d['time_fwbw_ms'] * 1e-3
@@ -56,8 +56,9 @@ def ck_postprocess(i):
     d['memory_kbytes'] = memory_bytes * 1e-3
     d['memory_mbytes'] = memory_bytes * 1e-6
 
+    # Built-in CK keys.
+    d['execution_time'] = d['time_total_s']
     d['post_processed'] = 'yes'
-    d['execution_time'] = d['time_total_s'] # built-in CK key
 
     rr={}
     rr['return']=0
