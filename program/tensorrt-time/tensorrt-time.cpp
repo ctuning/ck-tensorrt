@@ -3,8 +3,8 @@
  * sample provided by NVIDIA on Tegra:
  * /usr/src/gie_samples/samples/sampleGoogleNet
  *
- * Therefore:
- * 2015-2016 (c) NVIDIA
+ * Therefore, assuming:
+ * 2016 (c) NVIDIA
  * 2017 (c) dividiti
  */
 
@@ -133,7 +133,8 @@ public:
 void caffeToGIEModel(const char * modelFile,                    // path to deploy.prototxt file
                      const char * modelWeightsFile,             // path to caffemodel file
                      const std::vector<std::string>& outputs,   // network outputs
-                     const size_t maxBatchSize,                 // batch size - NB must be at least as large as the batch we want to run with)
+                     size_t maxBatchSize,                       // batch size - NB must be at least as large as the batch we want to run with
+                     bool enableFp16,                           // if true and natively supported, use 16-bit floating-point
                      std::ostream& gieModelStream)
 {
     // Create API root class - must span the lifetime of the engine usage.
@@ -143,8 +144,10 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     // Parse the Caffe model to populate the network, then set the outputs.
     ICaffeParser* parser = createCaffeParser();
 
-    // Create a 16-bit model if it's natively supported.
-    const bool useFp16 = builder->platformHasFastFp16();
+    // Check whether 16-bit floating-point is natively supported.
+    const bool hasFp16 = builder->platformHasFastFp16();
+    // Create a 16-bit model if supported and enabled.
+    const bool useFp16 = hasFp16 && enableFp16;
     DataType modelDataType = useFp16 ? DataType::kHALF : DataType::kFLOAT;
 
     // The third parameter is the network definition that the parser will populate.
@@ -161,7 +164,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     builder->setMaxBatchSize(maxBatchSize);
     builder->setMaxWorkspaceSize(16 << 20);
 
-    // Set up the network for paired-fp16 format if available.
+    // Set up the network for paired-fp16 format if supported and enabled.
     if (useFp16) builder->setHalf2Mode(true);
 
     ICudaEngine* engine = builder->buildCudaEngine(*network);
@@ -263,6 +266,11 @@ int main(int argc, char** argv)
     printf("     %s=\"%s\"\n", caffe_batch_size_var,
                                caffe_batch_size_val ? caffe_batch_size_val : "?");
 
+    const char * tensorrt_enable_fp16_var = "CK_TENSORRT_ENABLE_FP16";
+    const char * tensorrt_enable_fp16_val = getenv(tensorrt_enable_fp16_var);
+    printf("     %s=\"%s\"\n", tensorrt_enable_fp16_var,
+                               tensorrt_enable_fp16_val ? tensorrt_enable_fp16_val : "?");
+
     // Print configuration variables inferred.
     printf("\n[tensorrt-time]  TensorRT settings inferred:\n");
     const char * tensorrt_input_blob_name = caffe_model_input_blob_name_val ? caffe_model_input_blob_name_val : "data";
@@ -271,20 +279,25 @@ int main(int argc, char** argv)
     const char * tensorrt_output_blob_name = caffe_model_output_blob_name_val ? caffe_model_output_blob_name_val : "prob";
     printf("     TENSORRT_OUTPUT_BLOB_NAME=\"%s\"\n", tensorrt_output_blob_name);
 
-    const size_t tensorrt_batch_size = caffe_batch_size_val ? std::stoi(caffe_batch_size_val) : 1;
+    const size_t tensorrt_batch_size = caffe_batch_size_val ? atoi(caffe_batch_size_val) : 1;
     printf("     TENSORRT_BATCH_SIZE=%ld\n", tensorrt_batch_size);
 
+    const bool   tensorrt_enable_fp16 = tensorrt_enable_fp16_val ? (bool)atoi(tensorrt_enable_fp16_val) : true;
+    printf("     TENSORRT_ENABLE_FP16=%d\n", tensorrt_enable_fp16);
+
     // Print the basic engine info.
-    std::cout << "\n[tensorrt-time]  Building and running a TensorRT engine \n";
-    std::cout << "for \'" << caffe_weights_val << "\' \n";
-    std::cout << "with the batch size of " << tensorrt_batch_size << std::endl;
+    std::cout << "\n[tensorrt-time]  Building and running a TensorRT engine";
+    std::cout << "\nfor \'" << caffe_weights_val << "\'";
+    std::cout << "\nwith the batch size of " << tensorrt_batch_size;
+    std::cout << " and 16-bit floating point " << (tensorrt_enable_fp16 ? "enabled" : "disabled") << std::endl;
 
     // Parse the Caffe model and the mean file. FIXME: Only for AlexNet?
     std::stringstream tensorrt_model_stream;
     tensorrt_model_stream.seekg(0, tensorrt_model_stream.beg);
     std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
     caffeToGIEModel(caffe_model_val, caffe_weights_val,
-                    tensorrt_model_outputs, tensorrt_batch_size, tensorrt_model_stream);
+                    tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16,
+                    tensorrt_model_stream);
 
     // Create an engine.
     IRuntime* infer = createInferRuntime(gLogger);
