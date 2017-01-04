@@ -153,22 +153,39 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     // The third parameter is the network definition that the parser will populate.
     const IBlobNameToTensor *blobNameToTensor =
         parser->parse(modelFile, modelWeightsFile, *network, modelDataType);
+    if (!blobNameToTensor)
+    {
+        std::cout << "\n[tensorrt-time]  Failed to parse Caffe model...\n";
+        exit(EXIT_FAILURE);
+    }
 
-    assert(blobNameToTensor != nullptr);
     // As the Caffe model has no notion of outputs, we need to specify
     // explicitly which tensors the engine should generate.
-    for (auto& s : outputs)
-        network->markOutput(*blobNameToTensor->find(s.c_str()));
+    for (auto& output : outputs)
+    {
+        const char * output_name = output.c_str();
+        ITensor* tensor = blobNameToTensor->find(output_name);
+        if (!tensor)
+        {
+            std::cerr << "\n[tensorrt-time]  Failed to retrieve tensor for output \'" << output_name << "\'\n";
+            exit(EXIT_FAILURE);
+        }
+        network->markOutput(*tensor);
+    }
 
     // Build the engine.
     builder->setMaxBatchSize(maxBatchSize);
     builder->setMaxWorkspaceSize(16 << 20);
 
     // Set up the network for paired-fp16 format if supported and enabled.
-    if (useFp16) builder->setHalf2Mode(true);
+    builder->setHalf2Mode(useFp16);
 
     ICudaEngine* engine = builder->buildCudaEngine(*network);
-    assert(engine);
+    if (!engine)
+    {
+        std::cerr << "\n[tensorrt-time]  Failed to build CUDA engine\n";
+        exit(EXIT_FAILURE);
+    }
 
     // We no longer need the network, nor do we need the parser.
     network->destroy();
@@ -188,6 +205,7 @@ void timeInference(ICudaEngine* engine,
 {
     // Input and output buffer pointers that we pass to the engine - the engine requires exactly ICudaEngine::getNbBindings(),
     // of these, but in this case we know that there is exactly one input and one output.
+    // FIXME: "we know .. exactly one input and one output" - for GoogleNet, AlexNet?
     assert(engine->getNbBindings() == 2);
     void* buffers[2];
 
@@ -289,7 +307,7 @@ int main(int argc, char** argv)
     std::cout << "\n[tensorrt-time]  Building and running a TensorRT engine";
     std::cout << "\nfor \'" << caffe_weights_val << "\'";
     std::cout << "\nwith the batch size of " << tensorrt_batch_size;
-    std::cout << " and 16-bit floating point " << (tensorrt_enable_fp16 ? "enabled" : "disabled") << std::endl;
+    std::cout << " and 16-bit floating point " << (tensorrt_enable_fp16 ? "enabled\n\n" : "disabled\n\n");
 
     // Parse the Caffe model and the mean file. FIXME: Only for AlexNet?
     std::stringstream tensorrt_model_stream;
