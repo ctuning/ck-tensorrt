@@ -23,6 +23,9 @@
 #include <cJSON.h>
 #endif
 
+#if (1 == CK_TENSORRT_ENABLE_XOPENME)
+#include <xopenme.h>
+#endif
 
 #include "NvInfer.h"
 #include "NvCaffeParser.h"
@@ -205,8 +208,16 @@ void timeInference(ICudaEngine* engine,
     // Zero the input buffer.
     CHECK(cudaMemset(buffers[inputIndex], 0, inputSize));
 
+#if (1 == CK_TENSORRT_ENABLE_XOPENME)
+    xopenme_clock_start(0);
+#endif
+
     for (int i = 0; i < TIMING_ITERATIONS; i++)
         context->execute(tensorrt_batch_size, buffers);
+
+#if (1 == CK_TENSORRT_ENABLE_XOPENME)
+    xopenme_clock_end(0);
+#endif
 
     // Release the context and buffers.
     context->destroy();
@@ -218,6 +229,10 @@ void timeInference(ICudaEngine* engine,
 int main(int argc, char** argv)
 {
     int exit_status = EXIT_SUCCESS;
+
+#if (1 == CK_TENSORRT_ENABLE_XOPENME)
+     xopenme_init(1, 0);
+#endif
 
     // Print environment variables set by CK.
     printf("\n[tensorrt-time]  CK settings detected:\n");
@@ -284,5 +299,11 @@ int main(int argc, char** argv)
     std::cout << "\n[tensorrt-time]  Shutting down...\n";
     engine->destroy();
     infer->destroy();
+
+#if (1 == CK_TENSORRT_ENABLE_XOPENME)
+     xopenme_dump_state();
+     xopenme_finish();
+#endif
+
     return exit_status;
 }

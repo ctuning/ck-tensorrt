@@ -27,8 +27,9 @@ def ck_postprocess(i):
     if r['return']>0: return r
 
     # Update layer info similarly to Caffe output.
+    d['per_layer_info'] = r['dict']['per_layer_info']
     time_fw_ms = 0.0
-    for layer_info in r['dict']['per_layer_info']:
+    for layer_info in d['per_layer_info']:
         time_fw_ms += layer_info['time_ms']
         layer_info['direction'] = 'forward'
         layer_info['time_s'] = layer_info['time_ms'] * 1e-3
@@ -56,7 +57,7 @@ def ck_postprocess(i):
     d['memory_mbytes'] = memory_bytes * 1e-6
 
     d['post_processed'] = 'yes'
-    d['execution_time'] = 0.0 # built-in CK key
+    d['execution_time'] = d['time_total_s'] # built-in CK key
 
     rr={}
     rr['return']=0

@@ -4,6 +4,7 @@
     "CK_TENSORRT_ENABLE_CJSON": 1,
     "CK_TENSORRT_ENABLE_FP16": 1,
     "CK_TENSORRT_ENABLE_PROFILER": 1,
+    "CK_TENSORRT_ENABLE_XOPENME": 0,
     "CK_TENSORRT_ITERATIONS": 1
    },
   "compile_deps": {
@@ -24,6 +25,12 @@
       "name": "cJSON library",
       "sort": 30,
       "tags": "lib,cjson"
+    },
+    "lib-xopenme": {
+      "local": "yes",
+      "name": "xOpenME library",
+      "sort": 40,
+      "tags": "lib,xopenme"
     }
   },
   "run_deps": {
