@@ -1,7 +1,7 @@
 import ck.kernel as ck
 import copy
 import re
-
+import json
 
 def do(i):
     # Detect basic platform info.
@@ -57,13 +57,12 @@ def do(i):
 
     ii={'action':'pipeline',
         'prepare':'yes',
-         
+
         'repo_uoa':'ck-tensorrt',
         'module_uoa':'program',
         'data_uoa':'tensorrt-test',
         'cmd_key':'imagenet-val',
 
-        'FIXME: dependencies':'now have both cdeps and rdeps!',
         'dependencies': cdeps,
 
         'no_compiler_description':'yes',
@@ -74,6 +73,11 @@ def do(i):
 
         'speed':'no',
         'energy':'no',
+
+        'flags':'-O3',
+        'env':{
+           'CK_TENSORRT_MAX_IMAGES':10
+         },
 
         'no_state_check':'yes',
         'skip_calibration':'yes',
@@ -134,7 +138,7 @@ def do(i):
             model_tags = re.match('Caffe model \(net and weights\) \((?P<tags>.*)\)', model_name)
             model_tags = model_tags.group('tags').replace(' ', '').replace(',', '-')
             # Skip some models with "in [..]" or "not in [..]".
-            if model_tags in []: continue
+            if model_tags not in ['bvlc-alexnet', 'bvlc-googlenet']: continue
 
             record_repo='local'
             record_uoa='imagenet-val-accuracy-'+model_tags+'-'+lib_tags
@@ -165,13 +169,10 @@ def do(i):
             if r['return']>0: return r
 
             cpipeline['dependencies'].update(new_deps)
-
-            # TODO: Update compiler flags.
-            #cpipeline['flags'].update('-O3')
-
-            # TODO: Update environment.
-            #new_env = {'CK_TENSORRT_MAX_IMAGES':10}
-            #cpipeline['env'].update(new_env)
+            pipeline_name = '%s.json' % record_uoa
+            print ('Dumping pipeline to \'%s\'...' % pipeline_name)
+            with open(pipeline_name, 'w') as f:
+                json.dump(cpipeline, f, indent=2)
 
             ii={'action':'autotune',
 
@@ -184,7 +185,7 @@ def do(i):
                     ]
                 ],
                 'choices_selection':[
-                    {'type':'loop', 'start':0, 'stop':1, 'step':1, 'default':1}
+                    {'type':'loop', 'start':0, 'stop':2, 'step':1, 'default':1}
                 ],
 
                 'features_keys_to_process':['##choices#*'],
@@ -206,12 +207,12 @@ def do(i):
                 'pipeline':cpipeline,
                 'out':'con'}
 
-#            r=ck.access(ii)
-#            if r['return']>0: return r
-#
-#            fail=r.get('fail','')
-#            if fail=='yes':
-#                return {'return':10, 'error':'pipeline failed ('+r.get('fail_reason','')+')'}
+            r=ck.access(ii)
+            if r['return']>0: return r
+
+            fail=r.get('fail','')
+            if fail=='yes':
+                return {'return':10, 'error':'pipeline failed ('+r.get('fail_reason','')+')'}
 
     return {'return':0}
 
