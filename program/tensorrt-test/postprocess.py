@@ -23,8 +23,6 @@ def ck_postprocess(i):
 
     # Collect env vars of interest.
     d['REAL_ENV_CK_CAFFE_MODEL']=env.get('CK_CAFFE_MODEL','')
-    # FIXME: Is not set? (Hence, collecting the same var via the deps below.)
-    d['REAL_ENV_CK_CAFFE_IMAGENET_VAL_TXT']=env.get('CK_CAFFE_IMAGENET_VAL_TXT','')
 
     # Collect deps of interest.
     imagenet_aux=deps.get('dataset-imagenet-aux',{})
@@ -75,10 +73,11 @@ def ck_postprocess(i):
         if match:
             info_per_image = {}
             info_per_image['properties'] = {}
-            info_per_image['properties']['path'] = match.group('image_path')
-            info_per_image['properties']['width'] = match.group('image_width')
-            info_per_image['properties']['height'] = match.group('image_height')
-            info_per_image['properties']['size_bytes'] = match.group('image_size_bytes')
+            if d['debug']=='yes':
+                info_per_image['properties']['path'] = match.group('image_path')
+                info_per_image['properties']['width'] = match.group('image_width')
+                info_per_image['properties']['height'] = match.group('image_height')
+                info_per_image['properties']['size_bytes'] = match.group('image_size_bytes')
             # Prepare to match layer profiling, all predictions and the best one.
             info_per_image['all_predictions'] = []
             info_per_image['per_layer_info'] = []
@@ -113,7 +112,7 @@ def ck_postprocess(i):
                 # Update optional keys for compatibility with CK-Caffe.
                 layer_info['time_s'] = layer_info['time_ms'] * 1e-3
                 layer_info['label'] = '%02d: %s' % (layer_info['index'], layer_info['name'])
-                layer_info['timestamp'] = '0101 00:00:00.000000' # FIXME: Add proper timestamp.
+                layer_info['timestamp'] = '0101 00:00:00.000000' # FIXME: Add proper timestamp?
                 layer_info['direction'] = 'forward'
                 info_per_image['per_layer_info'].append(layer_info)
 
@@ -131,7 +130,8 @@ def ck_postprocess(i):
             info = {}
             info['class'] = int(match.group('class'))
             info['probability'] = float(match.group('probability'))
-            info['synset'] = match.group('synset')
+            if d['debug']=='yes':
+                info['synset'] = match.group('synset')
             info_per_image['all_predictions'].append(info)
 
         # Match the most likely prediction in e.g.:
@@ -146,27 +146,32 @@ def ck_postprocess(i):
         match = re.search(best_prediction_regex, line)
         if match:
             info = {}
-            info['file_path'] = match.group('file_path')
-            info['file_name'] = os.path.basename(info['file_path'])
-            info['probability'] = float(match.group('probability_pc'))*0.01
+            file_path = match.group('file_path')
+            info['file_name'] = os.path.basename(file_path)
             info['class'] = int(match.group('class'))
-            info['synset'] = match.group('synset')
+            if d['debug']=='yes':
+                info['file_path'] = file_path
+                info['synset'] = match.group('synset')
+                info['probability'] = float(match.group('probability_pc'))*0.01
             info_per_image['best_prediction'] = info
             info_per_image['all_predictions'] = sorted(info_per_image['all_predictions'], key=lambda k: k['probability'], reverse=True)
             # For the imagenet-val command, set 'accuracy_top1' and 'accuracy_top5' to 'yes' or 'no'.
             if d['CK_ENV_DATASET_IMAGENET_VAL']!='':
                 best_prediction = info_per_image['best_prediction']
-                best_prediction['class_correct'] = image_to_synset_map.get(best_prediction['file_name'],-1)
-                best_prediction['synset_correct'] = synset_list[best_prediction['class_correct']]
+                class_correct = image_to_synset_map.get(best_prediction['file_name'],-1)
                 for n in top_n_list:
                     top_n_accuracy = 'accuracy_top'+str(n)
                     top_n_predictions = info_per_image['all_predictions'][0:n]
                     best_prediction[top_n_accuracy] = 'no'
                     for prediction in top_n_predictions:
-                        if prediction['class']==best_prediction['class_correct']:
+                        if prediction['class']==class_correct:
                             best_prediction[top_n_accuracy] = 'yes'
                             d[top_n_accuracy] += 1
                             break
+                if d['debug']=='yes':
+                    best_prediction['class_correct'] = class_correct
+                    best_prediction['synset_correct'] = synset_list[best_prediction['class_correct']]
+
             # If we are here, it's the final match in per image info.
             if d['debug']=='yes':
                 # Finalize the execution time info.
