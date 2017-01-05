@@ -139,10 +139,27 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
 {
     // Create API root class - must span the lifetime of the engine usage.
     IBuilder* builder = createInferBuilder(gLogger);
+    if (!builder)
+    {
+        std::cout << "\n[tensorrt-time]  Failed to create inference builder (API root class)!\n";
+        exit(EXIT_FAILURE);
+    }
+
+    // Create network definition.
     INetworkDefinition* network = builder->createNetwork();
+    if (!network)
+    {
+        std::cout << "\n[tensorrt-time]  Failed to create network definition!\n";
+        exit(EXIT_FAILURE);
+    }
 
     // Parse the Caffe model to populate the network, then set the outputs.
     ICaffeParser* parser = createCaffeParser();
+    if (!parser)
+    {
+        std::cout << "\n[tensorrt-time]  Failed to create Caffe parser!\n";
+        exit(EXIT_FAILURE);
+    }
 
     // Check whether 16-bit floating-point is natively supported.
     const bool hasFp16 = builder->platformHasFastFp16();
@@ -155,7 +172,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
         parser->parse(modelFile, modelWeightsFile, *network, modelDataType);
     if (!blobNameToTensor)
     {
-        std::cout << "\n[tensorrt-time]  Failed to parse Caffe model...\n";
+        std::cout << "\n[tensorrt-time]  Failed to parse Caffe model!\n";
         exit(EXIT_FAILURE);
     }
 
@@ -167,7 +184,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
         ITensor* tensor = blobNameToTensor->find(output_name);
         if (!tensor)
         {
-            std::cerr << "\n[tensorrt-time]  Failed to retrieve tensor for output \'" << output_name << "\'\n";
+            std::cerr << "\n[tensorrt-time]  Failed to retrieve tensor for output \'" << output_name << "\'!\n";
             exit(EXIT_FAILURE);
         }
         network->markOutput(*tensor);
@@ -183,7 +200,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     ICudaEngine* engine = builder->buildCudaEngine(*network);
     if (!engine)
     {
-        std::cerr << "\n[tensorrt-time]  Failed to build CUDA engine\n";
+        std::cerr << "\n[tensorrt-time]  Failed to build CUDA engine!\n";
         exit(EXIT_FAILURE);
     }
 
@@ -224,6 +241,13 @@ void timeInference(ICudaEngine* engine,
     CHECK(cudaMalloc(&buffers[outputIndex], outputSize));
 
     IExecutionContext* context = engine->createExecutionContext();
+    if (!context)
+    {
+        std::cerr << "\n[tensorrt-time]  Failed to create execution context!\n";
+        exit(EXIT_FAILURE);
+    }
+
+    // Set the customized profiler.
     context->setProfiler(&gProfiler);
 
     // Zero the input buffer.
