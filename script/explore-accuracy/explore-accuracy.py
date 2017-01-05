@@ -19,6 +19,9 @@ def do(i):
     tosd=r['os_dict']
     tdid=r['device_id']
 
+    # Fix cmd key here since it may be used to get extra run-time deps
+    cmd_key='imagenet-val'
+
     # Load TensorRT-test program meta and desc to check deps.
     ii={'action':'load',
         'module_uoa':'program',
@@ -30,6 +33,12 @@ def do(i):
     # Update deps from GPGPU or ones remembered during autotuning.
     cdeps=mm.get('compile_deps',{})
     rdeps=mm.get('run_deps',{})
+
+    # We need to merge rdeps with cdeps for the pipeline 
+    # but tag them as "for_run_time" since pipeline uses common deps
+    for k in rdeps:
+        cdeps[k]=rdeps[k]
+        cdeps[k]['for_run_time']='yes'
 
     # TODO: TensortRT libs (1.0, 2.0).
     udepl = ['tensorrt-1.0']
@@ -53,7 +62,7 @@ def do(i):
 
     # Prepare pipeline.
     #cdeps['lib-caffe']['uoa']=udepl[0]
-    rdeps['caffemodel']['uoa']=udepm[0]
+    cdeps['caffemodel']['uoa']=udepm[0]
 
     ii={'action':'pipeline',
         'prepare':'yes',
@@ -61,7 +70,7 @@ def do(i):
         'repo_uoa':'ck-tensorrt',
         'module_uoa':'program',
         'data_uoa':'tensorrt-test',
-        'cmd_key':'imagenet-val',
+        'cmd_key':cmd_key,
 
         'dependencies': cdeps,
 
@@ -71,13 +80,14 @@ def do(i):
         'cpu_freq':'max',
         'gpu_freq':'max',
 
+        'flags':'-O3',
+
+        'env':{
+          'CK_TENSORRT_MAX_IMAGES':10
+        },
+
         'speed':'no',
         'energy':'no',
-
-        'flags':'-O3',
-        'env':{
-           'CK_TENSORRT_MAX_IMAGES':10
-         },
 
         'no_state_check':'yes',
         'skip_calibration':'yes',
@@ -181,17 +191,18 @@ def do(i):
 
                 'choices_order':[
                     [
-                        '##env#CK_TENSORRT_ENABLE_FP16'
+                        '##choices#env#CK_TENSORRT_ENABLE_FP16'
                     ]
                 ],
                 'choices_selection':[
-                    {'type':'loop', 'start':0, 'stop':2, 'step':1, 'default':1}
+                    {'type':'loop', "start":0, "stop":1, "step":1, "default":1}
+#                    {'type':'loop', 'choice':[0,1], 'default':1}
                 ],
 
                 'features_keys_to_process':['##choices#*'],
                 'process_multi_keys':['##characteristics#compile#*'],
 
-                'iterations':1,
+                'iterations':-1,
                 'repetitions':1,
 
                 'record':'yes',

@@ -3,7 +3,6 @@
   "repetitions":1,
 
   "pipeline_update":{
-    "flags":"-O3",
     "env":{
       "CK_TENSORRT_MAX_IMAGES":50000
     }
