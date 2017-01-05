@@ -118,7 +118,8 @@ def do(i):
         #lib_name=r['data_name']
         ## Skip some libs with "in [..]" or "not in [..]".
         #if lib_name in []: continue
-        lib_name=lib_uoa
+        lib_name='TensorRT'
+        lib_tags=lib_uoa
 
         # For each Caffe model.
         for model_uoa in udepm:
@@ -165,12 +166,12 @@ def do(i):
 
             cpipeline['dependencies'].update(new_deps)
 
-            # Update compiler flags.
-            cpipeline['flags'].update('-O3')
+            # TODO: Update compiler flags.
+            #cpipeline['flags'].update('-O3')
 
-            # Update environment.
-            new_env = {'CK_TENSORRT_MAX_IMAGES':10}
-            cpipeline['env'].update(new_env)
+            # TODO: Update environment.
+            #new_env = {'CK_TENSORRT_MAX_IMAGES':10}
+            #cpipeline['env'].update(new_env)
 
             ii={'action':'autotune',
 
