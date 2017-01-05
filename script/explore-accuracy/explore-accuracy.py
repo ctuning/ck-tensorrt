@@ -199,7 +199,8 @@ def do(i):
 #                    {'type':'loop', 'choice':[0,1], 'default':1}
                 ],
 
-                'features_keys_to_process':['##choices#*'],
+                'features_keys_to_process':['##choices#env#CK_TENSORRT_ENABLE_FP16', '##choices#env#CK_TENSORRT_MAX_IMAGES'],
+
                 'process_multi_keys':['##characteristics#compile#*'],
 
                 'iterations':-1,
