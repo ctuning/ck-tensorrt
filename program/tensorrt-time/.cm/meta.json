@@ -3,7 +3,7 @@
   "build_compiler_vars": {
     "CK_TENSORRT_ENABLE_CJSON": 1,
     "CK_TENSORRT_ENABLE_XOPENME": 0
-   },
+  },
   "compile_deps": {
     "compiler": {
       "local": "yes",
@@ -81,7 +81,8 @@
     }
   },
   "run_vars": {
-    "CK_CAFFE_BATCH_SIZE": "2"
+    "CK_CAFFE_BATCH_SIZE": 2,
+    "CK_TENSORRT_CJSON_PATH": "profiler.json"
   },
   "skip_bin_ext": "yes",
   "source_files": [

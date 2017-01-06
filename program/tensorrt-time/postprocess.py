@@ -22,8 +22,9 @@ def ck_postprocess(i):
     # Collect env vars of interest.
     d['REAL_ENV_CK_CAFFE_MODEL']=env.get('CK_CAFFE_MODEL','')
 
-    # Load tensorrt-time cJSON output written to stderr.
-    r=ck.load_json_file({'json_file':rt['run_cmd_out2']})
+    # Load tensorrt-time profiling output.
+    # TODO: Read from program meta run_vars['CK_TENSORRT_CJSON_PATH'].
+    r=ck.load_json_file({'json_file':'profiler.json'})
     if r['return']>0: return r
 
     # Update layer info similarly to Caffe output.
