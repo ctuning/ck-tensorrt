@@ -44,20 +44,36 @@ using namespace nvcaffeparser1;
 }
 
 
-// Logger for TensorRT info/warning/errors.
+// Custom logger for TensorRT info/warning/errors.
 class Logger : public ILogger
 {
+private:
+    std::ofstream info_log;
+
+public:
+    Logger(const char * path)
+    {
+        info_log.open(path);
+    }
+
+    ~Logger()
+    {
+        info_log << std::endl;
+        info_log.close();
+    }
+
     void log(Severity severity, const char* msg) override
     {
+        info_log << msg << std::endl;
         if (severity != Severity::kINFO)
         {
             std::cout << msg << std::endl;
         }
     }
-} gLogger;
+};
 
 
-// Profiler for TensorRT layers.
+// Custom profiler for TensorRT layers.
 class Profiler : public IProfiler
 {
 private:
@@ -121,10 +137,11 @@ void convertCaffeToTensorRT(
     const std::vector<std::string>& outputs, // network outputs
     size_t max_batch_size,                   // batch size - NB must be at least as large as the batch we want to run with
     bool enable_fp_16,                       // if true and natively supported, use 16-bit floating-point
-    std::ostream& output_stream)             // where to serialize the converted model
-{
+    std::ostream& output_stream,             // where to serialize the converted model
+    Logger& logger                           // custom logger
+){
     // Create API root class - must span the lifetime of the engine usage.
-    IBuilder* builder = createInferBuilder(gLogger);
+    IBuilder* builder = createInferBuilder(logger);
     if (!builder)
     {
         std::cout << "\n[tensorrt-time] Failed to create inference builder (API root class)!\n";
@@ -233,7 +250,7 @@ void timeInference(ICudaEngine* engine,
         exit(EXIT_FAILURE);
     }
 
-    // Set the customized profiler.
+    // Set the custom profiler.
     context->setProfiler(&gProfiler);
 
     // Zero the input buffer.
@@ -303,6 +320,12 @@ int main(int argc, char** argv)
     printf("     %s=\"%s\"\n", tensorrt_enable_cache_var,
                                tensorrt_enable_cache_val ? tensorrt_enable_cache_val : "?");
 
+    const char * tensorrt_info_log_var = "CK_TENSORRT_INFO_LOG";
+    const char * tensorrt_info_log_val = getenv(tensorrt_info_log_var);
+    printf("     %s=\"%s\"\n", tensorrt_info_log_var,
+                               tensorrt_info_log_val ? tensorrt_info_log_val : "?");
+    Logger logger(tensorrt_info_log_val);
+
     // Print configuration variables inferred.
     printf("\n[tensorrt-time] TensorRT settings inferred:\n");
     const char * tensorrt_input_blob_name = caffe_model_input_blob_name_val ? caffe_model_input_blob_name_val : "data";
@@ -333,10 +356,11 @@ int main(int argc, char** argv)
     tensorrt_model_stream.seekg(0, tensorrt_model_stream.beg);
     if (!tensorrt_enable_cache)
     {
-        std::cout << "\n[tensorrt-time] Converting the Caffe model to a TensorRT one...";
+        std::cout << "\n[tensorrt-time] Converting the Caffe model into a TensorRT one...\n";
         std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
         convertCaffeToTensorRT(caffe_model_val, caffe_weights_val,
-            tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16, tensorrt_model_stream);
+            tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16, tensorrt_model_stream,
+            logger);
     }
     else
     {
@@ -368,7 +392,8 @@ int main(int argc, char** argv)
             std::cout << "\n[tensorrt-time] - not found, converting...";
             std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
             convertCaffeToTensorRT(caffe_model_val, caffe_weights_val,
-                tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16, tensorrt_model_stream);
+                tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16, tensorrt_model_stream,
+                logger);
             std::cout << "\n[tensorrt-time] - storing...";
             std::ofstream tensorrt_model_cache_store(tensorrt_model_cache_path);
             tensorrt_model_cache_store << tensorrt_model_stream.rdbuf();
@@ -378,7 +403,7 @@ int main(int argc, char** argv)
     }
 
     // Create inference runtime engine.
-    IRuntime* runtime = createInferRuntime(gLogger);
+    IRuntime* runtime = createInferRuntime(logger);
     if (!runtime)
     {
         std::cerr << "\n[tensorrt-time] Failed to create inference runtime!\n";
