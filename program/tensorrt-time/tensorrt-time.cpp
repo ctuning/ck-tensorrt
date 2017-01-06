@@ -9,9 +9,9 @@
  */
 
 #include <assert.h>
+#include <iostream>
 #include <fstream>
 #include <sstream>
-#include <iostream>
 #include <cmath>
 #include <algorithm>
 #include <sys/stat.h>
@@ -141,7 +141,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     IBuilder* builder = createInferBuilder(gLogger);
     if (!builder)
     {
-        std::cout << "\n[tensorrt-time]  Failed to create inference builder (API root class)!\n";
+        std::cout << "\n[tensorrt-time] Failed to create inference builder (API root class)!\n";
         exit(EXIT_FAILURE);
     }
 
@@ -149,7 +149,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     INetworkDefinition* network = builder->createNetwork();
     if (!network)
     {
-        std::cout << "\n[tensorrt-time]  Failed to create network definition!\n";
+        std::cout << "\n[tensorrt-time] Failed to create network definition!\n";
         exit(EXIT_FAILURE);
     }
 
@@ -157,7 +157,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     ICaffeParser* parser = createCaffeParser();
     if (!parser)
     {
-        std::cout << "\n[tensorrt-time]  Failed to create Caffe parser!\n";
+        std::cout << "\n[tensorrt-time] Failed to create Caffe parser!\n";
         exit(EXIT_FAILURE);
     }
 
@@ -172,7 +172,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
         parser->parse(modelFile, modelWeightsFile, *network, modelDataType);
     if (!blobNameToTensor)
     {
-        std::cout << "\n[tensorrt-time]  Failed to parse Caffe model!\n";
+        std::cout << "\n[tensorrt-time] Failed to parse Caffe model!\n";
         exit(EXIT_FAILURE);
     }
 
@@ -184,7 +184,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
         ITensor* tensor = blobNameToTensor->find(output_name);
         if (!tensor)
         {
-            std::cerr << "\n[tensorrt-time]  Failed to retrieve tensor for output \'" << output_name << "\'!\n";
+            std::cerr << "\n[tensorrt-time] Failed to retrieve tensor for output \'" << output_name << "\'!\n";
             exit(EXIT_FAILURE);
         }
         network->markOutput(*tensor);
@@ -200,7 +200,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     ICudaEngine* engine = builder->buildCudaEngine(*network);
     if (!engine)
     {
-        std::cerr << "\n[tensorrt-time]  Failed to build CUDA engine!\n";
+        std::cerr << "\n[tensorrt-time] Failed to build CUDA engine!\n";
         exit(EXIT_FAILURE);
     }
 
@@ -243,7 +243,7 @@ void timeInference(ICudaEngine* engine,
     IExecutionContext* context = engine->createExecutionContext();
     if (!context)
     {
-        std::cerr << "\n[tensorrt-time]  Failed to create execution context!\n";
+        std::cerr << "\n[tensorrt-time] Failed to create execution context!\n";
         exit(EXIT_FAILURE);
     }
 
@@ -280,7 +280,7 @@ int main(int argc, char** argv)
 #endif
 
     // Print environment variables set by CK.
-    printf("\n[tensorrt-time]  CK settings detected:\n");
+    printf("\n[tensorrt-time] CK settings detected:\n");
 
     const char * caffe_model_var = "CK_CAFFE_MODEL";
     const char * caffe_model_val = getenv(caffe_model_var);
@@ -313,8 +313,13 @@ int main(int argc, char** argv)
     printf("     %s=\"%s\"\n", tensorrt_enable_fp16_var,
                                tensorrt_enable_fp16_val ? tensorrt_enable_fp16_val : "?");
 
+    const char * tensorrt_enable_cache_var = "CK_TENSORRT_ENABLE_CACHE";
+    const char * tensorrt_enable_cache_val = getenv(tensorrt_enable_cache_var);
+    printf("     %s=\"%s\"\n", tensorrt_enable_cache_var,
+                               tensorrt_enable_cache_val ? tensorrt_enable_cache_val : "?");
+
     // Print configuration variables inferred.
-    printf("\n[tensorrt-time]  TensorRT settings inferred:\n");
+    printf("\n[tensorrt-time] TensorRT settings inferred:\n");
     const char * tensorrt_input_blob_name = caffe_model_input_blob_name_val ? caffe_model_input_blob_name_val : "data";
     printf("     TENSORRT_INPUT_BLOB_NAME=\"%s\"\n", tensorrt_input_blob_name);
 
@@ -327,31 +332,81 @@ int main(int argc, char** argv)
     const bool   tensorrt_enable_fp16 = tensorrt_enable_fp16_val ? (bool)atoi(tensorrt_enable_fp16_val) : true;
     printf("     TENSORRT_ENABLE_FP16=%d\n", tensorrt_enable_fp16);
 
-    // Print the basic engine info.
-    std::cout << "\n[tensorrt-time]  Building and running a TensorRT engine";
-    std::cout << "\nfor \'" << caffe_weights_val << "\'";
-    std::cout << "\nwith the batch size of " << tensorrt_batch_size;
-    std::cout << " and 16-bit floating point " << (tensorrt_enable_fp16 ? "enabled\n\n" : "disabled\n\n");
+    const bool   tensorrt_enable_cache = tensorrt_enable_cache_val ? (bool)atoi(tensorrt_enable_cache_val) : true;
+    printf("     TENSORRT_ENABLE_CACHE=%d\n", tensorrt_enable_cache);
 
-    // Parse the Caffe model and the mean file. FIXME: Only for AlexNet?
+    // Print the basic engine info.
+    std::cout << "\n[tensorrt-time] Starting a TensorRT engine:";
+    std::cout << "\n- for the Caffe model at \'" << caffe_weights_val << "\'";
+    std::cout << "\n- with the batch size of " << tensorrt_batch_size;
+    std::cout << "\n- with 16-bit floating point " << (tensorrt_enable_fp16 ? "enabled" : "disabled");
+    std::cout << "\n- with model caching " << (tensorrt_enable_cache ? "enabled" : "disabled");
+    std::cout << std::endl;
+
+    // Parse the Caffe model or load from a cache.
     std::stringstream tensorrt_model_stream;
     tensorrt_model_stream.seekg(0, tensorrt_model_stream.beg);
-    std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
-    caffeToGIEModel(caffe_model_val, caffe_weights_val,
-                    tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16,
-                    tensorrt_model_stream);
+    if (!tensorrt_enable_cache)
+    {
+        std::cout << "\n[tensorrt-time] Converting the Caffe model to a TensorRT one...";
+        std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
+        caffeToGIEModel(caffe_model_val, caffe_weights_val,
+                        tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16,
+                        tensorrt_model_stream);
+    }
+    else
+    {
+        // Look up using the following "cache tag":
+        // "<caffe weights file>.tensorrt-<version>.fp<precision bits>.bs<batch size>".
+        const int version = getInferLibVersion();
+        const int version_major = version >> 16;
+        const int version_minor = (version & ((1<<16)-1)) >> 8;
+        const int version_patch = (version & ((1<<8)-1));
 
-    // Create an engine.
+        std::stringstream tensorrt_model_cache_ss;
+        tensorrt_model_cache_ss << caffe_weights_val;
+        tensorrt_model_cache_ss << ".tensorrt-" << version_major << "." << version_minor << "." << version_patch;
+        tensorrt_model_cache_ss << ".fp" << (tensorrt_enable_fp16 ? "16" : "32");
+        tensorrt_model_cache_ss << ".bs" << (tensorrt_batch_size);
+
+        // Try to load the file.
+        const std::string tensorrt_model_cache_path(tensorrt_model_cache_ss.str());
+        std::cout << "\n[tensorrt-time] Checking if cached at \'" << tensorrt_model_cache_path << "\'...";
+        std::ifstream tensorrt_model_cache_load(tensorrt_model_cache_path);
+        if (tensorrt_model_cache_load)
+        {
+            std::cout << "\n[tensorrt-time] - found, loading...";
+            tensorrt_model_stream << tensorrt_model_cache_load.rdbuf();
+            tensorrt_model_cache_load.close();
+        }
+        else
+        {
+            std::cout << "\n[tensorrt-time] - not found, converting...";
+            std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
+            caffeToGIEModel(caffe_model_val, caffe_weights_val,
+                            tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16,
+                            tensorrt_model_stream);
+            std::cout << "\n[tensorrt-time] - storing...";
+            std::ofstream tensorrt_model_cache_store(tensorrt_model_cache_path);
+            tensorrt_model_cache_store << tensorrt_model_stream.rdbuf();
+            tensorrt_model_cache_store.close();
+        }
+        tensorrt_model_stream.seekg(0, tensorrt_model_stream.beg);
+    }
+
+    // Create inference runtime engine.
     IRuntime* infer = createInferRuntime(gLogger);
+    // TODO: more error handling.
     ICudaEngine* engine = infer->deserializeCudaEngine(tensorrt_model_stream);
+    // TODO: more error handling.
 
     // Run inference with zero data to measure performance.
     timeInference(engine, tensorrt_batch_size, tensorrt_input_blob_name, tensorrt_output_blob_name);
 
-    std::cout << "\n[tensorrt-time]  Printing per layer timing info...\n";
+    std::cout << "\n[tensorrt-time] Printing per layer timing info...\n";
     gProfiler.printLayerTimes();
 
-    std::cout << "\n[tensorrt-time]  Shutting down...\n";
+    std::cout << "\n[tensorrt-time] Shutting down...\n";
     engine->destroy();
     infer->destroy();
 
