@@ -40,8 +40,8 @@ def do(i):
         cdeps[k]=rdeps[k]
         cdeps[k]['for_run_time']='yes'
 
-    # TODO: TensortRT libs (1.0, 2.0).
-    udepl = ['tensorrt-1.0']
+    # TODO: TensortRT libs (1.0.0, 2.0.0).
+    udepl = ['tensorrt-1.0.0']
 
     # Limit the number of images (50,000 by default).
     max_num_images = 10
@@ -131,7 +131,7 @@ def do(i):
         #    'data_uoa':lib_uoa}
         #r=ck.access(ii)
         #if r['return']>0: return r
-        ## Get the name e.g. 'TensorRT 1.0'
+        ## Get the name e.g. 'TensorRT 1.0.0'
         #lib_name=r['data_name']
         ## Skip some libs with "in [..]" or "not in [..]".
         #if lib_name in []: continue
