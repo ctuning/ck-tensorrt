@@ -110,18 +110,37 @@ int main( int argc, char** argv )
 
     // Print command line arguments.
     printf("\n[tensorrt-test] Command line arguments (%i):", argc);
-
-    for( int i = 0; i < argc; i++ )
+    for( int i = 0; i < argc; ++i )
         printf("\n     [%i] %s", i, argv[i]);
+    printf("\n");
 
-    printf("\n\n");
+    // Clean possibly cached TensorRT model.
+    printf("\n[tensorrt-test] Cleaning TensorRT model cache...");
+    {
+        const char* cache_ext = "tensorcache";
+        char* cache_path = (char*) malloc(strlen(caffe_weights_val) + strlen(cache_ext) + 2);
+        sprintf(cache_path, "%s.%s", caffe_weights_val, cache_ext);
+        printf("\n[tensorrt-test] - file \'%s\' removed ", cache_path);
+        int status = remove(cache_path);
+        if (0 == status)
+        {
+            printf("successfully!\n");
+        }
+        else
+        {
+            printf("unsuccessfully!\n");
+        }
+        free(cache_path);
+    }
 
     // Create an imageNet object.
     imageNet* net = imageNet::Create(
                         caffe_model_val,
                         caffe_weights_val,
                         imagenet_mean_bin_val,
-                        imagenet_synset_words_txt_val
+                        imagenet_synset_words_txt_val,
+                        "data", "prob",
+                        !tensorrt_enable_fp16
                     );
 #if( 1 == CK_TENSORRT_ENABLE_PROFILER )
     net->EnableProfiler();
@@ -129,14 +148,8 @@ int main( int argc, char** argv )
 
     if( !net )
     {
-        printf("\n[tensorrt-test] Failed to create ImageNet\n");
+        printf("\n[tensorrt-test] Failed to create ImageNet classifier\n");
         return EXIT_FAILURE;
-    }
-
-    // Disable 16-bit floating-point support if $CK_TENSORRT_ENABLE_FP16==0.
-    if( !tensorrt_enable_fp16 )
-    {
-        net->DisableFP16();
     }
 
     // Classify a single image or all images in $CK_ENV_DATASET_IMAGENET_VAL.
