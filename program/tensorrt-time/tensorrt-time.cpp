@@ -64,66 +64,54 @@ class Logger : public ILogger
 class Profiler : public IProfiler
 {
 private:
+    unsigned int layer_index;
+    float total_time_ms;
+#if (1 == CK_TENSORRT_ENABLE_CJSON)
     cJSON * dict;
     cJSON * per_layer_info;
-    unsigned int index;
+#endif
 
 public:
-    Profiler()
+    Profiler() : layer_index(0), total_time_ms(0.0f)
     {
+#if (1 == CK_TENSORRT_ENABLE_CJSON)
         // Create main dictionary.
         dict = cJSON_CreateObject();
         // Create per layer info list.
         per_layer_info = cJSON_CreateArray();
         cJSON_AddItemToObject(dict, "per_layer_info", per_layer_info);
-        // Init layer index.
-        index = 0;
+#endif
     }
 
     ~Profiler()
     {
+        std::cout << "\n[tensorrt-time] Total time: " << total_time_ms << " (ms)\n";
+#if (1 == CK_TENSORRT_ENABLE_CJSON)
         // Print dict to stderr. TODO: Save directly to file.
         const char * dict_serialized = cJSON_Print(dict);
         std::cerr << dict_serialized << std::endl;
         // Deallocate dict.
         cJSON_Delete(dict);
+#endif
     }
 
-    typedef std::pair<std::string, float> Record;
-    std::vector<Record> mProfile;
-
-    virtual void reportLayerTime(const char* layerName, float ms)
+    virtual void reportLayerTime(const char* layer_name, float layer_ms)
     {
-        auto record = std::find_if(mProfile.begin(), mProfile.end(), [&](const Record& r){ return r.first == layerName; });
-        if (record == mProfile.end())
-            mProfile.push_back(std::make_pair(layerName, ms));
-        else
-            record->second += ms;
-
+        this->total_time_ms += layer_ms;
+        const unsigned int layer_index = this->layer_index++;
+        std::cout << "[tensorrt-time]";
+        std::cout << " index: " << layer_index;
+        std::cout << "; name: " << layer_name;
+        std::cout << "; time: " << layer_ms << " (ms)\n";
 #if (1 == CK_TENSORRT_ENABLE_CJSON)
         cJSON * new_layer_info = cJSON_CreateObject();
-        cJSON * name = cJSON_CreateString(layerName);
-        cJSON * index = cJSON_CreateNumber(this->index++);
-        cJSON * time_ms = cJSON_CreateNumber(ms);
+        cJSON * name = cJSON_CreateString(layer_name);
+        cJSON * index = cJSON_CreateNumber(layer_index);
+        cJSON * time_ms = cJSON_CreateNumber(layer_ms);
         cJSON_AddItemToObject(new_layer_info, "name", name);
         cJSON_AddItemToObject(new_layer_info, "index", index);
         cJSON_AddItemToObject(new_layer_info, "time_ms", time_ms);
         cJSON_AddItemToArray(per_layer_info, new_layer_info);
-#endif
-    } // reportLayerTime()
-
-    void printLayerTimes()
-    {
-        float totalTime = 0.0f;
-        for (size_t i = 0; i < mProfile.size(); ++i)
-        {
-            printf("%-40.40s %4.3f ms\n", mProfile[i].first.c_str(), mProfile[i].second / TIMING_ITERATIONS);
-            totalTime += mProfile[i].second;
-        }
-        printf("Total time: %4.3f\n", totalTime / TIMING_ITERATIONS);
-
-#if (1 == CK_TENSORRT_ENABLE_CJSON)
-
 #endif
     }
 
@@ -410,10 +398,8 @@ int main(int argc, char** argv)
     }
 
     // Run inference with zero data to measure performance.
+    std::cout << "\n[tensorrt-time] Running inference...\n";
     timeInference(engine, tensorrt_batch_size, tensorrt_input_blob_name, tensorrt_output_blob_name);
-
-    std::cout << "\n[tensorrt-time] Printing per layer timing info...\n";
-    gProfiler.printLayerTimes();
 
     std::cout << "\n[tensorrt-time] Shutting down...\n";
     engine->destroy();
