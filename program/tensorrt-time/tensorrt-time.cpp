@@ -395,10 +395,19 @@ int main(int argc, char** argv)
     }
 
     // Create inference runtime engine.
-    IRuntime* infer = createInferRuntime(gLogger);
-    // TODO: more error handling.
-    ICudaEngine* engine = infer->deserializeCudaEngine(tensorrt_model_stream);
-    // TODO: more error handling.
+    IRuntime* runtime = createInferRuntime(gLogger);
+    if (!runtime)
+    {
+        std::cerr << "\n[tensorrt-time] Failed to create inference runtime!\n";
+        exit(EXIT_FAILURE);
+    }
+
+    ICudaEngine* engine = runtime->deserializeCudaEngine(tensorrt_model_stream);
+    if (!engine)
+    {
+        std::cerr << "\n[tensorrt-time] Failed to deserialize CUDA engine!\n";
+        exit(EXIT_FAILURE);
+    }
 
     // Run inference with zero data to measure performance.
     timeInference(engine, tensorrt_batch_size, tensorrt_input_blob_name, tensorrt_output_blob_name);
@@ -408,7 +417,7 @@ int main(int argc, char** argv)
 
     std::cout << "\n[tensorrt-time] Shutting down...\n";
     engine->destroy();
-    infer->destroy();
+    runtime->destroy();
 
 #if (1 == CK_TENSORRT_ENABLE_XOPENME)
      xopenme_dump_state();
