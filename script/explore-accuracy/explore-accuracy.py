@@ -78,7 +78,7 @@ def do(i):
         'dependencies': cdeps,
 
         'env':{
-          'CK_TENSORRT_MAX_IMAGES': max_num_images
+          'CK_TENSORRT_MAX_NUM_IMAGES': max_num_images
         },
 
         'no_compiler_description':'yes',
@@ -202,7 +202,7 @@ def do(i):
 #                    {'type':'loop', 'choice':[0,1], 'default':1}
                 ],
 
-                'features_keys_to_process':['##choices#env#CK_TENSORRT_ENABLE_FP16', '##choices#env#CK_TENSORRT_MAX_IMAGES'],
+                'features_keys_to_process':['##choices#env#CK_TENSORRT_ENABLE_FP16', '##choices#env#CK_TENSORRT_MAX_NUM_IMAGES'],
 
                 'process_multi_keys':['##characteristics#compile#*'],
 

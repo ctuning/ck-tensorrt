@@ -88,10 +88,10 @@ int main( int argc, char** argv )
     const char * caffe_batch_size_val = getenv(caffe_batch_size_var);
     printf("     %s=%s\n", caffe_batch_size_var, caffe_batch_size_val ? caffe_batch_size_val : "?");
 
-    const char * tensorrt_max_images_var = "CK_TENSORRT_MAX_IMAGES";
-    const char * tensorrt_max_images_val = getenv(tensorrt_max_images_var);
-    const size_t max_images = tensorrt_max_images_val ? std::stoi(tensorrt_max_images_val) : 1;
-    printf("     %s=%ld\n", tensorrt_max_images_var, max_images);
+    const char * tensorrt_max_num_images_var = "CK_TENSORRT_MAX_NUM_IMAGES";
+    const char * tensorrt_max_num_images_val = getenv(tensorrt_max_num_images_var);
+    const size_t max_num_images = tensorrt_max_num_images_val ? std::stoi(tensorrt_max_num_images_val) : 1;
+    printf("     %s=%ld\n", tensorrt_max_num_images_var, max_num_images);
 
 
     // print command line arguments
@@ -134,7 +134,7 @@ int main( int argc, char** argv )
             const char* sample_imagenet_val_file = "ILSVRC2012_val_00002212.JPEG"; // 00002212 with AlexNet: top1="no", top5="yes"
             char* imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(sample_imagenet_val_file) + 2);
             size_t num_images = 0;
-            while( (ent = readdir(dir)) && (num_images < max_images) )
+            while( (ent = readdir(dir)) && (num_images < max_num_images) )
             {
                 const char* imagenet_val_file = ent->d_name;
                 if( strlen(imagenet_val_file) < strlen(sample_imagenet_val_file) )
@@ -142,7 +142,7 @@ int main( int argc, char** argv )
                     // skip '.' and '..'
                     continue;
                 }
-                printf("\n[tensorrt-test]  classifying image #%ld out of %ld\n", num_images+1, max_images);
+                printf("\n[tensorrt-test]  classifying image #%ld out of %ld\n", num_images+1, max_num_images);
                 sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
                 exit_status = classifyImageRGBA(net, imagenet_val_path);
                 if (exit_status == EXIT_FAILURE)

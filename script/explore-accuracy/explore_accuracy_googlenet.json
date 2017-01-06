@@ -4,7 +4,7 @@
 
   "pipeline_update":{
     "env":{
-      "CK_TENSORRT_MAX_IMAGES":50000
+      "CK_TENSORRT_MAX_NUM_IMAGES":500
     }
   },
 

@@ -19,7 +19,7 @@
   "flags":"-O3",
 
   "env":{
-    "CK_TENSORRT_MAX_IMAGES": 123
+    "CK_TENSORRT_MAX_NUM_IMAGES": 123
   },
 
   "no_state_check":"yes",
