@@ -77,6 +77,7 @@ public:
 class Profiler : public IProfiler
 {
 private:
+    const char * cjson_path;
     unsigned int layer_index;
     float total_time_ms;
 #if (1 == CK_TENSORRT_ENABLE_CJSON)
@@ -85,7 +86,10 @@ private:
 #endif
 
 public:
-    Profiler() : layer_index(0), total_time_ms(0.0f)
+    Profiler(const char * path) :
+        cjson_path(path),
+        layer_index(0),
+        total_time_ms(0.0f)
     {
 #if (1 == CK_TENSORRT_ENABLE_CJSON)
         // Create main dictionary.
@@ -100,9 +104,18 @@ public:
     {
         std::cout << "\n[tensorrt-time] Total time: " << total_time_ms << " (ms)\n";
 #if (1 == CK_TENSORRT_ENABLE_CJSON)
-        // Print dict to stderr. TODO: Save directly to file.
         const char * dict_serialized = cJSON_Print(dict);
-        std::cerr << dict_serialized << std::endl;
+        if (cjson_path)
+        {
+            // Save to file (automatically opened and closed).
+            std::ofstream cjson_file(cjson_path);
+            cjson_file << dict_serialized;
+        }
+        else
+        {
+            // Print to stderr.
+            std::cerr << dict_serialized;
+        }
         // Deallocate dict.
         cJSON_Delete(dict);
 #endif
@@ -128,7 +141,7 @@ public:
 #endif
     }
 
-} gProfiler;
+};
 
 
 void convertCaffeToTensorRT(
@@ -218,11 +231,13 @@ void convertCaffeToTensorRT(
     shutdownProtobufLibrary();
 }
 
-void timeInference(ICudaEngine* engine,
-                   const size_t tensorrt_batch_size,
-                   const char * tensorrt_input_blob_name,
-                   const char * tensorrt_output_blob_name)
-{
+void timeInference(
+    ICudaEngine* engine,
+    const size_t tensorrt_batch_size,
+    const char * tensorrt_input_blob_name,
+    const char * tensorrt_output_blob_name,
+    Profiler& profiler
+){
     // Input and output buffer pointers that we pass to the engine - the engine requires exactly ICudaEngine::getNbBindings(),
     // of these, but in this case we know that there is exactly one input and one output.
     // FIXME: "we know .. exactly one input and one output" - for GoogleNet, AlexNet?
@@ -251,7 +266,7 @@ void timeInference(ICudaEngine* engine,
     }
 
     // Set the custom profiler.
-    context->setProfiler(&gProfiler);
+    context->setProfiler(&profiler);
 
     // Zero the input buffer.
     CHECK(cudaMemset(buffers[inputIndex], 0, inputSize));
@@ -319,6 +334,12 @@ int main(int argc, char** argv)
     const char * tensorrt_enable_cache_val = getenv(tensorrt_enable_cache_var);
     printf("     %s=\"%s\"\n", tensorrt_enable_cache_var,
                                tensorrt_enable_cache_val ? tensorrt_enable_cache_val : "?");
+
+    const char * tensorrt_cjson_path_var = "CK_TENSORRT_CJSON_PATH";
+    const char * tensorrt_cjson_path_val = getenv(tensorrt_cjson_path_var);
+    printf("     %s=\"%s\"\n", tensorrt_cjson_path_var,
+                               tensorrt_cjson_path_val ? tensorrt_cjson_path_val : "?");
+    Profiler profiler(tensorrt_cjson_path_val);
 
     const char * tensorrt_info_log_var = "CK_TENSORRT_INFO_LOG";
     const char * tensorrt_info_log_val = getenv(tensorrt_info_log_var);
@@ -419,7 +440,9 @@ int main(int argc, char** argv)
 
     // Run inference with zero data to measure performance.
     std::cout << "\n[tensorrt-time] Running inference...\n";
-    timeInference(engine, tensorrt_batch_size, tensorrt_input_blob_name, tensorrt_output_blob_name);
+    timeInference(engine,
+        tensorrt_batch_size, tensorrt_input_blob_name, tensorrt_output_blob_name,
+        profiler);
 
     std::cout << "\n[tensorrt-time] Shutting down...\n";
     engine->destroy();
