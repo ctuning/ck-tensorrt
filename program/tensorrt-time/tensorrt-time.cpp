@@ -44,18 +44,20 @@ using namespace nvcaffeparser1;
 }
 
 
-// Logger for GIE info/warning/errors.
+// Logger for TensorRT info/warning/errors.
 class Logger : public ILogger
 {
     void log(Severity severity, const char* msg) override
     {
-        if (severity!=Severity::kINFO)
+        if (severity != Severity::kINFO)
+        {
             std::cout << msg << std::endl;
+        }
     }
 } gLogger;
 
 
-// Profiler for GIE layers.
+// Profiler for TensorRT layers.
 class Profiler : public IProfiler
 {
 private:
@@ -113,12 +115,13 @@ public:
 } gProfiler;
 
 
-void caffeToGIEModel(const char * modelFile,                    // path to deploy.prototxt file
-                     const char * modelWeightsFile,             // path to caffemodel file
-                     const std::vector<std::string>& outputs,   // network outputs
-                     size_t maxBatchSize,                       // batch size - NB must be at least as large as the batch we want to run with
-                     bool enableFp16,                           // if true and natively supported, use 16-bit floating-point
-                     std::ostream& gieModelStream)
+void convertCaffeToTensorRT(
+    const char * deploy_file,                // path to deploy.prototxt file
+    const char * weights_file,               // path to caffemodel file
+    const std::vector<std::string>& outputs, // network outputs
+    size_t max_batch_size,                   // batch size - NB must be at least as large as the batch we want to run with
+    bool enable_fp_16,                       // if true and natively supported, use 16-bit floating-point
+    std::ostream& output_stream)             // where to serialize the converted model
 {
     // Create API root class - must span the lifetime of the engine usage.
     IBuilder* builder = createInferBuilder(gLogger);
@@ -145,14 +148,14 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     }
 
     // Check whether 16-bit floating-point is natively supported.
-    const bool hasFp16 = builder->platformHasFastFp16();
+    const bool has_fp_16 = builder->platformHasFastFp16();
     // Create a 16-bit model if supported and enabled.
-    const bool useFp16 = hasFp16 && enableFp16;
-    DataType modelDataType = useFp16 ? DataType::kHALF : DataType::kFLOAT;
+    const bool use_fp_16 = has_fp_16 && enable_fp_16;
+    DataType data_type = use_fp_16 ? DataType::kHALF : DataType::kFLOAT;
 
     // The third parameter is the network definition that the parser will populate.
     const IBlobNameToTensor *blobNameToTensor =
-        parser->parse(modelFile, modelWeightsFile, *network, modelDataType);
+        parser->parse(deploy_file, weights_file, *network, data_type);
     if (!blobNameToTensor)
     {
         std::cout << "\n[tensorrt-time] Failed to parse Caffe model!\n";
@@ -174,11 +177,11 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     }
 
     // Build the engine.
-    builder->setMaxBatchSize(maxBatchSize);
+    builder->setMaxBatchSize(max_batch_size);
     builder->setMaxWorkspaceSize(16 << 20);
 
     // Set up the network for paired-fp16 format if supported and enabled.
-    builder->setHalf2Mode(useFp16);
+    builder->setHalf2Mode(use_fp_16);
 
     ICudaEngine* engine = builder->buildCudaEngine(*network);
     if (!engine)
@@ -192,7 +195,7 @@ void caffeToGIEModel(const char * modelFile,                    // path to deplo
     parser->destroy();
 
     // Serialize the engine, then shut everything down.
-    engine->serialize(gieModelStream);
+    engine->serialize(output_stream);
     engine->destroy();
     builder->destroy();
     shutdownProtobufLibrary();
@@ -332,9 +335,8 @@ int main(int argc, char** argv)
     {
         std::cout << "\n[tensorrt-time] Converting the Caffe model to a TensorRT one...";
         std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
-        caffeToGIEModel(caffe_model_val, caffe_weights_val,
-                        tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16,
-                        tensorrt_model_stream);
+        convertCaffeToTensorRT(caffe_model_val, caffe_weights_val,
+            tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16, tensorrt_model_stream);
     }
     else
     {
@@ -365,9 +367,8 @@ int main(int argc, char** argv)
         {
             std::cout << "\n[tensorrt-time] - not found, converting...";
             std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
-            caffeToGIEModel(caffe_model_val, caffe_weights_val,
-                            tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16,
-                            tensorrt_model_stream);
+            convertCaffeToTensorRT(caffe_model_val, caffe_weights_val,
+                tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16, tensorrt_model_stream);
             std::cout << "\n[tensorrt-time] - storing...";
             std::ofstream tensorrt_model_cache_store(tensorrt_model_cache_path);
             tensorrt_model_cache_store << tensorrt_model_stream.rdbuf();
