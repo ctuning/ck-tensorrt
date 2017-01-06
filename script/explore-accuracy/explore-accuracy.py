@@ -19,7 +19,7 @@ def do(i):
     tosd=r['os_dict']
     tdid=r['device_id']
 
-    # Fix cmd key here since it may be used to get extra run-time deps
+    # Fix cmd key here since it may be used to get extra run-time deps.
     cmd_key='imagenet-val'
 
     # Load TensorRT-test program meta and desc to check deps.
@@ -42,6 +42,9 @@ def do(i):
 
     # TODO: TensortRT libs (1.0, 2.0).
     udepl = ['tensorrt-1.0']
+
+    # Limit the number of images (50,000 by default).
+    max_num_images = 10
 
     # Caffe models.
     depm=copy.deepcopy(rdeps['caffemodel'])
@@ -74,6 +77,10 @@ def do(i):
 
         'dependencies': cdeps,
 
+        'env':{
+          'CK_TENSORRT_MAX_IMAGES': max_num_images
+        },
+
         'no_compiler_description':'yes',
         'compile_only_once':'yes',
 
@@ -81,10 +88,6 @@ def do(i):
         'gpu_freq':'max',
 
         'flags':'-O3',
-
-        'env':{
-          'CK_TENSORRT_MAX_IMAGES':10
-        },
 
         'speed':'no',
         'energy':'no',
