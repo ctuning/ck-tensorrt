@@ -1,5 +1,9 @@
 /*
  * Loosely based on http://github.com/dusty-nv/jetson-inference
+ *
+ * Therefore, assuming:
+ * 2016 (c) NVIDIA
+ * 2017 (c) dividiti
  */
 
 #include "imageNet.h"
@@ -15,7 +19,7 @@ int classifyImageRGBA(imageNet* net, const char* imgPath)
 {
     int exit_status = EXIT_SUCCESS;
 
-    // load image from disk
+    // Load image from disk.
     float* imgCPU    = NULL;
     float* imgCUDA   = NULL;
     int    imgWidth  = 0;
@@ -23,18 +27,18 @@ int classifyImageRGBA(imageNet* net, const char* imgPath)
 
     if( !loadImageRGBA(imgPath, (float4**)&imgCPU, (float4**)&imgCUDA, &imgWidth, &imgHeight) )
     {
-        printf("[tensorrt-test]  failed to load image '%s'\n", imgPath);
+        printf("[tensorrt-test] Failed to load image '%s'\n", imgPath);
         exit_status = EXIT_FAILURE;
     }
     else
     {
-        // classify image
+        // Classify image.
         float confidence = 0.0f;
         const int imgClass = net->Classify(imgCUDA, imgWidth, imgHeight, &confidence);
 
         if( imgClass < 0 )
         {
-            printf("[tensorrt-test]  failed to classify '%s'  (result=%i)\n", imgPath, imgClass);
+            printf("[tensorrt-test] Failed to classify '%s'  (result=%i)\n", imgPath, imgClass);
             exit_status = EXIT_FAILURE;
         }
         else
@@ -48,61 +52,71 @@ int classifyImageRGBA(imageNet* net, const char* imgPath)
 }
 
 
-// main entry point
+// Main entry point.
 int main( int argc, char** argv )
 {
     int exit_status = EXIT_SUCCESS;
 
-    // print environment variables set by CK
-    printf("\n[tensorrt-test]  ck-env:\n");
+    // Print environment variables set by CK.
+    printf("\n[tensorrt-test] CK settings detected:\n");
 
     const char * caffe_model_var = "CK_CAFFE_MODEL";
     const char * caffe_model_val = getenv(caffe_model_var);
-    printf("     %s=\"%s\"\n", caffe_model_var, caffe_model_val ? caffe_model_val : "?");
+    printf("     %s=\"%s\"\n", caffe_model_var,
+                               caffe_model_val ? caffe_model_val : "?");
 
     const char * caffe_weights_var = "CK_ENV_MODEL_CAFFE_WEIGHTS";
     const char * caffe_weights_val = getenv(caffe_weights_var);
-    printf("     %s=\"%s\"\n", caffe_weights_var, caffe_weights_val ? caffe_weights_val : "?");
+    printf("     %s=\"%s\"\n", caffe_weights_var,
+                               caffe_weights_val ? caffe_weights_val : "?");
 
     const char * imagenet_val_dir_var = "CK_ENV_DATASET_IMAGENET_VAL";
     const char * imagenet_val_dir_val = getenv(imagenet_val_dir_var);
-    printf("     %s=\"%s\"\n", imagenet_val_dir_var, imagenet_val_dir_val ? imagenet_val_dir_val : "?");
+    printf("     %s=\"%s\"\n", imagenet_val_dir_var,
+                               imagenet_val_dir_val ? imagenet_val_dir_val : "?");
 
     const char * imagenet_mean_bin_var = "CK_CAFFE_IMAGENET_MEAN_BIN";
     const char * imagenet_mean_bin_val = getenv(imagenet_mean_bin_var);
-    printf("     %s=\"%s\"\n", imagenet_mean_bin_var, imagenet_mean_bin_val ? imagenet_mean_bin_val : "?");
+    printf("     %s=\"%s\"\n", imagenet_mean_bin_var,
+                               imagenet_mean_bin_val ? imagenet_mean_bin_val : "?");
 
     const char * imagenet_synset_words_txt_var = "CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT";
     const char * imagenet_synset_words_txt_val = getenv(imagenet_synset_words_txt_var);
-    printf("     %s=\"%s\"\n", imagenet_synset_words_txt_var, imagenet_synset_words_txt_val ? imagenet_synset_words_txt_val : "?");
+    printf("     %s=\"%s\"\n", imagenet_synset_words_txt_var,
+                               imagenet_synset_words_txt_val ? imagenet_synset_words_txt_val : "?");
 
     const char * imagenet_val_txt_var = "CK_CAFFE_IMAGENET_VAL_TXT";
     const char * imagenet_val_txt_val = getenv(imagenet_val_txt_var);
-    printf("     %s=\"%s\"\n", imagenet_val_txt_var, imagenet_val_txt_val ? imagenet_val_txt_val : "?");
-
-    const char * caffe_iterations_var = "CK_CAFFE_ITERATIONS";
-    const char * caffe_iterations_val = getenv(caffe_iterations_var);
-    printf("     %s=%s\n", caffe_iterations_var, caffe_iterations_val ? caffe_iterations_val : "?");
-
-    const char * caffe_batch_size_var = "CK_CAFFE_BATCH_SIZE";
-    const char * caffe_batch_size_val = getenv(caffe_batch_size_var);
-    printf("     %s=%s\n", caffe_batch_size_var, caffe_batch_size_val ? caffe_batch_size_val : "?");
+    printf("     %s=\"%s\"\n", imagenet_val_txt_var,
+                               imagenet_val_txt_val ? imagenet_val_txt_val : "?");
 
     const char * tensorrt_max_num_images_var = "CK_TENSORRT_MAX_NUM_IMAGES";
     const char * tensorrt_max_num_images_val = getenv(tensorrt_max_num_images_var);
-    const size_t max_num_images = tensorrt_max_num_images_val ? std::stoi(tensorrt_max_num_images_val) : 1;
-    printf("     %s=%ld\n", tensorrt_max_num_images_var, max_num_images);
+    printf("     %s=\"%s\"\n", tensorrt_max_num_images_var,
+                            tensorrt_max_num_images_val ? tensorrt_max_num_images_val : "?");
 
+    const char * tensorrt_enable_fp16_var = "CK_TENSORRT_ENABLE_FP16";
+    const char * tensorrt_enable_fp16_val = getenv(tensorrt_enable_fp16_var);
+    printf("     %s=\"%s\"\n", tensorrt_enable_fp16_var,
+                               tensorrt_enable_fp16_val ? tensorrt_enable_fp16_val : "?");
 
-    // print command line arguments
-    printf("\n[tensorrt-test]  args (%i):", argc);
+    // Print configuration variables inferred.
+    printf("\n[tensorrt-time] TensorRT settings inferred:\n");
+    const size_t tensorrt_max_num_images = tensorrt_max_num_images_val ? atoi(tensorrt_max_num_images_val) : 50000;
+    printf("     TENSORRT_MAX_NUM_IMAGES=%ld\n", tensorrt_max_num_images);
+
+    const bool   tensorrt_enable_fp16 = tensorrt_enable_fp16_val ? (bool)atoi(tensorrt_enable_fp16_val) : true;
+    printf("     TENSORRT_ENABLE_FP16=%d\n", tensorrt_enable_fp16);
+
+    // Print command line arguments.
+    printf("\n[tensorrt-test] Command line arguments (%i):", argc);
 
     for( int i = 0; i < argc; i++ )
         printf("\n     [%i] %s", i, argv[i]);
 
     printf("\n\n");
 
-    // create imageNet
+    // Create an imageNet object.
     imageNet* net = imageNet::Create(
                         caffe_model_val,
                         caffe_weights_val,
@@ -115,11 +129,17 @@ int main( int argc, char** argv )
 
     if( !net )
     {
-        printf("\n[tensorrt-test]  failed to initialize imageNet\n");
+        printf("\n[tensorrt-test] Failed to create ImageNet\n");
         return EXIT_FAILURE;
     }
 
-    // classify a single image or all images in $CK_ENV_DATASET_IMAGENET_VAL
+    // Disable 16-bit floating-point support if $CK_TENSORRT_ENABLE_FP16==0.
+    if( !tensorrt_enable_fp16 )
+    {
+        net->DisableFP16();
+    }
+
+    // Classify a single image or all images in $CK_ENV_DATASET_IMAGENET_VAL.
     if( argc == 2 )
     {
         const char* imgPath = argv[1];
@@ -134,15 +154,15 @@ int main( int argc, char** argv )
             const char* sample_imagenet_val_file = "ILSVRC2012_val_00002212.JPEG"; // 00002212 with AlexNet: top1="no", top5="yes"
             char* imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(sample_imagenet_val_file) + 2);
             size_t num_images = 0;
-            while( (ent = readdir(dir)) && (num_images < max_num_images) )
+            while( (ent = readdir(dir)) && (num_images < tensorrt_max_num_images) )
             {
                 const char* imagenet_val_file = ent->d_name;
                 if( strlen(imagenet_val_file) < strlen(sample_imagenet_val_file) )
                 {
-                    // skip '.' and '..'
+                    // Skip '.' and '..'.
                     continue;
                 }
-                printf("\n[tensorrt-test]  classifying image #%ld out of %ld\n", num_images+1, max_num_images);
+                printf("\n[tensorrt-test] Classifying image #%ld out of %ld\n", num_images+1, tensorrt_max_num_images);
                 sprintf(imagenet_val_path, "%s/%s", imagenet_val_dir_val, imagenet_val_file);
                 exit_status = classifyImageRGBA(net, imagenet_val_path);
                 if (exit_status == EXIT_FAILURE)
@@ -153,19 +173,22 @@ int main( int argc, char** argv )
             }
             closedir(dir);
             free(imagenet_val_path);
-        } else {
-            printf("\n[tensorrt-test]  failed to open directory \'%s\'\n", imagenet_val_dir_var);
+        }
+        else
+        {
+            printf("\n[tensorrt-test] Failed to open directory \'%s\'\n", imagenet_val_dir_var);
             exit_status = EXIT_FAILURE;
         }
     }
     else
     {
-        printf("\n[tensorrt-test]  usage: %s [path]", argv[0]);
+        printf("\n[tensorrt-test] Usage: %s [path]", argv[0]);
         printf(" (by default, all files in \'%s\' dir)\n", imagenet_val_dir_val);
         exit_status = EXIT_FAILURE;
     }
 
-    printf("\n[tensorrt-test]  shutting down...\n");
+    printf("\n[tensorrt-test] Shutting down...\n");
     delete net;
+
     return exit_status;
 }
