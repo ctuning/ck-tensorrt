@@ -2,8 +2,7 @@
   "backup_data_uid": "5e23a492b9138354",
   "build_compiler_vars": {
     "CK_TENSORRT_ENABLE_CJSON": 1,
-    "CK_TENSORRT_ENABLE_XOPENME": 0,
-    "CK_TENSORRT_ITERATIONS": 1
+    "CK_TENSORRT_ENABLE_XOPENME": 0
    },
   "compile_deps": {
     "compiler": {

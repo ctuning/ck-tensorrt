@@ -44,11 +44,6 @@ using namespace nvcaffeparser1;
 }
 
 
-// NB: Using multiple timing iterations takes away the ability
-// to assess the minimum execution time, performance variability, etc.
-static const int TIMING_ITERATIONS = CK_TENSORRT_ITERATIONS;
-
-
 // Logger for GIE info/warning/errors.
 class Logger : public ILogger
 {
@@ -245,8 +240,7 @@ void timeInference(ICudaEngine* engine,
     xopenme_clock_start(0);
 #endif
 
-    for (int i = 0; i < TIMING_ITERATIONS; i++)
-        context->execute(tensorrt_batch_size, buffers);
+    context->execute(tensorrt_batch_size, buffers);
 
 #if (1 == CK_TENSORRT_ENABLE_XOPENME)
     xopenme_clock_end(0);
