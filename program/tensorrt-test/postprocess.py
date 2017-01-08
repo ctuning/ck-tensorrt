@@ -135,14 +135,15 @@ def ck_postprocess(i):
             info_per_image['all_predictions'].append(info)
 
         # Match the most likely prediction in e.g.:
-        # "tensorrt-test: '<file path>' -> 33.05664% class #331 (hare)"
+        # ["tensorrt-test] '<file path>' -> 33.05664% class #331 (hare)"
+
         best_prediction_regex = \
             '\[tensorrt-test\](\s+)' + \
             '\'(?P<file_path>[\w\./_-]*)\'' + \
             '(\s)*->(\s)*' + \
             '(?P<probability_pc>\d+\.\d+)%' + \
             '(\s)*class(\s)*#(?P<class>\d+)(\s*)' + \
-            '\((?P<synset>[\w\s,\']*)\)'
+            '\((?P<synset>[\w\s,\'\-]*)\)'
         match = re.search(best_prediction_regex, line)
         if match:
             info = {}
@@ -208,7 +209,7 @@ def ck_postprocess(i):
         r=ck.save_json_to_file({'json_file':'results.json', 'dict':d})
         if r['return']>0: return r
     else:
-        rr['error']='failed to match best prediction in tensorrt-test output!'
+        rr['error']='failed to match best prediction in tensorrt-test output'
         rr['return']=1
 
     return rr
