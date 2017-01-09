@@ -1,0 +1,19 @@
+{
+  "auto_detect": "yes", 
+  "customize": {
+    "check_that_exists": "yes", 
+    "env_prefix": "CK_ENV_LIB_TENSORRT", 
+    "limit_recursion_dir_search": {
+      "linux": 3
+    }, 
+    "soft_file": {
+      "linux": "libnvinfer.so"
+    }
+  }, 
+  "soft_name": "TensorRT engine", 
+  "tags": [
+    "lib", 
+    "tensorrt", 
+    "inference"
+  ]
+}
