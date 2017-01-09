@@ -17,6 +17,12 @@
       "sort": 20,
       "tags": "compiler,lang-c-cuda"
     },
+    "lib-tensorrt": {
+      "local": "yes",
+      "name": "TensorRT engine",
+      "sort": 25,
+      "tags": "lib,tensorrt"
+    },
     "lib-cjson": {
       "local": "yes",
       "name": "cJSON library",
