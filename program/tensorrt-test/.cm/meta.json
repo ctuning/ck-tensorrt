@@ -16,6 +16,12 @@
       "sort": 20,
       "tags": "compiler,lang-c-cuda"
     },
+    "lib-tensorrt": {
+      "local": "yes",
+      "name": "TensorRT engine",
+      "sort": 25,
+      "tags": "lib,tensorrt"
+    },
     "lib-jetson-inference": {
       "local": "yes",
       "name": "Jetson Inference library",
@@ -141,7 +147,7 @@
         "run_cmd_out1": "stdout.log",
         "run_cmd_out2": "stderr.log",
         "run_set_env2": {
-          "CK_TENSORRT_MAX_NUM_IMAGES": "10"
+          "CK_TENSORRT_MAX_NUM_IMAGES": "1000"
         },
         "run_correctness_output_files": [
         ],
@@ -152,7 +158,7 @@
     }
   },
   "run_vars": {
-    "CK_TENSORRT_MAX_NUM_IMAGES": "50000"
+    "CK_TENSORRT_MAX_NUM_IMAGES": "10"
   },
   "skip_bin_ext": "yes",
   "source_files": [
