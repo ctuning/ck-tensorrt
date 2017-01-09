@@ -40,11 +40,26 @@ def do(i):
         cdeps[k]=rdeps[k]
         cdeps[k]['for_run_time']='yes'
 
-    # TODO: TensortRT libs (1.0.0, 2.0.0).
-    udepl = ['tensorrt-1.0.0']
-
     # Limit the number of images (50,000 by default).
-    max_num_images = 10
+    max_num_images = 10 #50000
+
+    # TensorRT engines.
+    depl=copy.deepcopy(cdeps['lib-tensorrt'])
+
+    ii={'action':'resolve',
+        'module_uoa':'env',
+        'host_os':hos,
+        'target_os':tos,
+        'device_id':tdid,
+        'deps':{'lib-tensorrt':copy.deepcopy(depl)}
+    }
+    r=ck.access(ii)
+    if r['return']>0: return r
+
+    #udepl = ['tensorrt-1.0.0']
+    udepl=r['deps']['lib-tensorrt'].get('choices',[]) # All UOAs of env for TensorRT engines.
+    if len(udepl)==0:
+        return {'return':1, 'error':'no registered TensorRT engines'}
 
     # Caffe models.
     depm=copy.deepcopy(rdeps['caffemodel'])
@@ -61,10 +76,10 @@ def do(i):
 
     udepm=r['deps']['caffemodel'].get('choices',[]) # All UOAs of env for Caffe models.
     if len(udepm)==0:
-        return {'return':1, 'error':'no installed Caffe models'}
+        return {'return':1, 'error':'no registered Caffe models'}
 
     # Prepare pipeline.
-    #cdeps['lib-caffe']['uoa']=udepl[0]
+    cdeps['lib-tensorrt']['uoa']=udepl[0]
     cdeps['caffemodel']['uoa']=udepm[0]
 
     ii={'action':'pipeline',
@@ -123,20 +138,19 @@ def do(i):
 
     pipeline=copy.deepcopy(r)
 
-    # For each TensorRT lib.
+    # For each TensorRT engine.
     for lib_uoa in udepl:
-        ## TODO: Load TensorRT lib.
-        #ii={'action':'load',
-        #    'module_uoa':'env',
-        #    'data_uoa':lib_uoa}
-        #r=ck.access(ii)
-        #if r['return']>0: return r
-        ## Get the name e.g. 'TensorRT 1.0.0'
-        #lib_name=r['data_name']
-        ## Skip some libs with "in [..]" or "not in [..]".
-        #if lib_name in []: continue
-        lib_name='TensorRT'
-        lib_tags=lib_uoa
+        # Load TensorRT engine.
+        ii={'action':'load',
+            'module_uoa':'env',
+            'data_uoa':lib_uoa}
+        r=ck.access(ii)
+        if r['return']>0: return r
+        # Get the name e.g. 'TensorRT 1.0.0'
+        lib_name='tensorrt-1.0.0' #r['data_name']
+        lib_tags=lib_name
+        # Skip some libs with "in [..]" or "not in [..]".
+        if lib_name in []: continue
 
         # For each Caffe model.
         for model_uoa in udepm:
@@ -151,7 +165,7 @@ def do(i):
             model_tags = re.match('Caffe model \(net and weights\) \((?P<tags>.*)\)', model_name)
             model_tags = model_tags.group('tags').replace(' ', '').replace(',', '-')
             # Skip some models with "in [..]" or "not in [..]".
-            if model_tags not in ['bvlc-alexnet', 'bvlc-googlenet']: continue
+            if model_tags not in ['nvidia-googlenet']: continue
 
             record_repo='local'
             record_uoa='imagenet-val-accuracy-'+model_tags+'-'+lib_tags
