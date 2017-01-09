@@ -80,7 +80,8 @@
         "fine_grain_timer_file": "results.json",
         "params": {
           "caffemodel_key": "deploy",
-          "classification": "yes"
+          "classification": "yes",
+          "debug": "yes"
         },
         "post_process_via_ck": "yes",
         "post_process_cmds": [
