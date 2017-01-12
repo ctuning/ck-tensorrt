@@ -3,19 +3,19 @@ import copy
 import re
 import json
 
-# Batch size iteration parameters.
-bs={
-  'start':2,
-  'stop':4,
-  'step':2,
-  'default':2
-}
 # Floating-point precision iteration parameters.
 fp={
   'start':0,
   'stop':1,
   'step':1,
   'default':1
+}
+# Batch size iteration parameters.
+bs={
+  'start':2,
+  'stop':4,
+  'step':2,
+  'default':2
 }
 # Number of statistical repetitions.
 num_repetitions=3
@@ -171,10 +171,17 @@ def do(i):
             if r['return']>0: return r
             # Get the tags from e.g. 'Caffe model (net and weights) (deepscale, squeezenet, 1.1)'
             model_name=r['data_name']
-            model_tags = re.match('Caffe model \(net and weights\) \((?P<tags>.*)\)', model_name)
-            model_tags = model_tags.group('tags').replace(' ', '').replace(',', '-')
+#            model_tags = re.match('Caffe model \(net and weights\) \((?P<tags>.*)\)', model_name)
+#            model_tags = model_tags.group('tags').replace(' ', '').replace(',', '-')
+            xmodel_tags=r['dict']['tags']
+            model_tags=''
+            for tag in xmodel_tags:
+                if model_tags!='': model_tags+='-'
+                model_tags+=tag
+
             # Skip some models with "in [..]" or "not in [..]".
-            if model_tags not in ['bvlc-googlenet','nvidia-googlenet']: continue
+            ck.out('Model tags: '+model_tags)
+            if 'caffemodel-googlenet' not in model_tags: continue
 
             record_repo='local'
             record_uoa=model_tags+'-'+lib_tags
@@ -214,7 +221,9 @@ def do(i):
 
                 'choices_order':[
                     [
-                        '##choices#env#CK_TENSORRT_ENABLE_FP16',
+                        '##choices#env#CK_TENSORRT_ENABLE_FP16'
+                    ],
+                    [
                         '##choices#env#CK_CAFFE_BATCH_SIZE'
                     ]
                 ],
