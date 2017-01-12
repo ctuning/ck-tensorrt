@@ -234,10 +234,10 @@ def do(i):
 
                 'features_keys_to_process':[
                     '##choices#env#CK_TENSORRT_ENABLE_FP16',
-                    '##choices#env#CK_CAFFE_BATCH_SZE'
+                    '##choices#env#CK_CAFFE_BATCH_SIZE'
                 ],
 
-                'features_keys_to_process':['##choices#*'],
+#                'features_keys_to_process':['##choices#*'],
 
                 'iterations':-1,
                 'repetitions':num_repetitions,
