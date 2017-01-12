@@ -3,7 +3,12 @@
   "data_name": "ck-tensorrt", 
   "dict": {
     "url": "git@github.com:dividiti/ck-tensorrt.git", 
-    "shared": "git"
+    "shared": "git",
+    "repo_deps": [
+       {
+         "repo_uoa": "ck-crowdtuning"
+       }
+    ]
   }, 
   "data_alias": "ck-tensorrt", 
   "data_uoa": "ck-tensorrt"
