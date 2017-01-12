@@ -30,12 +30,12 @@ def do(i):
     if rx['return']>0: return rx
     mm=rx['dict']
 
-    # Update deps from GPGPU or ones remembered during autotuning.
+    # Get compile-time and run-time deps.
     cdeps=mm.get('compile_deps',{})
     rdeps=mm.get('run_deps',{})
 
-    # We need to merge rdeps with cdeps for the pipeline 
-    # but tag them as "for_run_time" since pipeline uses common deps
+    # Merge rdeps with cdeps for setting up the pipeline (which uses
+    # common deps), but tag them as "for_run_time".
     for k in rdeps:
         cdeps[k]=rdeps[k]
         cdeps[k]['for_run_time']='yes'
