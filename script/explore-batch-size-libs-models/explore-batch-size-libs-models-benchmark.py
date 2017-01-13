@@ -171,17 +171,17 @@ def do(i):
             if r['return']>0: return r
             # Get the tags from e.g. 'Caffe model (net and weights) (deepscale, squeezenet, 1.1)'
             model_name=r['data_name']
-#            model_tags = re.match('Caffe model \(net and weights\) \((?P<tags>.*)\)', model_name)
-#            model_tags = model_tags.group('tags').replace(' ', '').replace(',', '-')
-            xmodel_tags=r['dict']['tags']
-            model_tags=''
-            for tag in xmodel_tags:
-                if model_tags!='': model_tags+='-'
-                model_tags+=tag
+            model_tags = re.match('Caffe model \(net and weights\) \((?P<tags>.*)\)', model_name)
+            if model_tags:
+                model_tags = model_tags.group('tags').replace(' ', '').replace(',', '-')
+            else:
+                model_tags=''
+                for tag in r['dict']['tags']:
+                    if model_tags!='': model_tags+='-'
+                    model_tags+=tag
 
             # Skip some models with "in [..]" or "not in [..]".
-            ck.out('Model tags: '+model_tags)
-            if 'caffemodel-googlenet' not in model_tags: continue
+            if model_tags in []: continue
 
             record_repo='local'
             record_uoa=model_tags+'-'+lib_tags
@@ -236,8 +236,6 @@ def do(i):
                     '##choices#env#CK_TENSORRT_ENABLE_FP16',
                     '##choices#env#CK_CAFFE_BATCH_SIZE'
                 ],
-
-#                'features_keys_to_process':['##choices#*'],
 
                 'iterations':-1,
                 'repetitions':num_repetitions,
