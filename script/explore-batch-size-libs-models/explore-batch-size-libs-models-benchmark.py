@@ -13,7 +13,7 @@ fp={
 # Batch size iteration parameters.
 bs={
   'start':2,
-  'stop':4,
+  'stop':16,
   'step':2,
   'default':2
 }
@@ -155,8 +155,10 @@ def do(i):
             'data_uoa':lib_uoa}
         r=ck.access(ii)
         if r['return']>0: return r
-        # Get the name e.g. 'TensorRT 1.0.0'
-        lib_name='tensorrt-1.0.0' #r['data_name']
+        # Get the name e.g. 'TensorRT 1.0.0'.
+        # FIXME: This is the preferred format for the name.
+        # Get it from r['data_name'].
+        lib_name='tensorrt-1.0.0'
         lib_tags=lib_name
         # Skip some libs with "in [..]" or "not in [..]".
         if lib_name in []: continue
