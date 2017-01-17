@@ -49,7 +49,8 @@
       "local": "yes",
       "name": "ImageNet dataset (val)",
       "only_for_cmd": [
-        "imagenet-val"
+        "imagenet-val",
+        "imagenet-val-debug"
       ],
       "sort": 60,
       "tags": "dataset,imagenet,val"
