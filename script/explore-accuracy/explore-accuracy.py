@@ -196,10 +196,6 @@ def do(i):
             if r['return']>0: return r
 
             cpipeline['dependencies'].update(new_deps)
-            pipeline_name = '%s.json' % record_uoa
-            print ('Dumping pipeline to \'%s\'...' % pipeline_name)
-            with open(pipeline_name, 'w') as f:
-                json.dump(cpipeline, f, indent=2)
 
             ii={'action':'autotune',
 
@@ -212,8 +208,7 @@ def do(i):
                     ]
                 ],
                 'choices_selection':[
-                    {'type':'loop', "start":0, "stop":1, "step":1, "default":1}
-#                    {'type':'loop', 'choice':[0,1], 'default':1}
+                    {'type':'loop', 'start':0, 'stop':1, 'step':1, 'default':1}
                 ],
 
                 'features_keys_to_process':['##choices#env#CK_TENSORRT_ENABLE_FP16', '##choices#env#CK_TENSORRT_MAX_NUM_IMAGES'],
