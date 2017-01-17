@@ -101,7 +101,7 @@ int main( int argc, char** argv )
                                tensorrt_enable_fp16_val ? tensorrt_enable_fp16_val : "?");
 
     // Print configuration variables inferred.
-    printf("\n[tensorrt-time] TensorRT settings inferred:\n");
+    printf("\n[tensorrt-test] TensorRT settings inferred:\n");
     const size_t tensorrt_max_num_images = tensorrt_max_num_images_val ? atoi(tensorrt_max_num_images_val) : 50000;
     printf("     TENSORRT_MAX_NUM_IMAGES=%ld\n", tensorrt_max_num_images);
 
