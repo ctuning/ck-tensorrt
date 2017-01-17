@@ -1,0 +1,79 @@
+{
+  "check_exit_status": "yes",
+  "customize": {
+    "extra_dir": "",
+    "file_with_weights": "squeezenet_v1.0.caffemodel",
+    "force_ask_path": "yes",
+    "install_env": {
+      "MODEL_FILE": "squeezenet_v1.0.caffemodel",
+      "MODEL_HASH_CALCULATOR": "sha1sum",
+      "MODEL_HASH_REF": "579d0beb658e43c45937bf8bb5e4034fea4e1f69",
+      "MODEL_URL": "https://github.com/DeepScale/SqueezeNet/raw/master/SqueezeNet_v1.0/squeezenet_v1.0.caffemodel"
+    },
+    "no_os_in_suggested_path": "yes",
+    "no_ver_in_suggested_path": "yes",
+    "params": {
+      "deploy": {
+        "substitute": {
+          "batch_size": 10
+        },
+        "template": "deploy.prototxt"
+      },
+      "train": {
+        "substitute": {
+          "train_batch_size": 32,
+          "val_batch_size": 25
+        },
+        "template": "train_val.prototxt"
+      },
+      "val": {
+        "accuracy_layers": [
+          "accuracy",
+          "accuracy_top5"
+        ],
+        "substitute": {
+          "train_batch_size": 32,
+          "val_batch_size": 25
+        },
+        "template": "train_val.prototxt"
+      }
+    },
+    "skip_file_check": "yes",
+    "version": "1.0"
+  },
+  "end_full_path": {
+    "linux": "squeezenet_v1.0.caffemodel",
+    "win": "squeezenet_v1.0.caffemodel"
+  },
+  "features": {
+    "accuracy": 0.576801,
+    "accuracy_top5": 0.803903
+  },
+  "only_for_host_os_tags": [
+    "windows",
+    "linux"
+  ],
+  "only_for_target_os_tags": [
+    "windows",
+    "linux"
+  ],
+  "package_extra_name": " (deepscale, squeezenet, 1.0)",
+  "process_script": "download",
+  "soft_uoa": "e2400aabc11d6cd1",
+  "suggested_path": "caffemodel-deepscale-squeezenet-1.0",
+  "tags": [
+    "caffe",
+    "weights",
+    "caffemodel",
+    "deepscale",
+    "squeezenet",
+    "v1.0",
+    "v1",
+    "explicit-window-global-pooling"
+  ],
+  "use_scripts_from_another_entry": {
+    "data_uoa": "download-caffemodel",
+    "module_uoa": "script",
+    "repo_uoa": "ck-caffe"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "backup_data_uid": "28370e3cdc413088", 
+  "backup_module_uid": "1dc07ee0f4742028", 
+  "backup_module_uoa": "package", 
+  "control": {
+    "author": "DeepScale", 
+    "author_webpage": "http://deepscale.ai", 
+    "engine": "CK", 
+    "iso_datetime": "2017-01-17T16:24:52.276169", 
+    "license": "BSD", 
+    "version": [
+      "1", 
+      "8", 
+      "6", 
+      "1"
+    ]
+  }, 
+  "data_name": "caffemodel-deepscale-squeezenet-1.1-explicit-window-global-pooling"
+}
