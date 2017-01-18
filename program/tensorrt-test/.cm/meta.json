@@ -98,6 +98,8 @@
         "run_correctness_output_files": [
         ],
         "run_output_files": [
+          "stdout.log",
+          "stderr.log",
           "results.json"
         ]
       }
@@ -124,6 +126,8 @@
         "run_correctness_output_files": [
         ],
         "run_output_files": [
+          "stdout.log",
+          "stderr.log",
           "results.json"
         ]
       }
@@ -154,6 +158,8 @@
         "run_correctness_output_files": [
         ],
         "run_output_files": [
+          "stdout.log",
+          "stderr.log",
           "results.json"
         ]
       }
