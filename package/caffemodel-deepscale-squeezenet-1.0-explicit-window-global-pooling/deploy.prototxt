@@ -545,8 +545,8 @@ layer {
   pooling_param {
     pool: AVE
     global_pooling: true
-    kernel_size: 14
-    stride: 14
+    kernel_size: 15
+    stride: 15
   }
 }
 layer {
