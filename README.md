@@ -8,10 +8,14 @@
 collaborative and reproducible optimisation of convolutional neural networks for Jetson TX1.
 It's based on the [Deep Inference](https://github.com/dusty-nv/jetson-inference) framework from the
 Dustin Franklin ([Jetson Developer @NVIDIA](https://github.com/dusty-nv)) and
-the [Collective Knowledge](http://cknowledge.org) framework from the [cTuning
-Foundation](http://ctuning.org). In essence, CK-TensorRT is simply a suite of
-convenient wrappers for building, evaluating and optimising performance of
-Jetson Inference runtime library for Jetson TX1.
+the [Collective Knowledge](http://cknowledge.org) framework for customizable
+cross-platform experimental workflows
+ from the [cTuning Foundation](http://ctuning.org). In essence, CK-TensorRT 
+is simply a suite of convenient wrappers with unified JSON API 
+for customizable building, evaluating and multi-objective optimisation 
+of Jetson Inference runtime library for Jetson TX1.
+
+See [project page](http://cKnowledge.org/ai) for more details.
 
 ## Authors/contributors
 
