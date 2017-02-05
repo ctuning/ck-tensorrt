@@ -17,6 +17,8 @@ of Jetson Inference runtime library for Jetson TX1.
 
 See [project page](http://cKnowledge.org/ai) for more details.
 
+![](http://cKnowledge.org/images/ai-cloud-resize.png)
+
 ## Authors/contributors
 
 * Anton Lokhmotov, [dividiti](http://dividiti.com)
