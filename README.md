@@ -77,6 +77,8 @@ We are working with the community to unify and crowdsource performance analysis
 and tuning of various DNN frameworks (or any realistic workload) 
 using Collective Knowledge Technology:
 * [CK-Caffe](https://github.com/dividiti/ck-caffe)
+* [CK-Caffe2](https://github.com/ctuning/ck-caffe2)
+* [Reusable AI artifacts](http://cKnowledge.org/ai-artifacts)
 * [CK-TinyDNN](https://github.com/ctuning/ck-tiny-dnn)
 * [Android app for DNN crowd-benchmarking and crowd-tuning](https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments)
 * [CK-powered ARM workload automation](https://github.com/ctuning/ck-wa)
