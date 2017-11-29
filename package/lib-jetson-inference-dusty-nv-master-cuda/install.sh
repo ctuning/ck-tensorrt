@@ -64,6 +64,8 @@ fi
 echo ""
 echo "Configuring jetson-inference in '${JETSON_BLD_DIR}' ..."
 
+cp /home/daniil/CK/ck-tensorrt/package/lib-jetson-inference-dusty-nv-master-cuda/CMakeLists.txt /home/daniil/CK-TOOLS/lib-jetson-inference-nvidia-trunk-gcc-5.4.1-compiler.cuda-8.0.72-linux-64/src/CMakeLists.txt
+
 cd ${JETSON_BLD_DIR}
 cmake ${JETSON_SRC_DIR} \
   -DCMAKE_BUILD_TYPE=${CK_ENV_CMAKE_BUILD_TYPE:-Release} \
@@ -71,6 +73,7 @@ cmake ${JETSON_SRC_DIR} \
   -DCMAKE_CXX_COMPILER="${CK_CXX}" \
   -DCMAKE_C_COMPILER="${CK_CC}" \
   -DBUILD_DEPS=NO # YES - apt update/install, download nets, etc.
+  -DNV_TENSORRT_MAJOR=2  
 
 if [ "${?}" != "0" ] ; then
   echo "Error: Configuring jetson-inference failed!"

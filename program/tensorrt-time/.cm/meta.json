@@ -34,6 +34,12 @@
       "name": "xOpenME library",
       "sort": 40,
       "tags": "lib,xopenme"
+    },
+    "lib-jetson-inference-dusty-nv-master-cuda": {
+      "local": "yes",
+      "name": "Jetson Inference lib",
+      "sort": 25,
+      "tags": "lib,jetson-inference"
     }
   },
   "run_deps": {
@@ -49,6 +55,8 @@
     "CK_ENV_LIB_STDCPP_INCLUDE",
     "CK_ENV_LIB_STDCPP_INCLUDE_EXTRA",
     "CK_ENV_LIB_JETSON_INFERENCE_INCLUDE",
+    "CK_ENV_LIB_TENSORRT_INCLUDE",
+    "CK_ENV_LIB_TENSORRT_INCLUDE2",
     "CK_ENV_COMPILER_CUDA_INCLUDE"
   ],
   "compiler_env": "CK_CXX",
