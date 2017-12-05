@@ -19,6 +19,9 @@
 #include <time.h>
 #include <cuda_runtime_api.h>
 
+#include "tensorNet.h"
+
+
 #if (1 == CK_TENSORRT_ENABLE_CJSON)
 #include <cJSON.h>
 #endif
@@ -29,6 +32,9 @@
 
 #include "NvInfer.h"
 #include "NvCaffeParser.h"
+
+
+
 
 using namespace nvinfer1;
 using namespace nvcaffeparser1;
@@ -161,6 +167,7 @@ void convertCaffeToTensorRT(
         exit(EXIT_FAILURE);
     }
 
+    builder->setMaxWorkspaceSize(20 << 20);
     // Create network definition.
     INetworkDefinition* network = builder->createNetwork();
     if (!network)
@@ -208,7 +215,6 @@ void convertCaffeToTensorRT(
 
     // Build the engine.
     builder->setMaxBatchSize(max_batch_size);
-    builder->setMaxWorkspaceSize(16 << 20);
 
     // Set up the network for paired-fp16 format if supported and enabled.
     builder->setHalf2Mode(use_fp_16);
@@ -225,7 +231,7 @@ void convertCaffeToTensorRT(
     parser->destroy();
 
     // Serialize the engine, then shut everything down.
-    engine->serialize(output_stream);
+  //  engine->serialize(output_stream);
     engine->destroy();
     builder->destroy();
     shutdownProtobufLibrary();
@@ -250,10 +256,10 @@ void timeInference(
     const int outputIndex = engine->getBindingIndex(tensorrt_output_blob_name);
 
     // Allocate GPU buffers.
-    Dims3 inputDims = engine->getBindingDimensions(inputIndex);
-    Dims3 outputDims = engine->getBindingDimensions(outputIndex);
-    const size_t inputSize = tensorrt_batch_size * inputDims.c * inputDims.h * inputDims.w * sizeof(float);
-    const size_t outputSize = tensorrt_batch_size * outputDims.c * outputDims.h * outputDims.w * sizeof(float);
+    auto inputDims = engine->getBindingDimensions(inputIndex);
+    auto outputDims = engine->getBindingDimensions(outputIndex);
+    const size_t inputSize = tensorrt_batch_size * DIMS_C(inputDims) * DIMS_H(inputDims) * DIMS_W(inputDims) * sizeof(float);
+    const size_t outputSize = tensorrt_batch_size * DIMS_C(outputDims) * DIMS_H(outputDims) * DIMS_W(outputDims) * sizeof(float);
 
     CHECK(cudaMalloc(&buffers[inputIndex], inputSize));
     CHECK(cudaMalloc(&buffers[outputIndex], outputSize));
@@ -431,7 +437,35 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-    ICudaEngine* engine = runtime->deserializeCudaEngine(tensorrt_model_stream);
+
+#if NV_TENSORRT_MAJOR > 1
+
+        printf("\nNV_TENSORRT_MAJOR > 1 \n"); 
+	// support for stringstream deserialization was deprecated in TensorRT v2
+	// instead, read the stringstream into a memory buffer and pass that to TRT.
+	tensorrt_model_stream.seekg(0, std::ios::end);
+	const int modelSize = tensorrt_model_stream.tellg();
+	tensorrt_model_stream.seekg(0, std::ios::beg);
+
+	void* modelMem = malloc(modelSize);
+
+	if( !modelMem )
+	{
+		printf("failed to allocate %i bytes to deserialize model\n", modelSize);
+		return 0;
+	}
+
+	tensorrt_model_stream.read((char*)modelMem, modelSize);
+	nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(modelMem, modelSize, NULL);
+	free(modelMem);
+#else
+        printf("\nNV_TENSORRT_MAJOR =  \n");
+
+	// TensorRT v1 can deserialize directly from stringstream
+	nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(tensorrt_model_stream);
+#endif
+
+
     if (!engine)
     {
         std::cerr << "\n[tensorrt-time] Failed to deserialize CUDA engine!\n";
