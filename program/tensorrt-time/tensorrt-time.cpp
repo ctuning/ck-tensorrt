@@ -167,6 +167,7 @@ void convertCaffeToTensorRT(
         exit(EXIT_FAILURE);
     }
 
+    builder->setMaxWorkspaceSize(20 << 20);
     // Create network definition.
     INetworkDefinition* network = builder->createNetwork();
     if (!network)
@@ -214,7 +215,6 @@ void convertCaffeToTensorRT(
 
     // Build the engine.
     builder->setMaxBatchSize(max_batch_size);
-    builder->setMaxWorkspaceSize(16 << 20);
 
     // Set up the network for paired-fp16 format if supported and enabled.
     builder->setHalf2Mode(use_fp_16);
@@ -438,11 +438,9 @@ int main(int argc, char** argv)
     }
 
 
-//    ICudaEngine* engine = runtime->deserializeCudaEngine(tensorrt_model_stream);
-
-
-
 #if NV_TENSORRT_MAJOR > 1
+
+        printf("\nNV_TENSORRT_MAJOR > 1 \n"); 
 	// support for stringstream deserialization was deprecated in TensorRT v2
 	// instead, read the stringstream into a memory buffer and pass that to TRT.
 	tensorrt_model_stream.seekg(0, std::ios::end);
@@ -461,6 +459,8 @@ int main(int argc, char** argv)
 	nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(modelMem, modelSize, NULL);
 	free(modelMem);
 #else
+        printf("\nNV_TENSORRT_MAJOR =  \n");
+
 	// TensorRT v1 can deserialize directly from stringstream
 	nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(tensorrt_model_stream);
 #endif
