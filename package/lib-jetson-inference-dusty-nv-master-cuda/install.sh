@@ -64,7 +64,7 @@ fi
 echo ""
 echo "Configuring jetson-inference in '${JETSON_BLD_DIR}' ..."
 
-cp /home/daniil/CK/ck-tensorrt/package/lib-jetson-inference-dusty-nv-master-cuda/CMakeLists.txt /home/daniil/CK-TOOLS/lib-jetson-inference-nvidia-trunk-gcc-5.4.1-compiler.cuda-8.0.72-linux-64/src/CMakeLists.txt
+cp ${ORIGINAL_PACKAGE_DIR}/CMakeLists.txt ${JETSON_SRC_DIR}/CMakeLists.txt
 
 #  -DBUILD_DEPS=NO # YES - apt update/install, download nets, etc.
 
