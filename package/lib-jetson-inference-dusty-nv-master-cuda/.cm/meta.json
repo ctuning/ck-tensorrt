@@ -31,6 +31,12 @@
       "name": "cmake",
       "sort": 30,
       "tags": "tool,cmake"
+    },
+    "tensorrt": {
+      "local": "yes",
+      "name": "TensorRT engine",
+      "sort": 40,
+      "tags": "lib,tensorrt"
     }
   },
   "end_full_path": {
