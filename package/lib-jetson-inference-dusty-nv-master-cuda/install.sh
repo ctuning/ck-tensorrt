@@ -75,6 +75,7 @@ cmake ${JETSON_SRC_DIR} \
   -DCMAKE_CXX_COMPILER="${CK_CXX}" \
   -DCMAKE_C_COMPILER="${CK_CC}" \
   -DBUILD_DEPS=NO \
+  -DGIE_PATH=${CK_ENV_LIB_TENSORRT_INCLUDE}/../ \
   -DNV_TENSORRT_MAJOR=2  
 
 if [ "${?}" != "0" ] ; then
