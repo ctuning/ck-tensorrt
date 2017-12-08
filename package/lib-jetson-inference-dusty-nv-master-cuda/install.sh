@@ -98,7 +98,7 @@ fi
 echo ""
 echo "Installing jetson-inference in '${INSTALL_DIR}' ..."
 
-cp -r ${JETSON_BLD_DIR}/aarch64/* ${INSTALL_DIR}
+cp -r ${JETSON_BLD_DIR}/$(uname -m)/* ${INSTALL_DIR}
 if [ "${?}" != "0" ] ; then
   echo "Error: Installing jetson-inference failed!"
   exit 1
