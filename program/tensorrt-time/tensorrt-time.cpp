@@ -34,8 +34,6 @@
 #include "NvCaffeParser.h"
 
 
-
-
 using namespace nvinfer1;
 using namespace nvcaffeparser1;
 
@@ -394,9 +392,17 @@ int main(int argc, char** argv)
         // Look up using the following "cache tag":
         // "<caffe weights file>.tensorrt-<version>.fp<precision bits>.bs<batch size>".
         const int version = getInferLibVersion();
+#if NV_TENSORRT_MAJOR > 1
+        const int version_major = version / 1000;
+        const int version_minor = (version - version_major * 1000) / 100;
+        const int version_patch = version - version_major * 1000 - version_minor * 100;
+#else /* NV_TENSORRT_MAJOR == 1 */
         const int version_major = version >> 16;
         const int version_minor = (version & ((1<<16)-1)) >> 8;
         const int version_patch = (version & ((1<<8)-1));
+#endif /* NV_TENSORRT_MAJOR */
+        std::cout << "\n[tensorrt-time] getInferLibVersion(): " << version;
+        std::cout << "\n[tensorrt-time] TensorRT version: " << version_major << "." << version_minor << "." << version_patch << "\n";
 
         std::stringstream tensorrt_model_cache_ss;
         tensorrt_model_cache_ss << caffe_weights_val;
