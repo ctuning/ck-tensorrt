@@ -46,7 +46,11 @@ $ sudo apt install coreutils \
 ```
 
 ### Installing CK-TensorRT dependencies
-TBD
+```
+$ sudo apt install libqt4-dev \
+                   libglew-dev \
+                   libgstreamer1.0-dev
+```
 
 ### Installing CK
 

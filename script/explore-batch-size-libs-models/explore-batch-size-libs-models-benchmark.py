@@ -1,3 +1,4 @@
+#! /usr/bin/python
 import ck.kernel as ck
 import copy
 import re
