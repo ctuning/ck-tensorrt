@@ -229,7 +229,22 @@ void convertCaffeToTensorRT(
     parser->destroy();
 
     // Serialize the engine, then shut everything down.
-  //  engine->serialize(output_stream);
+#if NV_TENSORRT_MAJOR > 1
+	nvinfer1::IHostMemory* serMem = engine->serialize();
+
+	if( !serMem )
+	{
+		printf(LOG_GIE "failed to serialize CUDA engine\n");
+		exit(EXIT_FAILURE);
+	}
+
+	output_stream.write((const char*)serMem->data(), serMem->size());
+#else
+	engine->serialize(output_stream);
+#endif
+
+
+
     engine->destroy();
     builder->destroy();
     shutdownProtobufLibrary();
@@ -419,6 +434,7 @@ int main(int argc, char** argv)
             std::cout << "\n[tensorrt-time] - found, loading...";
             tensorrt_model_stream << tensorrt_model_cache_load.rdbuf();
             tensorrt_model_cache_load.close();
+            std::cout << "\n[tensorrt-time] - loaded.";
         }
         else
         {
@@ -429,8 +445,14 @@ int main(int argc, char** argv)
                 logger);
             std::cout << "\n[tensorrt-time] - storing...";
             std::ofstream tensorrt_model_cache_store(tensorrt_model_cache_path);
+
+            if (! tensorrt_model_cache_store) {
+                printf("tensorrt_model_cache_store could not be opened\n");
+            }
+            
             tensorrt_model_cache_store << tensorrt_model_stream.rdbuf();
             tensorrt_model_cache_store.close();
+            std::cout << "\n[tensorrt-time] - stored.";
         }
         tensorrt_model_stream.seekg(0, tensorrt_model_stream.beg);
     }
@@ -451,6 +473,7 @@ int main(int argc, char** argv)
 	// instead, read the stringstream into a memory buffer and pass that to TRT.
 	tensorrt_model_stream.seekg(0, std::ios::end);
 	const int modelSize = tensorrt_model_stream.tellg();
+        printf("\n modelSize=%d\n", modelSize);
 	tensorrt_model_stream.seekg(0, std::ios::beg);
 
 	void* modelMem = malloc(modelSize);
