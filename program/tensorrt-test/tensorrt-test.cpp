@@ -133,6 +133,7 @@ int main( int argc, char** argv )
         free(cache_path);
     }
 
+    printf("\n[tensorrt-test] Start imageNet::Create...");
     // Create an imageNet object.
     imageNet* net = imageNet::Create(
                         caffe_model_val,
@@ -140,8 +141,9 @@ int main( int argc, char** argv )
                         imagenet_mean_bin_val,
                         imagenet_synset_words_txt_val,
                         "data", "prob",
-                        !tensorrt_enable_fp16
+                        1//!tensorrt_enable_fp16
                     );
+
 #if( 1 == CK_TENSORRT_ENABLE_PROFILER )
     net->EnableProfiler();
 #endif
@@ -167,6 +169,8 @@ int main( int argc, char** argv )
             const char* sample_imagenet_val_file = "ILSVRC2012_val_00002212.JPEG"; // 00002212 with AlexNet: top1="no", top5="yes"
             char* imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(sample_imagenet_val_file) + 2);
             size_t num_images = 0;
+
+            printf("\n[tensorrt-test] Start scaning dire: %s\n", imagenet_val_path);  
             while( (ent = readdir(dir)) && (num_images < tensorrt_max_num_images) )
             {
                 const char* imagenet_val_file = ent->d_name;
