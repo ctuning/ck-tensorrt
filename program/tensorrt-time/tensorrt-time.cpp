@@ -229,7 +229,18 @@ void convertCaffeToTensorRT(
     parser->destroy();
 
     // Serialize the engine, then shut everything down.
-  //  engine->serialize(output_stream);
+#if NV_TENSORRT_MAJOR > 1
+	  nvinfer1::IHostMemory* serMem = engine->serialize();
+	  if( !serMem )
+	  {
+        std::cerr << "\n[tensorrt-time] failed to serialize CUDA engine!\n";
+        exit(EXIT_FAILURE);
+	  }
+    output_stream.write((const char*)serMem->data(), serMem->size());
+#else
+    engine->serialize(output_stream);
+#endif
+
     engine->destroy();
     builder->destroy();
     shutdownProtobufLibrary();
@@ -416,21 +427,29 @@ int main(int argc, char** argv)
         std::ifstream tensorrt_model_cache_load(tensorrt_model_cache_path);
         if (tensorrt_model_cache_load)
         {
-            std::cout << "\n[tensorrt-time] - found, loading...";
+            std::cout << "\n[tensorrt-time] - Tensorrt Model Cache found, loading...";
             tensorrt_model_stream << tensorrt_model_cache_load.rdbuf();
             tensorrt_model_cache_load.close();
+            std::cout << "\n[tensorrt-time] - Tensorrt Model Cache loaded.";
         }
         else
         {
-            std::cout << "\n[tensorrt-time] - not found, converting...";
+            std::cout << "\n[tensorrt-time] - Tensorrt Model Cache not found, converting...";
             std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
             convertCaffeToTensorRT(caffe_model_val, caffe_weights_val,
                 tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16, tensorrt_model_stream,
                 logger);
-            std::cout << "\n[tensorrt-time] - storing...";
+            std::cout << "\n[tensorrt-time] - Storing Tensorrt Model Cache...";
             std::ofstream tensorrt_model_cache_store(tensorrt_model_cache_path);
+
+            if (! tensorrt_model_cache_store) {
+                std::cerr << "\n[tensorrt-time] Failed to open Tensorrt Model Cache!\n";
+                exit(EXIT_FAILURE);
+            }
+            
             tensorrt_model_cache_store << tensorrt_model_stream.rdbuf();
             tensorrt_model_cache_store.close();
+            std::cout << "\n[tensorrt-time] - Tensorrt Model Cache stored.";
         }
         tensorrt_model_stream.seekg(0, tensorrt_model_stream.beg);
     }
@@ -443,34 +462,30 @@ int main(int argc, char** argv)
         exit(EXIT_FAILURE);
     }
 
-
 #if NV_TENSORRT_MAJOR > 1
+    std::cout << "\n[tensorrt-time] Running with NV_TENSORRT_MAJOR > 1\n";
+    // support for stringstream deserialization was deprecated in TensorRT v2
+    // instead, read the stringstream into a memory buffer and pass that to TRT.
+    tensorrt_model_stream.seekg(0, std::ios::end);
+    const int modelSize = tensorrt_model_stream.tellg();
+    tensorrt_model_stream.seekg(0, std::ios::beg);
 
-        printf("\nNV_TENSORRT_MAJOR > 1 \n"); 
-	// support for stringstream deserialization was deprecated in TensorRT v2
-	// instead, read the stringstream into a memory buffer and pass that to TRT.
-	tensorrt_model_stream.seekg(0, std::ios::end);
-	const int modelSize = tensorrt_model_stream.tellg();
-	tensorrt_model_stream.seekg(0, std::ios::beg);
+    void* modelMem = malloc(modelSize);
+    if( !modelMem )
+    {
+        std::cerr << "\n[tensorrt-time] failed to allocate memory to deserialize model!\n";
+        exit(EXIT_FAILURE);
+    }
 
-	void* modelMem = malloc(modelSize);
-
-	if( !modelMem )
-	{
-		printf("failed to allocate %i bytes to deserialize model\n", modelSize);
-		return 0;
-	}
-
-	tensorrt_model_stream.read((char*)modelMem, modelSize);
-	nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(modelMem, modelSize, NULL);
-	free(modelMem);
+    tensorrt_model_stream.read((char*)modelMem, modelSize);
+    nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(modelMem, modelSize, NULL);
+    free(modelMem);
 #else
-        printf("\nNV_TENSORRT_MAJOR =  \n");
+    std::cout << "\n[tensorrt-time] Running with NV_TENSORRT_MAJOR=1\n";
 
-	// TensorRT v1 can deserialize directly from stringstream
-	nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(tensorrt_model_stream);
+	  // TensorRT v1 can deserialize directly from stringstream
+	  nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(tensorrt_model_stream);
 #endif
-
 
     if (!engine)
     {
