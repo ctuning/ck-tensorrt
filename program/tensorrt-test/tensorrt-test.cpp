@@ -15,6 +15,8 @@
 
 #include <dirent.h>
 
+#define DEFAULT_BATCH_SIZE 1
+
 int classifyImageRGBA(imageNet* net, const char* imgPath)
 {
     int exit_status = EXIT_SUCCESS;
@@ -108,6 +110,9 @@ int main( int argc, char** argv )
     const bool   tensorrt_enable_fp16 = tensorrt_enable_fp16_val ? (bool)atoi(tensorrt_enable_fp16_val) : true;
     printf("     TENSORRT_ENABLE_FP16=%d\n", tensorrt_enable_fp16);
 
+    // for classification default batch size is 1
+    const uint32_t maxBatchSize = DEFAULT_BATCH_SIZE;
+
     // Print command line arguments.
     printf("\n[tensorrt-test] Command line arguments (%i):", argc);
     for( int i = 0; i < argc; ++i )
@@ -141,7 +146,7 @@ int main( int argc, char** argv )
                         imagenet_mean_bin_val,
                         imagenet_synset_words_txt_val,
                         "data", "prob",
-                        1//!tensorrt_enable_fp16
+                        maxBatchSize
                     );
 
 #if( 1 == CK_TENSORRT_ENABLE_PROFILER )
@@ -170,7 +175,7 @@ int main( int argc, char** argv )
             char* imagenet_val_path = (char*) malloc(strlen(imagenet_val_dir_val) + strlen(sample_imagenet_val_file) + 2);
             size_t num_images = 0;
 
-            printf("\n[tensorrt-test] Start scaning dire: %s\n", imagenet_val_path);  
+            printf("\n[tensorrt-test] Scanning directory: %s\n", imagenet_val_path);
             while( (ent = readdir(dir)) && (num_images < tensorrt_max_num_images) )
             {
                 const char* imagenet_val_file = ent->d_name;
