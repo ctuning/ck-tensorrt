@@ -427,29 +427,29 @@ int main(int argc, char** argv)
         std::ifstream tensorrt_model_cache_load(tensorrt_model_cache_path);
         if (tensorrt_model_cache_load)
         {
-            std::cout << "\n[tensorrt-time] - Tensorrt Model Cache found, loading...";
+            std::cout << "\n[tensorrt-time] - cached TensorRT model found, loading...";
             tensorrt_model_stream << tensorrt_model_cache_load.rdbuf();
             tensorrt_model_cache_load.close();
-            std::cout << "\n[tensorrt-time] - Tensorrt Model Cache loaded.";
+            std::cout << "\n[tensorrt-time] - cached TensorRT model loaded.";
         }
         else
         {
-            std::cout << "\n[tensorrt-time] - Tensorrt Model Cache not found, converting...";
+            std::cout << "\n[tensorrt-time] - cached TensorRT model not found, converting...";
             std::vector<std::string> tensorrt_model_outputs({tensorrt_output_blob_name});
             convertCaffeToTensorRT(caffe_model_val, caffe_weights_val,
                 tensorrt_model_outputs, tensorrt_batch_size, tensorrt_enable_fp16, tensorrt_model_stream,
                 logger);
-            std::cout << "\n[tensorrt-time] - Storing Tensorrt Model Cache...";
+            std::cout << "\n[tensorrt-time] - caching TensorRT model...";
             std::ofstream tensorrt_model_cache_store(tensorrt_model_cache_path);
 
             if (! tensorrt_model_cache_store) {
-                std::cerr << "\n[tensorrt-time] Failed to open Tensorrt Model Cache!\n";
+                std::cerr << "\n[tensorrt-time] Failed to cache TensorRT model!\n";
                 exit(EXIT_FAILURE);
             }
             
             tensorrt_model_cache_store << tensorrt_model_stream.rdbuf();
             tensorrt_model_cache_store.close();
-            std::cout << "\n[tensorrt-time] - Tensorrt Model Cache stored.";
+            std::cout << "\n[tensorrt-time] - TensorRT model cached.";
         }
         tensorrt_model_stream.seekg(0, tensorrt_model_stream.beg);
     }
@@ -473,7 +473,7 @@ int main(int argc, char** argv)
     void* modelMem = malloc(modelSize);
     if( !modelMem )
     {
-        std::cerr << "\n[tensorrt-time] failed to allocate memory to deserialize model!\n";
+        std::cerr << "\n[tensorrt-time] Failed to allocate memory to deserialize model!\n";
         exit(EXIT_FAILURE);
     }
 
