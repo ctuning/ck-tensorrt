@@ -4,6 +4,8 @@ import copy
 import re
 import json
 
+platform_tags='nvidia-gtx1080'
+
 # Floating-point precision iteration parameters.
 fp={
   'start':0,
@@ -13,10 +15,10 @@ fp={
 }
 # Batch size iteration parameters.
 bs={
-  'start':2,
+  'start':1,
   'stop':16,
-  'step':2,
-  'default':2
+  'step':1,
+  'default':1
 }
 # Number of statistical repetitions.
 num_repetitions=3
@@ -159,7 +161,7 @@ def do(i):
         # Get the name e.g. 'TensorRT 1.0.0'.
         # FIXME: This is the preferred format for the name.
         # Get it from r['data_name'].
-        lib_name='tensorrt-1.0.0'
+        lib_name='tensorrt-3.0.1'
         lib_tags=lib_name
         # Skip some libs with "in [..]" or "not in [..]".
         if lib_name in []: continue
@@ -184,7 +186,7 @@ def do(i):
                     model_tags+=tag
 
             # Skip some models with "in [..]" or "not in [..]".
-            if model_tags in []: continue
+            if model_tags not in ['bvlc-alexnet','bvlc-googlenet','deepscale-squeezenet-1.1']: continue
 
             record_repo='local'
             record_uoa=model_tags+'-'+lib_tags
@@ -251,7 +253,7 @@ def do(i):
                 'record_repo':record_repo,
                 'record_uoa':record_uoa,
 
-                'tags':['explore-batch-size-libs-models', model_tags, lib_tags],
+                'tags':['explore-batch-size-libs-models', platform_tags, model_tags, lib_tags],
 
                 'pipeline':cpipeline,
                 'out':'con'}
