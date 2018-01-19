@@ -419,7 +419,6 @@ int main(int argc, char** argv)
         tensorrt_model_cache_ss << caffe_weights_val;
         tensorrt_model_cache_ss << ".tensorrt-" << version_major << "." << version_minor << "." << version_patch;
         tensorrt_model_cache_ss << ".fp" << (tensorrt_enable_fp16 ? "16" : "32");
-        tensorrt_model_cache_ss << ".bs" << (tensorrt_batch_size);
 
         // Try to load the file.
         const std::string tensorrt_model_cache_path(tensorrt_model_cache_ss.str());
