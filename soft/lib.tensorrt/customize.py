@@ -13,7 +13,20 @@ import os
 # get version from path
 
 def version_cmd(i):
-    return {'return':0, 'cmd':'', 'version':'trunk'}
+    libinfer_so=i['full_path']
+    lib=os.path.dirname(libinfer_so)
+    root=os.path.dirname(lib)
+    include=os.path.join(root, 'include')
+    nvinfer_h=os.path.join(include, 'NvInfer.h')
+    major='0'; minor='0'; patch='0'
+    with open(nvinfer_h, 'r') as f:
+        lines=f.readlines()
+        for line in lines:
+            if line.startswith('#define NV_TENSORRT_MAJOR'): major=line.split()[2]
+            if line.startswith('#define NV_TENSORRT_MINOR'): minor=line.split()[2]
+            if line.startswith('#define NV_TENSORRT_PATCH'): patch=line.split()[2]
+    version='%s.%s.%s' % (major,minor,patch)
+    return {'return':0, 'cmd':'', 'version':version}
 
 ##############################################################################
 # setup environment setup
