@@ -482,7 +482,7 @@ int main(int argc, char** argv)
     nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(modelMem, modelSize, NULL);
     free(modelMem);
 #else
-    std::cout << "\n[tensorrt-time] Running with NV_TENSORRT_MAJOR=1\n";
+    std::cout << "\n[tensorrt-time] Running with NV_TENSORRT_MAJOR == 1\n";
 
 	  // TensorRT v1 can deserialize directly from stringstream
 	  nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(tensorrt_model_stream);
