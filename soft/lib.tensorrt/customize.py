@@ -14,10 +14,17 @@ import os
 
 def version_cmd(i):
     libinfer_so=i['full_path']
-    lib=os.path.dirname(libinfer_so)
-    root=os.path.dirname(lib)
-    include=os.path.join(root, 'include')
-    nvinfer_h=os.path.join(include, 'NvInfer.h')
+    # On TX1, the full path is "/usr/lib/aarch64-linux-gnu/libnvinfer.so".
+    # Otherwise, the path is "<ROOT>/lib/libnvinfer.so".
+    libinfer_dir=os.path.dirname(libinfer_so)
+    if os.path.basename(libinfer_dir)=='lib':
+        lib_dir=libinfer_dir
+        arch_os_name=''
+    else:
+        lib_dir=os.path.dirname(libinfer_dir)
+        arch_os_name=os.path.basename(libinfer_dir)
+    root_dir=os.path.dirname(lib_dir)
+    nvinfer_h=os.path.join(root_dir, 'include', arch_os_name, 'NvInfer.h')
     major='0'; minor='0'; patch='0'
     with open(nvinfer_h, 'r') as f:
         lines=f.readlines()
