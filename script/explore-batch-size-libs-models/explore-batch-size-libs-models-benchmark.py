@@ -158,10 +158,9 @@ def do(i):
             'data_uoa':lib_uoa}
         r=ck.access(ii)
         if r['return']>0: return r
-        # Get the name e.g. 'TensorRT 1.0.0'.
-        # FIXME: This is the preferred format for the name.
-        # Get it from r['data_name'].
-        lib_name='tensorrt-3.0.1'
+        # Get the lib name e.g. 'tensorrt-3.0.4'.
+        lib_version=r['dict']['customize']['version']
+        lib_name='tensorrt-%s'%lib_version
         lib_tags=lib_name
         # Skip some libs with "in [..]" or "not in [..]".
         if lib_name in []: continue
