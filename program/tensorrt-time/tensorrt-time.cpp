@@ -419,7 +419,9 @@ int main(int argc, char** argv)
         tensorrt_model_cache_ss << caffe_weights_val;
         tensorrt_model_cache_ss << ".tensorrt-" << version_major << "." << version_minor << "." << version_patch;
         tensorrt_model_cache_ss << ".fp" << (tensorrt_enable_fp16 ? "16" : "32");
-
+#if NV_TENSORRT_MAJOR < 3
+        tensorrt_model_cache_ss << ".bs" << tensorrt_batch_size;
+#endif
         // Try to load the file.
         const std::string tensorrt_model_cache_path(tensorrt_model_cache_ss.str());
         std::cout << "\n[tensorrt-time] Checking if cached at \'" << tensorrt_model_cache_path << "\'...";
@@ -445,7 +447,7 @@ int main(int argc, char** argv)
                 std::cerr << "\n[tensorrt-time] Failed to cache TensorRT model!\n";
                 exit(EXIT_FAILURE);
             }
-            
+
             tensorrt_model_cache_store << tensorrt_model_stream.rdbuf();
             tensorrt_model_cache_store.close();
             std::cout << "\n[tensorrt-time] - TensorRT model cached.";
