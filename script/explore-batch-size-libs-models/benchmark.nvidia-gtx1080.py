@@ -9,9 +9,9 @@ platform_tags='nvidia-gtx1080'
 # Floating-point precision iteration parameters.
 fp={
   'start':0,
-  'stop':1,
+  'stop':0,
   'step':1,
-  'default':1
+  'default':0
 }
 # Batch size iteration parameters.
 bs={
