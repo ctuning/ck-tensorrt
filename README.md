@@ -1,9 +1,6 @@
 # Collective Knowledge repository for collaboratively benchmarking and optimising embedded deep vision runtime library for Jetson TX1
 
-[![logo](https://github.com/ctuning/ck-guide-images/blob/master/logo-powered-by-ck.png)](http://cKnowledge.org)
-[![logo](https://github.com/ctuning/ck-guide-images/blob/master/logo-validated-by-the-community-simple.png)](http://cTuning.org)
-[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-
+[![compatibility](https://github.com/ctuning/ck-guide-images/blob/master/ck-compatible.svg)](https://github.com/ctuning/ck)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 ## Introduction
@@ -84,7 +81,7 @@ using Collective Knowledge Technology:
 * [CK-Caffe2](https://github.com/ctuning/ck-caffe2)
 * [Reusable AI artifacts](http://cKnowledge.org/ai-artifacts)
 * [CK-TinyDNN](https://github.com/ctuning/ck-tiny-dnn)
-* [Android app for DNN crowd-benchmarking and crowd-tuning](https://play.google.com/store/apps/details?id=openscience.crowdsource.video.experiments)
+* [Android app for DNN crowd-benchmarking and crowd-tuning](http://cKnowledge.org/android-apps.html)
 * [CK-powered ARM workload automation](https://github.com/ctuning/ck-wa)
 
 ## Open R&D challenges
