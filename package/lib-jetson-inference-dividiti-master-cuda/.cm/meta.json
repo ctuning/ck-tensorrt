@@ -5,7 +5,7 @@
     "git_src_dir": "src",
     "install_env": {
       "JETSON_BRANCH": "master",
-      "JETSON_URL": "https://github.com/dividiti/jetson-inference",
+      "JETSON_URL": "http://github.com/ctuning/jetson-inference",
       "NVCCFLAGS": "-Wno-deprecated-gpu-targets"
     },
     "skip_file_check": "yes",
