@@ -5,7 +5,7 @@
 
 ## Introduction
 
-[CK-TensorRT](https://github.com/dividiti/ck-tensorrt) is an open framework for
+[CK-TensorRT](https://github.com/ctuning/ck-tensorrt) is an open framework for
 collaborative and reproducible optimisation of convolutional neural networks for Jetson TX1.
 It's based on the [Deep Inference](https://github.com/dusty-nv/jetson-inference) framework from
 Dustin Franklin (a [Jetson developer @ NVIDIA](https://github.com/dusty-nv)) and
@@ -59,7 +59,7 @@ $ ck version
 ### Installing CK-TensorRT repository
 
 ```
-$ ck pull repo:ck-tensorrt --url=https://github.com/dividiti/ck-tensorrt
+$ ck pull repo:ck-tensorrt
 ```
 
 ### Building CK-TensorRT and all dependencies via CK
@@ -92,4 +92,4 @@ join this community effort!
 
 ## Related publications with long term vision
 
-* <a href="https://github.com/ctuning/ck/wiki/Publications">All references with BibTex</a>
+* <a href="https://github.com/ctuning/ck/wiki/Publications">All references with BibTeX</a>
