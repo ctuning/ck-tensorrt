@@ -2,7 +2,7 @@
   "data_uid": "3abe4a16a4fb17d7", 
   "data_name": "ck-tensorrt", 
   "dict": {
-    "url": "http://github.com/ctuning/ck-tensorrt.git", 
+    "url": "http://github.com/ctuning/ck-tensorrt", 
     "shared": "git",
     "repo_deps": [
        {
