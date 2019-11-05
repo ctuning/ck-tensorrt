@@ -1,0 +1,17 @@
+{
+  "auto_detect": "yes", 
+  "customize": {
+    "check_that_exists": "yes", 
+    "ck_version": 10, 
+    "env_prefix": "CK_ENV_TENSORRT_MODEL", 
+    "soft_file_universal": "*.trt"
+  }, 
+  "soft_name": "TensorRT model", 
+  "tags": [
+    "tensorrt", 
+    "trt",
+    "model"
+  ], 
+  "template": "yes", 
+  "template_type": "TensorRT model"
+}
