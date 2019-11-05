@@ -1,0 +1,33 @@
+{
+  "check_exit_status": "yes", 
+  "customize": {
+    "install_env": {
+      "PACKAGE_NAME": "converted_model.trt", 
+      "PACKAGE_VERSION": "1"
+    }, 
+    "no_os_in_suggested_path": "yes", 
+    "no_ver_in_suggested_path": "yes", 
+    "package_name": "TensorRT-from-Caffe model (Mobilenet)", 
+    "skip_file_check": "yes"
+  }, 
+  "deps": {
+    "model-source": {
+      "local": "yes", 
+      "name": "Original Caffe model", 
+      "sort": 10, 
+      "tags": "caffe,model"
+    }
+  }, 
+  "end_full_path_universal": "converted_model.trt", 
+  "process_script": "install", 
+  "soft_uoa": "model.tensorrt", 
+  "suggested_path": "model-tensorrt-converted-from-caffe", 
+  "tags": [
+    "model", 
+    "image-classification", 
+    "tensorrt", 
+    "trt",
+    "converted", 
+    "converted-from-caffe"
+  ]
+}

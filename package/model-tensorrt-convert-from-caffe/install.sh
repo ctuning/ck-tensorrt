@@ -1,0 +1,3 @@
+#!/bin/bash
+
+$CK_ENV_COMPILER_PYTHON_FILE $PACKAGE_DIR/caffe2tensorrt_model_converter.py "${CK_ENV_MODEL_CAFFE_WEIGHTS}" "${CK_ENV_MODEL_CAFFE_DEPLOY}" "${INSTALL_DIR}/${PACKAGE_NAME}"
