@@ -16,7 +16,11 @@
       "local": "yes", 
       "name": "Original Caffe model", 
       "sort": 10, 
-      "tags": "caffe,model"
+      "tags": "caffe,model",
+      "update_tags_if_env" : {
+        "image-classification,mobilenet":    [ { "_MODEL_TO_CONVERT": "mobilenet_v1_1.0_224" } ],
+        "image-classification,resnet":       [ { "_MODEL_TO_CONVERT": "resnet50_v1" } ]
+      }
     }
   }, 
   "end_full_path_universal": "converted_model.trt", 
@@ -40,6 +44,14 @@
     "fp16": {
       "extra_env": {
         "ML_MODEL_DATA_TYPE": "fp16"
+      }
+    },
+    "mobilenet": {
+      "extra_env": {
+        "_MODEL_TO_CONVERT": "mobilenet_v1_1.0_224",
+        "ML_MODEL_DATA_LAYOUT": "NCHW",
+        "ML_MODEL_NORMALIZE_DATA": "YES",
+        "ML_MODEL_SUBTRACT_MEAN": "NO"
       }
     }
   }
