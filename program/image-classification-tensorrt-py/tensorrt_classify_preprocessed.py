@@ -14,19 +14,17 @@ import pycuda.tools
 
 ## Model properties:
 #
-MODEL_DATA_LAYOUT       = 'NCHW'
 MODEL_PATH              = os.environ['CK_ENV_TENSORRT_MODEL_FILENAME']
+MODEL_DATA_LAYOUT       = os.getenv('ML_MODEL_DATA_LAYOUT', 'NCHW')
 LABELS_PATH             = os.environ['CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT']
 
 ## Image normalization:
 #
-MODEL_NORMALIZE_DATA    = os.getenv("CK_ENV_TENSORRT_MODEL_NORMALIZE_DATA") in ('YES', 'yes', 'ON', 'on', '1')
-SUBTRACT_MEAN           = os.getenv("CK_ENV_TENSORRT_MODEL_SUBTRACT_MEAN") in ('YES', 'yes', 'ON', 'on', '1')
-GIVEN_CHANNEL_MEANS     = os.getenv("ML_MODEL_GIVEN_CHANNEL_MEANS", '')
+MODEL_NORMALIZE_DATA    = os.getenv('ML_MODEL_NORMALIZE_DATA') in ('YES', 'yes', 'ON', 'on', '1')
+SUBTRACT_MEAN           = os.getenv('ML_MODEL_SUBTRACT_MEAN', 'YES') in ('YES', 'yes', 'ON', 'on', '1')
+GIVEN_CHANNEL_MEANS     = os.getenv('ML_MODEL_GIVEN_CHANNEL_MEANS', '')
 if GIVEN_CHANNEL_MEANS:
     GIVEN_CHANNEL_MEANS = np.array(GIVEN_CHANNEL_MEANS.split(' '), dtype=np.float32)
-
-SUBTRACT_MEAN = True    # valid for ResNet50
 
 ## Input image properties:
 #
