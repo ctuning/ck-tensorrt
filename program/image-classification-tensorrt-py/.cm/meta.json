@@ -42,6 +42,12 @@
       "sort": 40, 
       "tags": "lib,python-package,numpy"
     }, 
+    "lib-python-pycuda": {
+      "local": "yes",
+      "name": "Python PyCUDA library",
+      "sort": 50,
+      "tags": "lib,python-package,pycuda"
+    },
     "weights": {
       "local": "yes", 
       "name": "TensorRT model", 
