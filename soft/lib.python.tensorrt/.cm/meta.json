@@ -15,7 +15,7 @@
   "deps": {
     "tensorrt-library": {
       "local": "yes", 
-      "name": "Tensorrt library", 
+      "name": "TensorRT library", 
       "sort": 10, 
       "tags": "lib,tensorrt,inference"
     }
