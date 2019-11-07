@@ -25,6 +25,7 @@ SUBTRACT_MEAN           = os.getenv('ML_MODEL_SUBTRACT_MEAN', 'YES') in ('YES', 
 GIVEN_CHANNEL_MEANS     = os.getenv('ML_MODEL_GIVEN_CHANNEL_MEANS', '')
 if GIVEN_CHANNEL_MEANS:
     GIVEN_CHANNEL_MEANS = np.array(GIVEN_CHANNEL_MEANS.split(' '), dtype=np.float32)
+    GIVEN_CHANNEL_MEANS = GIVEN_CHANNEL_MEANS[::-1]     # swapping Red and Blue colour channels
 
 ## Input image properties:
 #
@@ -49,6 +50,7 @@ def load_preprocessed_batch(image_list, image_index):
         img_file = os.path.join(IMAGE_DIR, image_list[image_index])
         img = np.fromfile(img_file, IMAGE_DATA_TYPE)
         img = img.reshape((MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH, 3))
+        img = img[...,::-1]     # swapping Red and Blue colour channels
 
         if IMAGE_DATA_TYPE != 'float32':
             img = img.astype(np.float32)
