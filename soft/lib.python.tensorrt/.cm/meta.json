@@ -12,6 +12,14 @@
     "version_recursive_import": "yes",
     "version_variable_name": "__version__"
   }, 
+  "deps": {
+    "tensorrt-library": {
+      "local": "yes", 
+      "name": "Tensorrt library", 
+      "sort": 10, 
+      "tags": "lib,tensorrt,inference"
+    }
+  },
   "soft_name": "Python TensorRT library", 
   "tags": [
     "lib", 
