@@ -18,6 +18,13 @@
       "name": "TensorRT library", 
       "sort": 10, 
       "tags": "lib,tensorrt,inference"
+    },
+    "python": {
+      "add_to_path": "yes",
+      "local": "yes",
+      "name": "Python interpreter",
+      "sort": 20,
+      "tags": "compiler,python,v3"
     }
   },
   "soft_name": "Python TensorRT library", 
