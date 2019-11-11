@@ -24,7 +24,8 @@
       "local": "yes",
       "name": "Python interpreter",
       "sort": 20,
-      "tags": "compiler,python,v3"
+      "tags": "compiler,python",
+      "version_from": [ 3, 5, 0 ]
     }
   },
   "soft_name": "Python TensorRT library", 
