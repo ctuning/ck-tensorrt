@@ -23,9 +23,9 @@ def convert_caffe_model_to_trt(caffe_weights_file, caffe_deploy_file, trt_model_
                 print('Warning: This platform is not optimized for fast fp16 mode')
 
             builder.fp16_mode = True
-            print('Converting into fp16')
+            print('Converting into fp16, max_batch_size={}'.format(max_batch_size))
         else:
-            print('Converting into fp32 (default)')
+            print('Converting into fp32 (default), max_batch_size={}'.format(max_batch_size))
 
         builder.max_workspace_size  = max_workspace_size
         builder.max_batch_size      = max_batch_size

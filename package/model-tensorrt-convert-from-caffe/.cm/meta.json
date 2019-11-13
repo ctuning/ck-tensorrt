@@ -7,6 +7,7 @@
         "ML_MODEL_NORMALIZE_DATA": "YES",
         "ML_MODEL_SUBTRACT_MEAN": "NO",
         "ML_MODEL_DATA_TYPE": "fp32",
+        "ML_MODEL_MAX_BATCH_SIZE": "1",
 
         "PACKAGE_NAME": "converted_model.trt",
         "PACKAGE_VERSION": "1"
@@ -47,6 +48,21 @@
     "converted-from-caffe"
   ],
   "variations": {
+    "maxbatch.1": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "1"
+      }
+    },
+    "maxbatch.5": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "5"
+      }
+    },
+    "maxbatch.10": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "10"
+      }
+    },
     "fp32": {
       "extra_env": {
         "ML_MODEL_DATA_TYPE": "fp32"
