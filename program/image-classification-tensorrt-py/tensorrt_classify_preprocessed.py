@@ -117,15 +117,16 @@ def main():
             trt_engine = runtime.deserialize_cuda_engine(serialized_engine)
             print('[TRT] successfully loaded')
     except:
-        print('[TRT] file {} is not found or corrupted'.format(MODEL_PATH))
-        raise
+        default_context.pop()
+        raise RuntimeError('TensorRT model file {} is not found or corrupted'.format(MODEL_PATH))
 
     model_input_shape   = trt_engine.get_binding_shape(0)
     model_output_shape  = trt_engine.get_binding_shape(1)
+    max_batch_size      = trt_engine.max_batch_size
 
     IMAGE_DATATYPE=np.float32
-    h_input = cuda.pagelocked_empty(trt.volume(model_input_shape), dtype=IMAGE_DATATYPE)
-    h_output = cuda.pagelocked_empty(trt.volume(model_output_shape), dtype=IMAGE_DATATYPE)
+    h_input = cuda.pagelocked_empty(max_batch_size*trt.volume(model_input_shape), dtype=IMAGE_DATATYPE)
+    h_output = cuda.pagelocked_empty(max_batch_size*trt.volume(model_output_shape), dtype=IMAGE_DATATYPE)
     print('Allocated device memory buffers: input_size={} output_size={}'.format(h_input.nbytes, h_output.nbytes))
     d_input = cuda.mem_alloc(h_input.nbytes)
     d_output = cuda.mem_alloc(h_output.nbytes)
@@ -155,8 +156,13 @@ def main():
     print('Model image height: {}'.format(MODEL_IMAGE_HEIGHT))
     print('Model image width: {}'.format(MODEL_IMAGE_WIDTH))
     print('Model image channels: {}'.format(MODEL_IMAGE_CHANNELS))
+    print('Model max_batch_size: {}'.format(max_batch_size))
     print("Background/unlabelled classes to skip: {}".format(bg_class_offset))
     print("")
+
+    if BATCH_SIZE>max_batch_size:
+        default_context.pop()
+        raise RuntimeError("Desired batch_size ({}) exceeds max_batch_size of the model ({})".format(BATCH_SIZE,max_batch_size))
 
     setup_time = time.time() - setup_time_begin
 
@@ -177,6 +183,7 @@ def main():
             begin_time = time.time()
             batch_data, image_index = load_preprocessed_batch(image_list, image_index)
             image_fp32 = np.array(batch_data[0]).ravel().astype(np.float32)
+            image_fp32 = np.array(batch_data).ravel().astype(np.float32)
 
             load_time = time.time() - begin_time
             total_load_time += load_time
@@ -188,11 +195,11 @@ def main():
             begin_time = time.time()
 
             cuda.memcpy_htod_async(d_input, image_fp32, cuda_stream)
-            context.execute_async(bindings=[int(d_input), int(d_output)], stream_handle=cuda_stream.handle)
+            context.execute_async(bindings=[int(d_input), int(d_output)], batch_size=BATCH_SIZE, stream_handle=cuda_stream.handle)
             cuda.memcpy_dtoh_async(h_output, d_output, cuda_stream)
             cuda_stream.synchronize()
 
-            batch_results = [ h_output ]
+            batch_results = np.split(h_output, max_batch_size)
 
             classification_time = time.time() - begin_time
             if FULL_REPORT:
