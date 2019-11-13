@@ -1,0 +1,76 @@
+{
+  "check_exit_status": "yes", 
+  "customize": {
+    "install_env": {
+      "ML_MODEL_DATA_LAYOUT": "NCHW", 
+      "ML_MODEL_DATA_TYPE": "fp32", 
+      "ML_MODEL_NORMALIZE_DATA": "NO", 
+      "ML_MODEL_SUBTRACT_MEAN": "YES", 
+      "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
+      "PACKAGE_NAME": "converted_model.trt", 
+      "PACKAGE_VERSION": "1", 
+      "_MODEL_TO_CONVERT": "tf2onnx_resnet50"
+    }, 
+    "no_os_in_suggested_path": "yes", 
+    "no_ver_in_suggested_path": "yes", 
+    "package_name": "TensorRT-from-Onnx model (ResNet50)", 
+    "skip_file_check": "yes"
+  }, 
+  "deps": {
+    "lib-python-tensorrt": {
+      "local": "yes", 
+      "name": "Python TensorRT library", 
+      "sort": 20, 
+      "tags": "lib,python-package,tensorrt"
+    }, 
+    "model-source": {
+      "local": "yes", 
+      "name": "Original Onnx model", 
+      "sort": 10, 
+      "tags": "onnx,model", 
+      "update_tags_if_env": {
+        "image-classification,resnet,converted-from-tf": [
+          {
+            "_MODEL_TO_CONVERT": "tf2onnx_resnet50"
+          }
+        ]
+      }
+    }
+  }, 
+  "end_full_path_universal": "converted_model.trt", 
+  "process_script": "install", 
+  "soft_uoa": "model.tensorrt", 
+  "suggested_path": "model-tensorrt-converted-from-onnx", 
+  "tags": [
+    "model", 
+    "image-classification", 
+    "tensorrt", 
+    "trt", 
+    "converted", 
+    "converted-from-onnx"
+  ], 
+  "variations": {
+    "fp16": {
+      "extra_env": {
+        "ML_MODEL_DATA_TYPE": "fp16"
+      }
+    }, 
+    "fp32": {
+      "extra_env": {
+        "ML_MODEL_DATA_TYPE": "fp32"
+      }
+    }, 
+    "resnet": {
+      "extra_customize": {
+        "package_name": "TensorRT-from-Onnx model (ResNet50)"
+      }, 
+      "extra_env": {
+        "ML_MODEL_DATA_LAYOUT": "NCHW", 
+        "ML_MODEL_NORMALIZE_DATA": "NO", 
+        "ML_MODEL_SUBTRACT_MEAN": "YES", 
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
+        "_MODEL_TO_CONVERT": "tf2onnx_resnet50"
+      }
+    }
+  }
+}
