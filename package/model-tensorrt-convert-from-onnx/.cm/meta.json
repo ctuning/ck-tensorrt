@@ -2,14 +2,18 @@
   "check_exit_status": "yes", 
   "customize": {
     "install_env": {
-      "ML_MODEL_DATA_LAYOUT": "NCHW", 
       "ML_MODEL_DATA_TYPE": "fp32", 
+
+      "ML_MODEL_MAX_BATCH_SIZE": "1",
+
+      "ML_MODEL_DATA_LAYOUT": "NCHW",
       "ML_MODEL_NORMALIZE_DATA": "NO", 
       "ML_MODEL_SUBTRACT_MEAN": "YES", 
       "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
-      "PACKAGE_NAME": "converted_model.trt", 
-      "PACKAGE_VERSION": "1", 
-      "_MODEL_TO_CONVERT": "tf2onnx_resnet50"
+      "_MODEL_TO_CONVERT": "tf2onnx_resnet50",
+
+      "PACKAGE_NAME": "converted_model.trt",
+      "PACKAGE_VERSION": "1"
     }, 
     "no_os_in_suggested_path": "yes", 
     "no_ver_in_suggested_path": "yes", 
@@ -50,6 +54,21 @@
     "converted-from-onnx"
   ], 
   "variations": {
+     "maxbatch.1": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "1"
+       }
+     },
+     "maxbatch.5": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "5"
+       }
+     },
+     "maxbatch.10": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "10"
+       }
+     },
     "fp16": {
       "extra_env": {
         "ML_MODEL_DATA_TYPE": "fp16"
