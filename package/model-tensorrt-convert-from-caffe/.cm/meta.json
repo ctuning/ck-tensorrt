@@ -2,19 +2,12 @@
   "check_exit_status": "yes", 
   "customize": {
     "install_env": {
-        "_MODEL_TO_CONVERT": "mobilenet_v1_1.0_224",
-        "ML_MODEL_DATA_LAYOUT": "NCHW",
-        "ML_MODEL_NORMALIZE_DATA": "YES",
-        "ML_MODEL_SUBTRACT_MEAN": "NO",
-        "ML_MODEL_DATA_TYPE": "fp32",
-        "ML_MODEL_MAX_BATCH_SIZE": "1",
-
         "PACKAGE_NAME": "converted_model.trt",
         "PACKAGE_VERSION": "1"
     }, 
     "no_os_in_suggested_path": "yes", 
     "no_ver_in_suggested_path": "yes", 
-    "package_name": "TensorRT-from-Caffe model (Mobilenet)", 
+    "package_name": "TensorRT-from-Caffe model",
     "skip_file_check": "yes"
   }, 
   "deps": {
@@ -49,6 +42,7 @@
   ],
   "variations": {
     "maxbatch.1": {
+      "on_by_default": "yes",
       "extra_env": {
         "ML_MODEL_MAX_BATCH_SIZE": "1"
       }
@@ -64,6 +58,7 @@
       }
     },
     "fp32": {
+      "on_by_default": "yes",
       "extra_env": {
         "ML_MODEL_DATA_TYPE": "fp32"
       }
@@ -74,6 +69,7 @@
       }
     },
     "mobilenet": {
+      "on_by_default": "yes",
       "extra_env": {
         "_MODEL_TO_CONVERT": "mobilenet_v1_1.0_224",
         "ML_MODEL_DATA_LAYOUT": "NCHW",
