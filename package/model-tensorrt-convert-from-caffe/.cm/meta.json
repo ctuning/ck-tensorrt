@@ -74,7 +74,8 @@
         "_MODEL_TO_CONVERT": "mobilenet_v1_1.0_224",
         "ML_MODEL_DATA_LAYOUT": "NCHW",
         "ML_MODEL_NORMALIZE_DATA": "YES",
-        "ML_MODEL_SUBTRACT_MEAN": "NO"
+        "ML_MODEL_SUBTRACT_MEAN": "NO",
+        "ML_MODEL_COLOUR_CHANNELS_BGR": "YES"
       },
       "extra_customize": {
         "package_name": "TensorRT-from-Caffe model (Mobilenet)"
