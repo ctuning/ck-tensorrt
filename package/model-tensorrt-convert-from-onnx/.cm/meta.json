@@ -23,11 +23,8 @@
       "sort": 10, 
       "tags": "onnx,model", 
       "update_tags_if_env": {
-        "image-classification,resnet,converted-from-tf": [
-          {
-            "_MODEL_TO_CONVERT": "tf2onnx_resnet50"
-          }
-        ]
+        "image-classification,resnet,converted-from-tf": [ { "_MODEL_TO_CONVERT": "tf2onnx_resnet50" } ],
+        "image-classification,mobilenet,converted-from-tf,nchw": [ { "_MODEL_TO_CONVERT": "tf2onnx_mobilenet" } ]
       }
     }
   }, 
@@ -82,6 +79,17 @@
         "ML_MODEL_SUBTRACT_MEAN": "YES", 
         "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
         "_MODEL_TO_CONVERT": "tf2onnx_resnet50"
+      }
+    },
+    "mobilenet": {
+      "extra_customize": {
+        "package_name": "TensorRT-from-Onnx model (MobileNet)"
+      },
+      "extra_env": {
+        "ML_MODEL_DATA_LAYOUT": "NCHW",
+        "ML_MODEL_NORMALIZE_DATA": "YES",
+        "ML_MODEL_SUBTRACT_MEAN": "NO",
+        "_MODEL_TO_CONVERT": "tf2onnx_mobilenet"
       }
     }
   }
