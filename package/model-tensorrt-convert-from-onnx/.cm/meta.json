@@ -23,8 +23,8 @@
       "sort": 10, 
       "tags": "onnx,model", 
       "update_tags_if_env": {
-        "image-classification,resnet,converted-from-tf": [ { "_MODEL_TO_CONVERT": "tf2onnx_resnet50" } ],
-        "image-classification,mobilenet,converted-from-tf,nchw": [ { "_MODEL_TO_CONVERT": "tf2onnx_mobilenet" } ]
+        "image-classification,resnet": [ { "_MODEL_TO_CONVERT": "tf2onnx_resnet50" } ],
+        "image-classification,mobilenet,nchw": [ { "_MODEL_TO_CONVERT": "tf2onnx_mobilenet" } ]
       }
     }
   }, 
