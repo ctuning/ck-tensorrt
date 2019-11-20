@@ -1,45 +1,45 @@
 {
-  "check_exit_status": "yes", 
+  "check_exit_status": "yes",
   "customize": {
     "install_env": {
       "PACKAGE_NAME": "converted_model.trt",
       "PACKAGE_VERSION": "1"
-    }, 
-    "no_os_in_suggested_path": "yes", 
-    "no_ver_in_suggested_path": "yes", 
+    },
+    "no_os_in_suggested_path": "yes",
+    "no_ver_in_suggested_path": "yes",
     "package_name": "TensorRT-from-ONNX model",
     "skip_file_check": "yes"
-  }, 
+  },
   "deps": {
     "lib-python-tensorrt": {
-      "local": "yes", 
-      "name": "Python TensorRT library", 
-      "sort": 20, 
+      "local": "yes",
+      "name": "Python TensorRT library",
+      "sort": 20,
       "tags": "lib,python-package,tensorrt"
-    }, 
+    },
     "model-source": {
-      "local": "yes", 
-      "name": "Original ONNX model", 
-      "sort": 10, 
-      "tags": "onnx,model", 
+      "local": "yes",
+      "name": "Original ONNX model",
+      "sort": 10,
+      "tags": "onnx,model",
       "update_tags_if_env": {
         "image-classification,resnet": [ { "_MODEL_TO_CONVERT": "tf2onnx_resnet50" } ],
         "image-classification,mobilenet,nchw": [ { "_MODEL_TO_CONVERT": "tf2onnx_mobilenet" } ]
       }
     }
-  }, 
-  "end_full_path_universal": "converted_model.trt", 
-  "process_script": "install", 
-  "soft_uoa": "model.tensorrt", 
-  "suggested_path": "model-tensorrt-converted-from-onnx", 
+  },
+  "end_full_path_universal": "converted_model.trt",
+  "process_script": "install",
+  "soft_uoa": "model.tensorrt",
+  "suggested_path": "model-tensorrt-converted-from-onnx",
   "tags": [
-    "model", 
-    "image-classification", 
-    "tensorrt", 
-    "trt", 
-    "converted", 
+    "model",
+    "image-classification",
+    "tensorrt",
+    "trt",
+    "converted",
     "converted-from-onnx"
-  ], 
+  ],
   "variations": {
      "maxbatch.1": {
       "on_by_default": "yes",
@@ -47,9 +47,44 @@
          "ML_MODEL_MAX_BATCH_SIZE": "1"
        }
      },
+     "maxbatch.2": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "2"
+       }
+     },
+     "maxbatch.3": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "3"
+       }
+     },
+     "maxbatch.4": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "4"
+       }
+     },
      "maxbatch.5": {
        "extra_env": {
          "ML_MODEL_MAX_BATCH_SIZE": "5"
+       }
+     },
+     "maxbatch.6": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "6"
+       }
+     },
+     "maxbatch.7": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "7"
+       }
+     },
+     "maxbatch.8": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "8"
+       }
+     },
+     "maxbatch.9": {
+       "extra_env": {
+         "ML_MODEL_MAX_BATCH_SIZE": "9"
        }
      },
      "maxbatch.10": {
@@ -61,22 +96,22 @@
       "extra_env": {
         "ML_MODEL_DATA_TYPE": "fp16"
       }
-    }, 
+    },
     "fp32": {
       "on_by_default": "yes",
       "extra_env": {
         "ML_MODEL_DATA_TYPE": "fp32"
       }
-    }, 
+    },
     "resnet": {
       "on_by_default": "yes",
       "extra_customize": {
         "package_name": "TensorRT-from-ONNX model (ResNet50)"
-      }, 
+      },
       "extra_env": {
-        "ML_MODEL_DATA_LAYOUT": "NCHW", 
-        "ML_MODEL_NORMALIZE_DATA": "NO", 
-        "ML_MODEL_SUBTRACT_MEAN": "YES", 
+        "ML_MODEL_DATA_LAYOUT": "NCHW",
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
         "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
         "_MODEL_TO_CONVERT": "tf2onnx_resnet50"
       }
