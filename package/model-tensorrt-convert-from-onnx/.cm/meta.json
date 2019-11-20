@@ -7,7 +7,7 @@
     }, 
     "no_os_in_suggested_path": "yes", 
     "no_ver_in_suggested_path": "yes", 
-    "package_name": "TensorRT-from-Onnx model",
+    "package_name": "TensorRT-from-ONNX model",
     "skip_file_check": "yes"
   }, 
   "deps": {
@@ -19,7 +19,7 @@
     }, 
     "model-source": {
       "local": "yes", 
-      "name": "Original Onnx model", 
+      "name": "Original ONNX model", 
       "sort": 10, 
       "tags": "onnx,model", 
       "update_tags_if_env": {
@@ -71,7 +71,7 @@
     "resnet": {
       "on_by_default": "yes",
       "extra_customize": {
-        "package_name": "TensorRT-from-Onnx model (ResNet50)"
+        "package_name": "TensorRT-from-ONNX model (ResNet50)"
       }, 
       "extra_env": {
         "ML_MODEL_DATA_LAYOUT": "NCHW", 
@@ -83,7 +83,7 @@
     },
     "mobilenet": {
       "extra_customize": {
-        "package_name": "TensorRT-from-Onnx model (MobileNet)"
+        "package_name": "TensorRT-from-ONNX model (MobileNet)"
       },
       "extra_env": {
         "ML_MODEL_DATA_LAYOUT": "NCHW",
