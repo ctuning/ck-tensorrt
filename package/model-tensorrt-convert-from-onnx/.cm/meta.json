@@ -24,7 +24,8 @@
       "tags": "onnx,model",
       "update_tags_if_env": {
         "image-classification,resnet": [ { "_MODEL_TO_CONVERT": "tf2onnx_resnet50" } ],
-        "image-classification,mobilenet,nchw": [ { "_MODEL_TO_CONVERT": "tf2onnx_mobilenet" } ]
+        "image-classification,mobilenet,non-quantized,nchw": [ { "_MODEL_TO_CONVERT": "tf2onnx_mobilenet" } ],
+        "image-classification,mobilenet,quantized,nchw": [ { "_MODEL_TO_CONVERT": "tf2onnx_mobilenet_quant" } ]
       }
     }
   },
@@ -175,6 +176,17 @@
         "ML_MODEL_NORMALIZE_DATA": "YES",
         "ML_MODEL_SUBTRACT_MEAN": "NO",
         "_MODEL_TO_CONVERT": "tf2onnx_mobilenet"
+      }
+    },
+    "mobilenet-quant": {
+      "extra_customize": {
+        "package_name": "TensorRT-from-ONNX model (MobileNet quantized)"
+      },
+      "extra_env": {
+        "ML_MODEL_DATA_LAYOUT": "NCHW",
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
+        "_MODEL_TO_CONVERT": "tf2onnx_mobilenet_quant"
       }
     }
   }
