@@ -42,7 +42,7 @@ models_preprocessing_tags=( "dataset,side.224,crop.875,inter.linear,preprocessed
 data_types=( "fp16" "fp32" )
 
 # Max batch sizes.
-max_batch_sizes=( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 )
+max_batch_sizes=$(seq 1 20)
 
 
 experiment_id=1
