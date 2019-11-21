@@ -39,10 +39,10 @@ models_tags=( "model,tensorrt,converted-from-onnx,resnet" )
 models_preprocessing_tags=( "dataset,side.224,crop.875,inter.linear,preprocessed,using-opencv" )
 
 # Numerical data types.
-data_types=( "fp32" "fp16" )
+data_types=( "fp16" "fp32" )
 
 # Max batch sizes.
-max_batch_sizes=( 1 2 3 4 5 6 7 8 )
+max_batch_sizes=( 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 )
 
 
 experiment_id=1
@@ -66,7 +66,7 @@ for implementation in ${implementations[@]}; do
       # Iterate for each mode.
       for mode in ${modes[@]}; do
         # TODO: Use the maximum batch size for accuracy experiments.
-        if [ "${mode}" != "accuracy" ]; then continue; fi
+        if [ "${mode}" == "accuracy" ]; then continue; fi
 
         # Iterate for each max batch size.
         for max_batch_size in ${max_batch_sizes[@]}; do
@@ -75,8 +75,8 @@ for implementation in ${implementations[@]}; do
           for batch_size in $(seq 1 ${max_batch_size}); do
 
             # Configure record settings.
-            record_uoa="${task}.${library}.${device}.${model}.${data_type}.max-batch-${max_batch_size}.${mode}"
-            record_tags="${task},${library},${device},${model},${data_type},max-batch-${max_batch_size},${mode}"
+            record_uoa="${task}.${device}.${library}.${model}.${data_type}.max-batch-${max_batch_size}.batch-${batch_size}.${mode}"
+            record_tags="${task},${device},${library},${model},${data_type},max-batch-${max_batch_size},batch-${batch_size},${mode}"
             if [ "${mode}" = "accuracy" ]; then
               # Get substring after "preprocessed," to end.
               preprocessing="${model_preprocessing_tags##*preprocessed,}"
@@ -116,7 +116,7 @@ for implementation in ${implementations[@]}; do
             --skip_print_timers --skip_stat_analysis --process_multi_keys
 END_OF_CMD
             echo ${CMD}
-            #eval ${CMD}
+            eval ${CMD}
             # Check for errors.
             if [ "${?}" != "0" ]; then
               echo "ERROR: Failed running '${model}' with '${implementation}'!"

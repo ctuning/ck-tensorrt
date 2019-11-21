@@ -40,58 +40,106 @@
     "converted",
     "converted-from-onnx"
   ],
-  "variations": {
-     "maxbatch.1": {
-      "on_by_default": "yes",
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "1"
-       }
-     },
-     "maxbatch.2": {
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "2"
-       }
-     },
-     "maxbatch.3": {
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "3"
-       }
-     },
-     "maxbatch.4": {
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "4"
-       }
-     },
-     "maxbatch.5": {
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "5"
-       }
-     },
-     "maxbatch.6": {
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "6"
-       }
-     },
-     "maxbatch.7": {
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "7"
-       }
-     },
-     "maxbatch.8": {
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "8"
-       }
-     },
-     "maxbatch.9": {
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "9"
-       }
-     },
-     "maxbatch.10": {
-       "extra_env": {
-         "ML_MODEL_MAX_BATCH_SIZE": "10"
-       }
-     },
+     "on_by_default": "yes",
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "1"
+      }
+    },
+    "maxbatch.2": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "2"
+      }
+    },
+    "maxbatch.3": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "3"
+      }
+    },
+    "maxbatch.4": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "4"
+      }
+    },
+    "maxbatch.5": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "5"
+      }
+    },
+    "maxbatch.6": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "6"
+      }
+    },
+    "maxbatch.7": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "7"
+      }
+    },
+    "maxbatch.8": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "8"
+      }
+    },
+    "maxbatch.9": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "9"
+      }
+    },
+    "maxbatch.10": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "10"
+      }
+    },
+    "maxbatch.11": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "11"
+      }
+    },
+    "maxbatch.12": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "12"
+      }
+    },
+    "maxbatch.13": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "13"
+      }
+    },
+    "maxbatch.14": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "14"
+      }
+    },
+    "maxbatch.15": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "15"
+      }
+    },
+    "maxbatch.16": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "16"
+      }
+    },
+    "maxbatch.17": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "17"
+      }
+    },
+    "maxbatch.8": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "18"
+      }
+    },
+    "maxbatch.19": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "19"
+      }
+    },
+    "maxbatch.20": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "20"
+      }
+    },
     "fp16": {
       "extra_env": {
         "ML_MODEL_DATA_TYPE": "fp16"
