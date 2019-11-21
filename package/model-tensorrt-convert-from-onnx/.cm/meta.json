@@ -40,7 +40,9 @@
     "converted",
     "converted-from-onnx"
   ],
-     "on_by_default": "yes",
+  "variations": {
+    "maxbatch.1": {
+      "on_by_default": "yes",
       "extra_env": {
         "ML_MODEL_MAX_BATCH_SIZE": "1"
       }
@@ -125,7 +127,7 @@
         "ML_MODEL_MAX_BATCH_SIZE": "17"
       }
     },
-    "maxbatch.8": {
+    "maxbatch.18": {
       "extra_env": {
         "ML_MODEL_MAX_BATCH_SIZE": "18"
       }
