@@ -67,7 +67,7 @@ def load_preprocessed_batch(image_list, image_index):
                 if len(GIVEN_CHANNEL_MEANS):
                     img -= GIVEN_CHANNEL_MEANS
                 else:
-                    img -= np.mean(img)
+                    img -= np.mean(img, axis=(0,1), keepdims=True)
 
         # Add img to batch
         batch_data.append( [img] )
