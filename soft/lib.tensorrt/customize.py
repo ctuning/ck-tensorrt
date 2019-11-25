@@ -24,14 +24,27 @@ def version_cmd(i):
         lib_dir=os.path.dirname(libinfer_dir)
         arch_os_name=os.path.basename(libinfer_dir)
     root_dir=os.path.dirname(lib_dir)
-    nvinfer_h=os.path.join(root_dir, 'include', arch_os_name, 'NvInfer.h')
+
+    # Undetected version: 0.0.0
     major='0'; minor='0'; patch='0'
-    with open(nvinfer_h, 'r') as f:
-        lines=f.readlines()
-        for line in lines:
-            if line.startswith('#define NV_TENSORRT_MAJOR'): major=line.split()[2]
-            if line.startswith('#define NV_TENSORRT_MINOR'): minor=line.split()[2]
-            if line.startswith('#define NV_TENSORRT_PATCH'): patch=line.split()[2]
+
+    nvinferversion_h=os.path.join(root_dir, 'include', arch_os_name, 'NvInferVersion.h')
+    nvinfer_h=os.path.join(root_dir, 'include', arch_os_name, 'NvInfer.h')
+    version_file_path = None
+    if os.path.exists(nvinferversion_h):
+        # TensorRT v5-6.
+        version_file_path = nvinferversion_h
+    elif os.path.exists(nvinfer_h):
+        # TensorRT v1-5 (?).
+        version_file_path = nvinfer_h
+    if version_file_path:
+        with open(version_file_path, 'r') as version_file:
+            lines=version_file.readlines()
+            for line in lines:
+                if line.startswith('#define NV_TENSORRT_MAJOR'): major=line.split()[2]
+                if line.startswith('#define NV_TENSORRT_MINOR'): minor=line.split()[2]
+                if line.startswith('#define NV_TENSORRT_PATCH'): patch=line.split()[2]
+
     version='%s.%s.%s' % (major,minor,patch)
     return {'return':0, 'cmd':'', 'version':version}
 
