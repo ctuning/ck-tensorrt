@@ -18,6 +18,11 @@ MODEL_PATH              = os.environ['CK_ENV_TENSORRT_MODEL_FILENAME']
 MODEL_DATA_LAYOUT       = os.getenv('ML_MODEL_DATA_LAYOUT', 'NCHW')
 LABELS_PATH             = os.environ['CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT']
 MODEL_COLOURS_BGR       = os.getenv('ML_MODEL_COLOUR_CHANNELS_BGR', 'NO') in ('YES', 'yes', 'ON', 'on', '1')
+MODEL_DATA_TYPE         = os.getenv('ML_MODEL_DATA_TYPE', 'float32')
+
+## Internal processing:
+#
+VECTOR_DATA_TYPE        = np.float32
 
 ## Image normalization:
 #
@@ -25,7 +30,7 @@ MODEL_NORMALIZE_DATA    = os.getenv('ML_MODEL_NORMALIZE_DATA') in ('YES', 'yes',
 SUBTRACT_MEAN           = os.getenv('ML_MODEL_SUBTRACT_MEAN', 'YES') in ('YES', 'yes', 'ON', 'on', '1')
 GIVEN_CHANNEL_MEANS     = os.getenv('ML_MODEL_GIVEN_CHANNEL_MEANS', '')
 if GIVEN_CHANNEL_MEANS:
-    GIVEN_CHANNEL_MEANS = np.array(GIVEN_CHANNEL_MEANS.split(' '), dtype=np.float32)
+    GIVEN_CHANNEL_MEANS = np.array(GIVEN_CHANNEL_MEANS.split(' '), dtype=VECTOR_DATA_TYPE)
     if MODEL_COLOURS_BGR:
         GIVEN_CHANNEL_MEANS = GIVEN_CHANNEL_MEANS[::-1]     # swapping Red and Blue colour channels
 
@@ -33,7 +38,7 @@ if GIVEN_CHANNEL_MEANS:
 #
 IMAGE_DIR               = os.getenv('CK_ENV_DATASET_IMAGENET_PREPROCESSED_DIR')
 IMAGE_LIST_FILE         = os.path.join(IMAGE_DIR, os.getenv('CK_ENV_DATASET_IMAGENET_PREPROCESSED_SUBSET_FOF'))
-IMAGE_DATA_TYPE         = np.dtype( os.getenv('CK_ENV_DATASET_IMAGENET_PREPROCESSED_DATA_TYPE', 'uint8') )
+IMAGE_DATA_TYPE         = os.getenv('CK_ENV_DATASET_IMAGENET_PREPROCESSED_DATA_TYPE', 'uint8')
 
 ## Writing the results out:
 #
@@ -45,18 +50,17 @@ FULL_REPORT             = os.getenv('CK_SILENT_MODE', '0') in ('NO', 'no', 'OFF'
 BATCH_SIZE              = int(os.getenv('CK_BATCH_SIZE', 1))
 BATCH_COUNT             = int(os.getenv('CK_BATCH_COUNT', 1))
 
-
 def load_preprocessed_batch(image_list, image_index):
     batch_data = []
     for _ in range(BATCH_SIZE):
         img_file = os.path.join(IMAGE_DIR, image_list[image_index])
-        img = np.fromfile(img_file, IMAGE_DATA_TYPE)
+        img = np.fromfile(img_file, np.dtype(IMAGE_DATA_TYPE))
         img = img.reshape((MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH, 3))
         if MODEL_COLOURS_BGR:
             img = img[...,::-1]     # swapping Red and Blue colour channels
 
-        if IMAGE_DATA_TYPE != 'float32':
-            img = img.astype(np.float32)
+        if IMAGE_DATA_TYPE == 'uint8':
+            img = img.astype(VECTOR_DATA_TYPE)
 
             # Normalize
             if MODEL_NORMALIZE_DATA:
@@ -127,9 +131,8 @@ def main():
     model_output_shape  = trt_engine.get_binding_shape(1)
     max_batch_size      = trt_engine.max_batch_size
 
-    IMAGE_DATATYPE=np.float32
-    h_input = cuda.pagelocked_empty(max_batch_size*trt.volume(model_input_shape), dtype=IMAGE_DATATYPE)
-    h_output = cuda.pagelocked_empty(max_batch_size*trt.volume(model_output_shape), dtype=IMAGE_DATATYPE)
+    h_input = cuda.pagelocked_empty(max_batch_size*trt.volume(model_input_shape), VECTOR_DATA_TYPE)
+    h_output = cuda.pagelocked_empty(max_batch_size*trt.volume(model_output_shape), VECTOR_DATA_TYPE)
     print('Allocated device memory buffers: input_size={} output_size={}'.format(h_input.nbytes, h_output.nbytes))
     d_input = cuda.mem_alloc(h_input.nbytes)
     d_output = cuda.mem_alloc(h_output.nbytes)
@@ -159,6 +162,8 @@ def main():
     print('Model image height: {}'.format(MODEL_IMAGE_HEIGHT))
     print('Model image width: {}'.format(MODEL_IMAGE_WIDTH))
     print('Model image channels: {}'.format(MODEL_IMAGE_CHANNELS))
+    print('Model data type: {}'.format(MODEL_DATA_TYPE))
+    print('Model BGR colours: {}'.format(MODEL_COLOURS_BGR))
     print('Model max_batch_size: {}'.format(max_batch_size))
     print("Background/unlabelled classes to skip: {}".format(bg_class_offset))
     print("")
@@ -185,8 +190,7 @@ def main():
           
             begin_time = time.time()
             batch_data, image_index = load_preprocessed_batch(image_list, image_index)
-            image_fp32 = np.array(batch_data[0]).ravel().astype(np.float32)
-            image_fp32 = np.array(batch_data).ravel().astype(np.float32)
+            vectored_batch = np.array(batch_data).ravel().astype(VECTOR_DATA_TYPE)
 
             load_time = time.time() - begin_time
             total_load_time += load_time
@@ -197,7 +201,7 @@ def main():
             # Classify image
             begin_time = time.time()
 
-            cuda.memcpy_htod_async(d_input, image_fp32, cuda_stream)
+            cuda.memcpy_htod_async(d_input, vectored_batch, cuda_stream)
             context.execute_async(bindings=[int(d_input), int(d_output)], batch_size=BATCH_SIZE, stream_handle=cuda_stream.handle)
             cuda.memcpy_dtoh_async(h_output, d_output, cuda_stream)
             cuda_stream.synchronize()
