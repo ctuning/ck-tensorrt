@@ -145,13 +145,13 @@
     },
     "fp16": {
       "extra_env": {
-        "ML_MODEL_DATA_TYPE": "fp16"
+        "ML_MODEL_DATA_TYPE": "float16"
       }
     },
     "fp32": {
       "on_by_default": "yes",
       "extra_env": {
-        "ML_MODEL_DATA_TYPE": "fp32"
+        "ML_MODEL_DATA_TYPE": "float32"
       }
     },
     "resnet": {

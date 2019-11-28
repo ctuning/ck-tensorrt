@@ -18,14 +18,14 @@ def convert_onnx_model_to_trt(onnx_model_filename, trt_model_filename,
 
     with trt.Builder(TRT_LOGGER) as builder, builder.create_network() as network, trt.OnnxParser(network, TRT_LOGGER) as parser:
 
-        if (output_data_type=='fp16'):
+        if (output_data_type=='float32'):
+            print('Converting into fp32 (default), max_batch_size={}'.format(max_batch_size))
+        else:
             if not builder.platform_has_fast_fp16:
                 print('Warning: This platform is not optimized for fast fp16 mode')
 
             builder.fp16_mode = True
             print('Converting into fp16, max_batch_size={}'.format(max_batch_size))
-        else:
-            print('Converting into fp32 (default), max_batch_size={}'.format(max_batch_size))
 
         builder.max_workspace_size  = max_workspace_size
         builder.max_batch_size      = max_batch_size
@@ -53,7 +53,7 @@ def main():
     arg_parser.add_argument('onnx_model_file',      type=str,                       help='Onnx model file')
     arg_parser.add_argument('trt_model_filename',   type=str,                       help='TensorRT model file')
     arg_parser.add_argument('--output_tensor_name', type=str,   default='prob',     help='Output tensor type')
-    arg_parser.add_argument('--output_data_type',   type=str,   default='fp32',     help='Output data type')
+    arg_parser.add_argument('--output_data_type',   type=str,   default='float32',  help='Output data type')
     arg_parser.add_argument('--max_workspace_size', type=int,   default=(1<<30),    help='Builder workspace size')
     arg_parser.add_argument('--max_batch_size',     type=int,   default=1,          help='Builder batch size')
     args        = arg_parser.parse_args()
