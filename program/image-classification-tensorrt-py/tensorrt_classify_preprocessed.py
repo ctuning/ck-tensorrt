@@ -138,7 +138,10 @@ def main():
     d_output = cuda.mem_alloc(h_output.nbytes)
     cuda_stream = cuda.Stream()
 
-    model_classes       = model_output_shape[0]
+    model_classes       = 1
+    for outshape_member in model_output_shape:
+        model_classes *= outshape_member
+
     labels              = load_labels(LABELS_PATH)
     bg_class_offset     = model_classes-len(labels)  # 1 means the labels represent classes 1..1000 and the background class 0 has to be skipped
 
