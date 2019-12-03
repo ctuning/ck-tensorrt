@@ -19,6 +19,8 @@ MODEL_DATA_LAYOUT       = os.getenv('ML_MODEL_DATA_LAYOUT', 'NCHW')
 LABELS_PATH             = os.environ['CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT']
 MODEL_COLOURS_BGR       = os.getenv('ML_MODEL_COLOUR_CHANNELS_BGR', 'NO') in ('YES', 'yes', 'ON', 'on', '1')
 MODEL_DATA_TYPE         = os.getenv('ML_MODEL_DATA_TYPE', 'float32')
+MODEL_SOFTMAX_LAYER     = os.getenv('CK_ENV_TENSORFLOW_MODEL_OUTPUT_LAYER_NAME', '')
+
 
 ## Internal processing:
 #
@@ -127,21 +129,34 @@ def main():
         default_context.pop()
         raise RuntimeError('TensorRT model file {} is not found or corrupted'.format(MODEL_PATH))
 
-    model_input_shape   = trt_engine.get_binding_shape(0)
-    model_output_shape  = trt_engine.get_binding_shape(1)
     max_batch_size      = trt_engine.max_batch_size
 
-    h_input = cuda.pagelocked_empty(max_batch_size*trt.volume(model_input_shape), VECTOR_DATA_TYPE)
-    h_output = cuda.pagelocked_empty(max_batch_size*trt.volume(model_output_shape), VECTOR_DATA_TYPE)
-    print('Allocated device memory buffers: input_size={} output_size={}'.format(h_input.nbytes, h_output.nbytes))
-    d_input = cuda.mem_alloc(h_input.nbytes)
-    d_output = cuda.mem_alloc(h_output.nbytes)
-    cuda_stream = cuda.Stream()
+    d_inputs, h_d_outputs, model_bindings = [], [], []
+    for interface_layer in trt_engine:
+        dtype   = trt_engine.get_binding_dtype(interface_layer)
+        shape   = trt_engine.get_binding_shape(interface_layer)
+        size    = trt.volume(shape) * max_batch_size
 
-    model_classes       = 1
-    for outshape_member in model_output_shape:
-        model_classes *= outshape_member
+        dev_mem = cuda.mem_alloc(size * dtype.itemsize)
+        model_bindings.append( int(dev_mem) )
 
+        if trt_engine.binding_is_input(interface_layer):
+            interface_type = 'Input'
+            d_inputs.append(dev_mem)
+            model_input_shape   = shape
+        else:
+            interface_type = 'Output'
+            host_mem    = cuda.pagelocked_empty(size, trt.nptype(dtype))
+            h_d_outputs.append({ 'host_mem': host_mem, 'dev_mem': dev_mem })
+            if MODEL_SOFTMAX_LAYER=='' or interface_layer == MODEL_SOFTMAX_LAYER:
+                model_output_shape  = shape
+                h_output            = host_mem
+
+        print("{} layer {}: dtype={}, shape={}, elements_per_max_batch={}".format(interface_type, interface_layer, dtype, shape, size))
+
+    cuda_stream         = cuda.Stream()
+
+    model_classes       = trt.volume(model_output_shape)
     labels              = load_labels(LABELS_PATH)
     bg_class_offset     = model_classes-len(labels)  # 1 means the labels represent classes 1..1000 and the background class 0 has to be skipped
 
@@ -160,8 +175,6 @@ def main():
     print('Per-channel means to subtract: {}'.format(GIVEN_CHANNEL_MEANS))
 
     print("Data layout: {}".format(MODEL_DATA_LAYOUT) )
-    print("Expected input shape: {}".format(model_input_shape))
-    print("Output shape: {}".format(model_output_shape))
     print('Model image height: {}'.format(MODEL_IMAGE_HEIGHT))
     print('Model image width: {}'.format(MODEL_IMAGE_WIDTH))
     print('Model image channels: {}'.format(MODEL_IMAGE_CHANNELS))
@@ -204,9 +217,11 @@ def main():
             # Classify image
             begin_time = time.time()
 
-            cuda.memcpy_htod_async(d_input, vectored_batch, cuda_stream)
-            context.execute_async(bindings=[int(d_input), int(d_output)], batch_size=BATCH_SIZE, stream_handle=cuda_stream.handle)
-            cuda.memcpy_dtoh_async(h_output, d_output, cuda_stream)
+            cuda.memcpy_htod_async(d_inputs[0], vectored_batch, cuda_stream)    # assuming one input layer for image classification
+            context.execute_async(bindings=model_bindings, batch_size=BATCH_SIZE, stream_handle=cuda_stream.handle)
+            for output in h_d_outputs:
+                cuda.memcpy_dtoh_async(output['host_mem'], output['dev_mem'], cuda_stream)
+
             cuda_stream.synchronize()
 
             batch_results = np.split(h_output, max_batch_size)
