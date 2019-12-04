@@ -19,7 +19,7 @@ MODEL_DATA_LAYOUT       = os.getenv('ML_MODEL_DATA_LAYOUT', 'NCHW')
 LABELS_PATH             = os.environ['CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT']
 MODEL_COLOURS_BGR       = os.getenv('ML_MODEL_COLOUR_CHANNELS_BGR', 'NO') in ('YES', 'yes', 'ON', 'on', '1')
 MODEL_DATA_TYPE         = os.getenv('ML_MODEL_DATA_TYPE', 'float32')
-MODEL_SOFTMAX_LAYER     = os.getenv('CK_ENV_TENSORFLOW_MODEL_OUTPUT_LAYER_NAME', '')
+MODEL_SOFTMAX_LAYER     = os.getenv('CK_ENV_ONNX_MODEL_OUTPUT_LAYER_NAME', os.getenv('CK_ENV_TENSORFLOW_MODEL_OUTPUT_LAYER_NAME', ''))
 
 
 ## Internal processing:
