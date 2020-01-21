@@ -69,8 +69,10 @@
     "CK_SKIP_IMAGES": 0
   }, 
   "tags": [
-    "image-classification", 
-    "onnx", 
+    "image-classification",
+    "tensorrt",
+    "trt",
+    "standalone",
     "lang-python"
   ]
 }
