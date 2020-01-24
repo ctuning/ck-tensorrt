@@ -1,0 +1,51 @@
+{
+  "check_exit_status": "yes", 
+  "customize": {
+    "comment": "As of this update, TensorRT has to be first downloaded as a wheel, then installed from it",
+    "install_env": {
+      "PIP_INSTALL_OPTIONS": "--ignore-installed"
+    }
+  }, 
+  "deps": {
+    "python": {
+      "add_to_path": "yes", 
+      "local": "yes", 
+      "name": "Python interpreter", 
+      "sort": 10, 
+      "tags": "compiler,python"
+    }
+  }, 
+  "end_full_path_universal": "build$#sep#$tensorrt$#sep#$__init__.py", 
+  "only_for_host_os_tags": [], 
+  "only_for_target_os_tags": [
+    "linux"
+  ], 
+  "process_script": "install", 
+  "soft_uoa": "589e881dee2c8b2e", 
+  "suggested_path": "lib-python-tensorrt", 
+  "tags": [
+    "lib", 
+    "python-package", 
+    "tensorrt",
+    "trt"
+  ], 
+  "template": "yes", 
+  "template_type": "Python library", 
+  "use_scripts_from_another_entry": {
+    "data_uoa": "e4d8d3d2c4c67902", 
+    "module_uoa": "package"
+  }, 
+  "variations": {
+    "tensorrt-v5": {
+      "extra_env": {
+        "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-5.1.5.0/python/tensorrt-5.1.5.0-cp36-none-linux_x86_64.whl"
+      }
+    },
+    "tensorrt-v6": {
+      "on_by_default": "yes",
+      "extra_env": {
+        "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-6.0.1.5/python/tensorrt-6.0.1.5-cp36-none-linux_x86_64.whl"
+      }
+    }
+  }
+}
