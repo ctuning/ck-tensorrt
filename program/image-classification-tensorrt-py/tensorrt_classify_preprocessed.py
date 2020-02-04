@@ -75,6 +75,9 @@ def load_preprocessed_batch(image_list, image_index):
                 else:
                     img -= np.mean(img, axis=(0,1), keepdims=True)
 
+        if MODEL_DATA_TYPE == 'int8':
+            img = np.clip(img, -128, 127)
+
         # Add img to batch
         batch_data.append( [img.astype(MODEL_DATA_TYPE)] )
         image_index += 1
