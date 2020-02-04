@@ -61,7 +61,7 @@ def load_preprocessed_batch(image_list, image_index):
         if MODEL_COLOURS_BGR:
             img = img[...,::-1]     # swapping Red and Blue colour channels
 
-        if IMAGE_DATA_TYPE == 'uint8':
+        if IMAGE_DATA_TYPE != 'float32':
             img = img.astype(VECTOR_DATA_TYPE)
 
             # Normalize
@@ -76,7 +76,7 @@ def load_preprocessed_batch(image_list, image_index):
                     img -= np.mean(img, axis=(0,1), keepdims=True)
 
         # Add img to batch
-        batch_data.append( [img] )
+        batch_data.append( [img.astype(MODEL_DATA_TYPE)] )
         image_index += 1
 
     nhwc_data = np.concatenate(batch_data, axis=0)
@@ -158,7 +158,7 @@ def main():
 
     model_classes       = trt.volume(model_output_shape)
     labels              = load_labels(LABELS_PATH)
-    bg_class_offset     = model_classes-len(labels)  # 1 means the labels represent classes 1..1000 and the background class 0 has to be skipped
+    num_layers          = trt_engine.num_layers
 
     if MODEL_DATA_LAYOUT == 'NHWC':
         (MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH, MODEL_IMAGE_CHANNELS) = model_input_shape
@@ -181,7 +181,7 @@ def main():
     print('Model data type: {}'.format(MODEL_DATA_TYPE))
     print('Model BGR colours: {}'.format(MODEL_COLOURS_BGR))
     print('Model max_batch_size: {}'.format(max_batch_size))
-    print("Background/unlabelled classes to skip: {}".format(bg_class_offset))
+    print('Model num_layers: {}'.format(num_layers))
     print("")
 
     if BATCH_SIZE>max_batch_size:
@@ -206,7 +206,7 @@ def main():
           
             begin_time = time.time()
             batch_data, image_index = load_preprocessed_batch(image_list, image_index)
-            vectored_batch = np.array(batch_data).ravel().astype(VECTOR_DATA_TYPE)
+            vectored_batch = np.array(batch_data).ravel().astype(MODEL_DATA_TYPE)
 
             load_time = time.time() - begin_time
             total_load_time += load_time
@@ -237,7 +237,12 @@ def main():
 
             # Process results
             for index_in_batch in range(BATCH_SIZE):
-                softmax_vector = batch_results[index_in_batch][bg_class_offset:]    # skipping the background class on the left (if present)
+                one_batch_result = batch_results[index_in_batch]
+                if model_classes==1:
+                    arg_max = one_batch_result[0]
+                    softmax_vector = [0]*arg_max + [1] + [0]*(1000-arg_max-1)
+                else:
+                    softmax_vector = one_batch_result[-1000:]    # skipping the background class on the left (if present)
                 global_index = batch_index * BATCH_SIZE + index_in_batch
                 res_file = os.path.join(RESULTS_DIR, image_list[global_index])
                 with open(res_file + '.txt', 'w') as f:
