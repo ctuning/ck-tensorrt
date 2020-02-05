@@ -5,6 +5,8 @@ Usage examples:
         --extra_tags=fp32,resnet,resnet50,image-classification,converted-from-caffe \
         --cus.version=resnet_caffe_fp32 \
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=YES \
+        --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=224 \
+        --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=224 \
         --ienv.ML_MODEL_DATA_TYPE=float32 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \
@@ -17,6 +19,8 @@ Usage examples:
         --extra_tags=maxbatch.15,int8,resnet,resnet50,dla,image-classification,converted-by-nvidia \
         --cus.version=resnet_nvidia_int8 \
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
+        --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=224 \
+        --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=224 \
         --ienv.ML_MODEL_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \
@@ -30,6 +34,8 @@ Usage examples:
         --extra_tags=maxbatch.250,int8,mobilenet,gpu,image-classification,converted-by-nvidia \
         --cus.version=mobilenet_nvidia_int8 \
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
+        --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=224 \
+        --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=224 \
         --ienv.ML_MODEL_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \
