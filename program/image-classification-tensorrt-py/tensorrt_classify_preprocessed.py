@@ -204,8 +204,6 @@ def main():
     with trt_engine.create_execution_context() as context:
         for batch_index in range(BATCH_COUNT):
             batch_number = batch_index+1
-            if FULL_REPORT or (batch_number % 10 == 0):
-                print("\nBatch {} of {}".format(batch_number, BATCH_COUNT))
           
             begin_time = time.time()
             batch_data, image_index = load_preprocessed_batch(image_list, image_index)
@@ -214,8 +212,6 @@ def main():
             load_time = time.time() - begin_time
             total_load_time += load_time
             images_loaded += BATCH_SIZE
-            if FULL_REPORT:
-                print("Batch loaded in %fs" % (load_time))
 
             # Classify image
             begin_time = time.time()
@@ -230,8 +226,9 @@ def main():
             batch_results = np.split(h_output, max_batch_size)
 
             classification_time = time.time() - begin_time
-            if FULL_REPORT:
-                print("Batch classified in %fs" % (classification_time))
+
+            print("[batch {} of {}] loading={:.2f} ms, inference={:.2f} ms".format(
+                          batch_number, BATCH_COUNT, load_time*1000, classification_time*1000))
 
             total_classification_time += classification_time
             # Remember first batch prediction time
