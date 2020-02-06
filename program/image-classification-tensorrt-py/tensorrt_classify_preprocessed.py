@@ -223,12 +223,12 @@ def main():
 
             cuda_stream.synchronize()
 
-            batch_results = np.split(h_output, max_batch_size)
-
             classification_time = time.time() - begin_time
 
             print("[batch {} of {}] loading={:.2f} ms, inference={:.2f} ms".format(
                           batch_number, BATCH_COUNT, load_time*1000, classification_time*1000))
+
+            batch_results = np.split(h_output, max_batch_size)
 
             total_classification_time += classification_time
             # Remember first batch prediction time
