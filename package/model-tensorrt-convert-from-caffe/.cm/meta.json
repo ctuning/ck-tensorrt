@@ -60,7 +60,7 @@
     "fp32": {
       "on_by_default": "yes",
       "extra_env": {
-        "ML_MODEL_DATA_TYPE": "fp32"
+        "ML_MODEL_DATA_TYPE": "fp32",
         "ML_MODEL_INPUT_DATA_TYPE": "float32"
       }
     },

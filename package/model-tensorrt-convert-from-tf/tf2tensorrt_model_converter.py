@@ -32,7 +32,7 @@ def convert_tf_model_to_trt(tf_model_filename, trt_model_filename,
         if not parser.parse_buffer(uff_model, network):
             raise RuntimeError("UFF model parsing (originally from {}) failed. Error: {}".format(tf_model_filename, parser.get_error(0).desc()))
 
-        if (output_data_type=='float32'):
+        if (output_data_type=='fp32'):
             print('Converting into fp32 (default), max_batch_size={}'.format(max_batch_size))
         else:
             if not builder.platform_has_fast_fp16:
@@ -66,7 +66,7 @@ def main():
     arg_parser.add_argument('--input_height',       type=int,   default=224,        help='Input height')
     arg_parser.add_argument('--input_width',        type=int,   default=224,        help='Input width')
     arg_parser.add_argument('--output_layer_name',  type=str,   default='MobilenetV1/Predictions/Reshape_1', help='Output layer name')
-    arg_parser.add_argument('--output_data_type',   type=str,   default='float32',  help='Output data type')
+    arg_parser.add_argument('--output_data_type',   type=str,   default='fp32',     help='Model data type')
     arg_parser.add_argument('--max_workspace_size', type=int,   default=(1<<30),    help='Builder workspace size')
     arg_parser.add_argument('--max_batch_size',     type=int,   default=1,          help='Builder batch size')
     args        = arg_parser.parse_args()
