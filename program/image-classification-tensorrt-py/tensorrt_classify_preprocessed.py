@@ -18,7 +18,8 @@ MODEL_PATH              = os.environ['CK_ENV_TENSORRT_MODEL_FILENAME']
 MODEL_DATA_LAYOUT       = os.getenv('ML_MODEL_DATA_LAYOUT', 'NCHW')
 LABELS_PATH             = os.environ['CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT']
 MODEL_COLOURS_BGR       = os.getenv('ML_MODEL_COLOUR_CHANNELS_BGR', 'NO') in ('YES', 'yes', 'ON', 'on', '1')
-MODEL_DATA_TYPE         = os.getenv('ML_MODEL_DATA_TYPE', 'float32')
+MODEL_INPUT_DATA_TYPE   = os.getenv('ML_MODEL_INPUT_DATA_TYPE', 'float32')
+MODEL_DATA_TYPE         = os.getenv('ML_MODEL_DATA_TYPE', '(unknown)')
 MODEL_SOFTMAX_LAYER     = os.getenv('CK_ENV_ONNX_MODEL_OUTPUT_LAYER_NAME', os.getenv('CK_ENV_TENSORFLOW_MODEL_OUTPUT_LAYER_NAME', ''))
 
 
@@ -75,11 +76,11 @@ def load_preprocessed_batch(image_list, image_index):
                 else:
                     img -= np.mean(img, axis=(0,1), keepdims=True)
 
-        if MODEL_DATA_TYPE == 'int8':
+        if MODEL_INPUT_DATA_TYPE == 'int8':
             img = np.clip(img, -128, 127)
 
         # Add img to batch
-        batch_data.append( [img.astype(MODEL_DATA_TYPE)] )
+        batch_data.append( [img.astype(MODEL_INPUT_DATA_TYPE)] )
         image_index += 1
 
     nhwc_data = np.concatenate(batch_data, axis=0)
@@ -181,7 +182,8 @@ def main():
     print('Model image height: {}'.format(MODEL_IMAGE_HEIGHT))
     print('Model image width: {}'.format(MODEL_IMAGE_WIDTH))
     print('Model image channels: {}'.format(MODEL_IMAGE_CHANNELS))
-    print('Model data type: {}'.format(MODEL_DATA_TYPE))
+    print('Model input data type: {}'.format(MODEL_INPUT_DATA_TYPE))
+    print('Model (internal) data type: {}'.format(MODEL_DATA_TYPE))
     print('Model BGR colours: {}'.format(MODEL_COLOURS_BGR))
     print('Model max_batch_size: {}'.format(max_batch_size))
     print('Model num_layers: {}'.format(num_layers))
@@ -207,7 +209,7 @@ def main():
           
             begin_time = time.time()
             batch_data, image_index = load_preprocessed_batch(image_list, image_index)
-            vectored_batch = np.array(batch_data).ravel().astype(MODEL_DATA_TYPE)
+            vectored_batch = np.array(batch_data).ravel().astype(MODEL_INPUT_DATA_TYPE)
 
             load_time = time.time() - begin_time
             total_load_time += load_time

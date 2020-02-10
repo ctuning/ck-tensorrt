@@ -7,7 +7,8 @@ Usage examples:
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=YES \
         --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=224 \
         --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=224 \
-        --ienv.ML_MODEL_DATA_TYPE=float32 \
+        --ienv.ML_MODEL_INPUT_DATA_TYPE=float32 \
+        --ienv.ML_MODEL_DATA_TYPE=fp32 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \
         --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
@@ -21,6 +22,7 @@ Usage examples:
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
         --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=224 \
         --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=224 \
+        --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \
@@ -36,6 +38,7 @@ Usage examples:
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
         --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=224 \
         --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=224 \
+        --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \

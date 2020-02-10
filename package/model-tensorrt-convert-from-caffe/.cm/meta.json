@@ -61,11 +61,13 @@
       "on_by_default": "yes",
       "extra_env": {
         "ML_MODEL_DATA_TYPE": "fp32"
+        "ML_MODEL_INPUT_DATA_TYPE": "float32"
       }
     },
     "fp16": {
       "extra_env": {
-        "ML_MODEL_DATA_TYPE": "fp16"
+        "ML_MODEL_DATA_TYPE": "fp16",
+        "ML_MODEL_INPUT_DATA_TYPE": "float32"
       }
     },
     "mobilenet": {
