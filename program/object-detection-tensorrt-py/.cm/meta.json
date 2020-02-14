@@ -1,0 +1,83 @@
+{
+  "backup_data_uid": "adedfdb48403db8a",
+  "build_compiler_vars": {},
+  "data_name": "object-detection-tensorrt-py",
+  "main_language": "python",
+  "no_compile": "yes",
+  "no_target_file": "yes",
+  "process_in_tmp": "yes",
+  "program": "yes",
+  "run_cmds": {
+    "default": {
+      "ignore_return_code": "no",
+      "run_time": {
+        "fine_grain_timer_file": "tmp-ck-timer.json",
+        "_post_process_via_ck": {
+          "data_uoa": "24c98b0cee248d93",
+          "module_uoa": "script",
+          "script_name": "iniless_postprocess"
+        },
+        "run_cmd_main": "$<<CK_ENV_COMPILER_PYTHON_FILE>>$ ../tensorrt_detect_preprocessed.py"
+      }
+    }
+  },
+  "run_deps": {
+    "tool-coco": {
+      "local": "yes",
+      "name": "Python API for COCO",
+      "sort": 10,
+      "tags": "tool,coco"
+    },
+    "images": {
+      "force_target_as_host": "yes",
+      "local": "yes",
+      "name": "ImageNet dataset (preprocessed subset)",
+      "sort": 20,
+      "tags": "dataset,preprocessed,object-detection"
+    },
+    "lib-python-numpy": {
+      "local": "yes",
+      "name": "Python NumPy library",
+      "sort": 40,
+      "tags": "lib,python-package,numpy"
+    },
+    "lib-python-matplotlib": {
+      "local": "yes",
+      "name": "Python Matplotlib library",
+      "sort": 45,
+      "tags": "lib,python-package,matplotlib"
+    },
+    "lib-python-pycuda": {
+      "local": "yes",
+      "name": "Python PyCUDA library",
+      "sort": 50,
+      "tags": "lib,python-package,pycuda"
+    },
+    "lib-python-tensorrt": {
+      "local": "yes",
+      "name": "Python TensorRT library",
+      "sort": 60,
+      "tags": "lib,python-package,tensorrt"
+    },
+    "weights": {
+      "local": "yes",
+      "name": "TensorRT model",
+      "sort": 30,
+      "tags": "tensorrt,model,object-detection"
+    }
+  },
+  "run_vars": {
+    "CK_BATCH_COUNT": 1,
+    "CK_BATCH_SIZE": 1,
+    "CK_RESULTS_DIR": "predictions",
+    "CK_SILENT_MODE": 0,
+    "CK_SKIP_IMAGES": 0
+  },
+  "tags": [
+    "object-detection",
+    "tensorrt",
+    "trt",
+    "standalone",
+    "lang-python"
+  ]
+}
