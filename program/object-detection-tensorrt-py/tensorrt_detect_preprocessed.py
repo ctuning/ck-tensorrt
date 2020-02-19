@@ -12,7 +12,6 @@ import pycuda.autoinit
 import pycuda.tools
 
 
-
 ## Model properties:
 #
 MODEL_PATH              = os.environ['CK_ENV_TENSORRT_MODEL_FILENAME']
@@ -56,13 +55,17 @@ IMAGE_DATA_TYPE         = os.getenv('CK_ENV_DATASET_OBJ_DETECTION_PREPROCESSED_D
 
 ## Writing the results out:
 #
-RESULTS_DIR             = os.getenv('CK_RESULTS_DIR')
+CUR_DIR = os.getcwd()
+DETECTIONS_OUT_DIR      = os.path.join(CUR_DIR, os.environ['CK_DETECTIONS_OUT_DIR'])
+ANNOTATIONS_OUT_DIR     = os.path.join(CUR_DIR, os.environ['CK_ANNOTATIONS_OUT_DIR'])
+RESULTS_OUT_DIR         = os.path.join(CUR_DIR, os.environ['CK_RESULTS_OUT_DIR'])
 FULL_REPORT             = os.getenv('CK_SILENT_MODE', '0') in ('NO', 'no', 'OFF', 'off', '0')
 
 ## Processing in batches:
 #
 BATCH_SIZE              = int(os.getenv('CK_BATCH_SIZE', 1))
 BATCH_COUNT             = int(os.getenv('CK_BATCH_COUNT', 1))
+SKIP_IMAGES             = int(os.getenv('CK_SKIP_IMAGES', 0))
 
 
 def load_preprocessed_batch(image_list, image_index):
@@ -124,18 +127,26 @@ def main():
     setup_time_begin = time.time()
 
     # Load preprocessed image filenames:
-    image_list      = []
-    original_w_h    = {}
     with open(IMAGE_LIST_FILE, 'r') as f:
-        for s in f:
-            file_name, width, height = s.strip().split(";")
-            image_list += [ file_name ]
-            original_w_h[file_name] = int(width), int(height)
+        image_list = [s.strip() for s in f]
+
+    # Trim the input list of preprocessed files:
+    image_list = image_list[SKIP_IMAGES: BATCH_COUNT * BATCH_SIZE + SKIP_IMAGES]
+
+    # Creating a local list of processed files and parsing it:
+    image_filenames = []
+    original_w_h    = []
+    with open(IMAGE_LIST_FILE_NAME, 'w') as f:
+        for line in image_list:
+            f.write('{}\n'.format(line))
+            file_name, width, height = line.split(";")
+            image_filenames.append( file_name )
+            original_w_h.append( (int(width), int(height)) )
 
     # Cleanup results directory
-    if os.path.isdir(RESULTS_DIR):
-        shutil.rmtree(RESULTS_DIR)
-    os.mkdir(RESULTS_DIR)
+    if os.path.isdir(DETECTIONS_OUT_DIR):
+        shutil.rmtree(DETECTIONS_OUT_DIR)
+    os.mkdir(DETECTIONS_OUT_DIR)
 
     # Load the TensorRT model from file
     default_context = pycuda.tools.make_default_context()
@@ -190,7 +201,7 @@ def main():
     print('Image list file: ' + IMAGE_LIST_FILE)
     print('Batch size: {}'.format(BATCH_SIZE))
     print('Batch count: {}'.format(BATCH_COUNT))
-    print('Results dir: ' + RESULTS_DIR);
+    print('Detections dir: ' + DETECTIONS_OUT_DIR);
     print('Normalize: {}'.format(MODEL_NORMALIZE_DATA))
     print('Subtract mean: {}'.format(SUBTRACT_MEAN))
     print('Per-channel means to subtract: {}'.format(GIVEN_CHANNEL_MEANS))
@@ -214,10 +225,10 @@ def main():
 
     # Run batched mode
     test_time_begin = time.time()
-    image_index = 0
     total_load_time = 0
-    total_classification_time = 0
-    first_classification_time = 0
+    next_batch_offset = 0
+    total_inference_time = 0
+    first_inference_time = 0
     images_loaded = 0
 
     with trt_engine.create_execution_context() as context:
@@ -225,74 +236,89 @@ def main():
             batch_number = batch_index+1
           
             begin_time = time.time()
-            batch_data, image_index = load_preprocessed_batch(image_list, image_index)
+            current_batch_offset = next_batch_offset
+            batch_data, next_batch_offset = load_preprocessed_batch(image_filenames, current_batch_offset)
             vectored_batch = np.array(batch_data).ravel().astype(MODEL_INPUT_DATA_TYPE)
-            print('BATCH_CONTENTS:')
-            print(vectored_batch[:100])
 
             load_time = time.time() - begin_time
             total_load_time += load_time
             images_loaded += BATCH_SIZE
 
-            # Classify image
+            # Inference begins here
             begin_time = time.time()
 
-            cuda.memcpy_htod_async(d_inputs[0], vectored_batch, cuda_stream)    # assuming one input layer for image classification
+            cuda.memcpy_htod_async(d_inputs[0], vectored_batch, cuda_stream)    # assuming one input layer for inference
             context.execute_async(bindings=model_bindings, batch_size=BATCH_SIZE, stream_handle=cuda_stream.handle)
             for output in h_d_outputs:
                 cuda.memcpy_dtoh_async(output['host_mem'], output['dev_mem'], cuda_stream)
 
             cuda_stream.synchronize()
 
-            classification_time = time.time() - begin_time
+            # Inference ends here
+            inference_time = time.time() - begin_time
 
             print("[batch {} of {}] loading={:.2f} ms, inference={:.2f} ms".format(
-                          batch_number, BATCH_COUNT, load_time*1000, classification_time*1000))
+                          batch_number, BATCH_COUNT, load_time*1000, inference_time*1000))
 
-            output_data = h_d_outputs[0]['host_mem']
-            batch_results = output_data.reshape(max_batch_size, 100*7+1)
+            batch_results = h_output.reshape(max_batch_size, 100*7+1)[:BATCH_SIZE]
 
-            total_classification_time += classification_time
-            # Remember first batch prediction time
+            total_inference_time += inference_time
+            # Remember inference_time for the first batch
             if batch_index == 0:
-                first_classification_time = classification_time
+                first_inference_time = inference_time
 
             # Process results
             for index_in_batch in range(BATCH_SIZE):
-                one_batch_result = batch_results[index_in_batch] # .view('int32')
-                num_boxes_f = one_batch_result[700]
-                num_boxes_i = one_batch_result[700].view('int32')
-                print("{}) Boxes: {} or {}".format(index_in_batch, num_boxes_f, num_boxes_i))
-                for i in range(700):
-                    #print("{:.5f} ".format(one_batch_result[column+row*7]), end='')
-                    print("{} ".format(one_batch_result[i]), end='')
-                print("")
+                single_image_predictions = batch_results[index_in_batch]
+                num_boxes = single_image_predictions[100*7].view('int32')
+                global_image_index = current_batch_offset + index_in_batch
+                width_orig, height_orig = original_w_h[global_image_index]
 
+                filename_orig = image_filenames[global_image_index]
+                detections_filename = os.path.splitext(filename_orig)[0] + '.txt'
+                detections_filepath = os.path.join(DETECTIONS_OUT_DIR, detections_filename)
+
+                with open(detections_filepath, 'w') as det_file:
+                    det_file.write('{:d} {:d}\n'.format(width_orig, height_orig))
+
+                    for row in range(num_boxes):
+                        (image_id, ymin, xmin, ymax, xmax, confidence, class_number) = single_image_predictions[row*7:(row+1)*7]
+                        image_id        = int(image_id)
+                        x1              = xmin * width_orig
+                        y1              = ymin * height_orig
+                        x2              = xmax * width_orig
+                        y2              = ymax * height_orig
+                        class_number    = int(class_number)
+                        class_label     = labels[class_number-1]
+                        det_file.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.3f} {} {}\n'.format(
+                                        x1, y1, x2, y2, confidence, class_number, class_label))
                 
     default_context.pop()
 
     test_time = time.time() - test_time_begin
  
     if BATCH_COUNT > 1:
-        avg_classification_time = (total_classification_time - first_classification_time) / (images_loaded - BATCH_SIZE)
+        avg_inference_time = (total_inference_time - first_inference_time) / (images_loaded - BATCH_SIZE)
     else:
-        avg_classification_time = total_classification_time / images_loaded
+        avg_inference_time = total_inference_time / images_loaded
 
     avg_load_time = total_load_time / images_loaded
 
     # Store benchmarking results:
     output_dict = {
-        'setup_time_s': setup_time,
-        'test_time_s': test_time,
-        'images_load_time_total_s': total_load_time,
-        'images_load_time_avg_s': avg_load_time,
-        'prediction_time_total_s': total_classification_time,
-        'prediction_time_avg_s': avg_classification_time,
+        'run_time_state': {
+            'setup_time_s': setup_time,
+            'test_time_s': test_time,
+            'images_load_time_total_s': total_load_time,
+            'images_load_time_avg_s': avg_load_time,
+            'prediction_time_total_s': total_inference_time,
+            'prediction_time_avg_s': avg_inference_time,
 
-        'avg_time_ms': avg_classification_time * 1000,
-        'avg_fps': 1.0 / avg_classification_time,
-        'batch_time_ms': avg_classification_time * 1000 * BATCH_SIZE,
-        'batch_size': BATCH_SIZE,
+            'avg_time_ms': avg_inference_time * 1000,
+            'avg_fps': 1.0 / avg_inference_time,
+            'batch_time_ms': avg_inference_time * 1000 * BATCH_SIZE,
+            'batch_size': BATCH_SIZE,
+        }
     }
     with open('tmp-ck-timer.json', 'w') as out_file:
         json.dump(output_dict, out_file, indent=4, sort_keys=True)
