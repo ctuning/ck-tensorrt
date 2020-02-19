@@ -36,7 +36,7 @@
       "sort": 10,
       "tags": "tool,coco"
     },
-    "images": {
+    "dataset": {
       "force_target_as_host": "yes",
       "local": "yes",
       "name": "ImageNet dataset (preprocessed subset)",
