@@ -47,3 +47,20 @@ Usage examples:
         --ienv.ML_MODEL_MAX_BATCH_SIZE=250
 ```
 
+```bash
+    ck detect soft:model.tensorrt --full_path=/full/path/to/ssd-mobilenet-MultiStream-b20-fp16.plan \
+        --extra_tags=maxbatch.20,fp16,ssd-mobilenet,object-detection,converted-by-nvidia \
+        --cus.version=ssd-mobilenet_nvidia_fp16 \
+        --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
+        --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=300 \
+        --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=300 \
+        --ienv.ML_MODEL_INPUT_DATA_TYPE=fp32 \
+        --ienv.ML_MODEL_DATA_TYPE=float16 \
+        --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
+        --ienv.ML_MODEL_NORMALIZE_DATA=YES \
+        --ienv.ML_MODEL_SUBTRACT_MEAN=NO \
+        --ienv.ML_MODEL_MAX_BATCH_SIZE=20 \
+        --ienv.ML_MODEL_CLASS_LABELS=/full/path/to/coco_class_labels.txt \
+        --ienv.ML_MODEL_TENSORRT_PLUGIN=/full/path/to/libnmsoptplugin.so
+```
+
