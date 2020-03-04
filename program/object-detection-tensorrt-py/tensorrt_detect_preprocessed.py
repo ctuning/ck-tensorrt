@@ -15,12 +15,13 @@ import pycuda.tools
 ## Model properties:
 #
 MODEL_PATH              = os.environ['CK_ENV_TENSORRT_MODEL_FILENAME']
-MODEL_PLUGIN_PATH       = os.getenv('CK_ENV_TENSORRT_MODEL_PLUGIN','')
+MODEL_PLUGIN_PATH       = os.getenv('ML_MODEL_TENSORRT_PLUGIN','')
 MODEL_DATA_LAYOUT       = os.getenv('ML_MODEL_DATA_LAYOUT', 'NCHW')
 LABELS_PATH             = os.environ['ML_MODEL_CLASS_LABELS']
 MODEL_COLOURS_BGR       = os.getenv('ML_MODEL_COLOUR_CHANNELS_BGR', 'NO') in ('YES', 'yes', 'ON', 'on', '1')
 MODEL_INPUT_DATA_TYPE   = os.getenv('ML_MODEL_INPUT_DATA_TYPE', 'float32')
 MODEL_DATA_TYPE         = os.getenv('ML_MODEL_DATA_TYPE', '(unknown)')
+MODEL_MAX_PREDICTIONS   = int(os.getenv('ML_MODEL_MAX_PREDICTIONS', 100))
 
 if MODEL_PLUGIN_PATH:
     import ctypes
@@ -260,7 +261,7 @@ def main():
             print("[batch {} of {}] loading={:.2f} ms, inference={:.2f} ms".format(
                           batch_number, BATCH_COUNT, load_time*1000, inference_time*1000))
 
-            batch_results = h_output.reshape(max_batch_size, 100*7+1)[:BATCH_SIZE]
+            batch_results = h_output.reshape(max_batch_size, MODEL_MAX_PREDICTIONS*7+1)[:BATCH_SIZE]
 
             total_inference_time += inference_time
             # Remember inference_time for the first batch
@@ -270,7 +271,7 @@ def main():
             # Process results
             for index_in_batch in range(BATCH_SIZE):
                 single_image_predictions = batch_results[index_in_batch]
-                num_boxes = single_image_predictions[100*7].view('int32')
+                num_boxes = single_image_predictions[MODEL_MAX_PREDICTIONS*7].view('int32')
                 global_image_index = current_batch_offset + index_in_batch
                 width_orig, height_orig = original_w_h[global_image_index]
 
