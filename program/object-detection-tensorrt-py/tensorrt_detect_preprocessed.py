@@ -12,6 +12,11 @@ import pycuda.autoinit
 import pycuda.tools
 
 
+## Post-detection filtering by confidence score:
+#
+SCORE_THRESHOLD = float(os.getenv('CK_DETECTION_THRESHOLD', 0.0))
+
+
 ## Model properties:
 #
 MODEL_PATH              = os.environ['CK_ENV_TENSORRT_MODEL_FILENAME']
@@ -233,6 +238,7 @@ def main():
     print('Model BGR colours: {}'.format(MODEL_COLOURS_BGR))
     print('Model max_batch_size: {}'.format(max_batch_size))
     print('Model num_layers: {}'.format(num_layers))
+    print('Post-detection confidence score threshold: {}'.format(SCORE_THRESHOLD))
     print("")
 
     if BATCH_SIZE>max_batch_size:
@@ -302,18 +308,19 @@ def main():
                     for row in range(num_boxes):
                         (image_id, ymin, xmin, ymax, xmax, confidence, class_number) = single_image_predictions[row*7:(row+1)*7]
 
-                        class_number    = int(class_number)
-                        if class_map:
-                            class_number = class_map[class_number]
+                        if confidence >= SCORE_THRESHOLD:
+                            class_number    = int(class_number)
+                            if class_map:
+                                class_number = class_map[class_number]
 
-                        image_id        = int(image_id)
-                        x1              = xmin * width_orig
-                        y1              = ymin * height_orig
-                        x2              = xmax * width_orig
-                        y2              = ymax * height_orig
-                        class_label     = labels[class_number - bg_class_offset]
-                        det_file.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.3f} {} {}\n'.format(
-                                        x1, y1, x2, y2, confidence, class_number, class_label))
+                            image_id        = int(image_id)
+                            x1              = xmin * width_orig
+                            y1              = ymin * height_orig
+                            x2              = xmax * width_orig
+                            y2              = ymax * height_orig
+                            class_label     = labels[class_number - bg_class_offset]
+                            det_file.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.3f} {} {}\n'.format(
+                                            x1, y1, x2, y2, confidence, class_number, class_label))
                 
     default_context.pop()
 

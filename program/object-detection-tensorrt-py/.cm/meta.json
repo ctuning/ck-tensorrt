@@ -77,6 +77,7 @@
   "run_vars": {
     "CK_ANNOTATIONS_OUT_DIR": "annotations",
     "CK_DETECTIONS_OUT_DIR": "detections",
+    "CK_DETECTION_THRESHOLD": 0.0,
     "CK_PREPROCESSED_OUT_DIR": "preprocessed",
     "CK_RESULTS_OUT_DIR": "results",
     "CK_BATCH_COUNT": 1,
