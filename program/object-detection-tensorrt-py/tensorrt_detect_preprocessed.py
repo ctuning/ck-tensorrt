@@ -52,12 +52,21 @@ VECTOR_DATA_TYPE        = np.float32
 ## Image normalization:
 #
 MODEL_NORMALIZE_DATA    = os.getenv('ML_MODEL_NORMALIZE_DATA') in ('YES', 'yes', 'ON', 'on', '1')
+MODEL_NORMALIZE_LOWER   = float(os.getenv('ML_MODEL_NORMALIZE_LOWER', -1.0))
+MODEL_NORMALIZE_UPPER   = float(os.getenv('ML_MODEL_NORMALIZE_UPPER',  1.0))
+
 SUBTRACT_MEAN           = os.getenv('ML_MODEL_SUBTRACT_MEAN', 'YES') in ('YES', 'yes', 'ON', 'on', '1')
 GIVEN_CHANNEL_MEANS     = os.getenv('ML_MODEL_GIVEN_CHANNEL_MEANS', '')
 if GIVEN_CHANNEL_MEANS:
     GIVEN_CHANNEL_MEANS = np.array(GIVEN_CHANNEL_MEANS.split(' '), dtype=VECTOR_DATA_TYPE)
     if MODEL_COLOURS_BGR:
         GIVEN_CHANNEL_MEANS = GIVEN_CHANNEL_MEANS[::-1]     # swapping Red and Blue colour channels
+
+GIVEN_CHANNEL_STDS      = os.getenv('ML_MODEL_GIVEN_CHANNEL_STDS', '')
+if GIVEN_CHANNEL_STDS:
+    GIVEN_CHANNEL_STDS = np.array(GIVEN_CHANNEL_STDS.split(' '), dtype=VECTOR_DATA_TYPE)
+    if MODEL_COLOURS_BGR:
+        GIVEN_CHANNEL_STDS  = GIVEN_CHANNEL_STDS[::-1]      # swapping Red and Blue colour channels
 
 ## Input image properties:
 #
@@ -96,7 +105,7 @@ def load_preprocessed_batch(image_list, image_index):
 
             # Normalize
             if MODEL_NORMALIZE_DATA:
-                img = img/127.5 - 1.0
+                img = img*(MODEL_NORMALIZE_UPPER-MODEL_NORMALIZE_LOWER)/255.0+MODEL_NORMALIZE_LOWER
 
             # Subtract mean value
             if SUBTRACT_MEAN:
@@ -104,6 +113,9 @@ def load_preprocessed_batch(image_list, image_index):
                     img -= GIVEN_CHANNEL_MEANS
                 else:
                     img -= np.mean(img, axis=(0,1), keepdims=True)
+
+            if len(GIVEN_CHANNEL_STDS):
+                img /= GIVEN_CHANNEL_STDS
 
         if MODEL_INPUT_DATA_TYPE == 'int8':
             img = np.clip(img, -128, 127)
