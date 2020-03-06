@@ -22,6 +22,13 @@ MODEL_COLOURS_BGR       = os.getenv('ML_MODEL_COLOUR_CHANNELS_BGR', 'NO') in ('Y
 MODEL_INPUT_DATA_TYPE   = os.getenv('ML_MODEL_INPUT_DATA_TYPE', 'float32')
 MODEL_DATA_TYPE         = os.getenv('ML_MODEL_DATA_TYPE', '(unknown)')
 MODEL_MAX_PREDICTIONS   = int(os.getenv('ML_MODEL_MAX_PREDICTIONS', 100))
+MODEL_SKIPPED_CLASSES   = os.getenv("ML_MODEL_SKIPS_ORIGINAL_DATASET_CLASSES", None)
+
+if (MODEL_SKIPPED_CLASSES):
+    SKIPPED_CLASSES = [int(x) for x in MODEL_SKIPPED_CLASSES.split(",")]
+else:
+    SKIPPED_CLASSES = None
+
 
 if MODEL_PLUGIN_PATH:
     import ctypes
@@ -71,6 +78,7 @@ SKIP_IMAGES             = int(os.getenv('CK_SKIP_IMAGES', 0))
 
 def load_preprocessed_batch(image_list, image_index):
     batch_data = []
+
     for _ in range(BATCH_SIZE):
         img_file = os.path.join(IMAGE_DIR, image_list[image_index])
         img = np.fromfile(img_file, np.dtype(IMAGE_DATA_TYPE))
@@ -192,6 +200,15 @@ def main():
     model_classes       = trt.volume(model_output_shape)
     labels              = load_labels(LABELS_PATH)
     num_layers          = trt_engine.num_layers
+    bg_class_offset     = 1
+
+    ## Workaround for SSD-Resnet34 model incorrectly trained on filtered labels
+    class_map = None
+    if (SKIPPED_CLASSES):
+        class_map = []
+        for i in range(len(labels) + bg_class_offset):
+            if i not in SKIPPED_CLASSES:
+                class_map.append(i)
 
     if MODEL_DATA_LAYOUT == 'NHWC':
         (MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH, MODEL_IMAGE_CHANNELS) = model_input_shape
@@ -284,13 +301,17 @@ def main():
 
                     for row in range(num_boxes):
                         (image_id, ymin, xmin, ymax, xmax, confidence, class_number) = single_image_predictions[row*7:(row+1)*7]
+
+                        class_number    = int(class_number)
+                        if class_map:
+                            class_number = class_map[class_number]
+
                         image_id        = int(image_id)
                         x1              = xmin * width_orig
                         y1              = ymin * height_orig
                         x2              = xmax * width_orig
                         y2              = ymax * height_orig
-                        class_number    = int(class_number)
-                        class_label     = labels[class_number-1]
+                        class_label     = labels[class_number - bg_class_offset]
                         det_file.write('{:.2f} {:.2f} {:.2f} {:.2f} {:.3f} {} {}\n'.format(
                                         x1, y1, x2, y2, confidence, class_number, class_label))
                 
