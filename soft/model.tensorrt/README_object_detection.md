@@ -6,8 +6,8 @@ Specific usage examples:
         --cus.version=ssd-mobilenet_nvidia_fp32 \
         --ienv.ML_MODEL_CLASS_LABELS=/datasets/tensorrt_plans_for_Xavier/flatlabels.txt \
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
-        --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=300 \
-        --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=300 \
+        --ienv.ML_MODEL_IMAGE_HEIGHT=300 \
+        --ienv.ML_MODEL_IMAGE_WIDTH=300 \
         --ienv.ML_MODEL_INPUT_DATA_TYPE=float32 \
         --ienv.ML_MODEL_DATA_TYPE=float32 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
@@ -23,8 +23,8 @@ Specific usage examples:
         --cus.version=ssd-mobilenet_nvidia_int8_linear \
         --ienv.ML_MODEL_CLASS_LABELS=/datasets/tensorrt_plans_for_Xavier/flatlabels.txt \
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
-        --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=300 \
-        --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=300 \
+        --ienv.ML_MODEL_IMAGE_HEIGHT=300 \
+        --ienv.ML_MODEL_IMAGE_WIDTH=300 \
         --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
@@ -41,8 +41,8 @@ Specific usage examples:
         --extra_tags=maxbatch.2,int8,ssd-resnet,object-detection,converted-by-nvidia \
         --cus.version=ssd-resnet_nvidia_int8 \
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
-        --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=1200 \
-        --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=1200 \
+        --ienv.ML_MODEL_IMAGE_HEIGHT=1200 \
+        --ienv.ML_MODEL_IMAGE_WIDTH=1200 \
         --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
@@ -61,8 +61,8 @@ Specific usage examples:
         --extra_tags=maxbatch.2,fp16,ssd-resnet,object-detection,converted-by-nvidia \
         --cus.version=ssd-resnet_nvidia_fp16 \
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
-        --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=1200 \
-        --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=1200 \
+        --ienv.ML_MODEL_IMAGE_HEIGHT=1200 \
+        --ienv.ML_MODEL_IMAGE_WIDTH=1200 \
         --ienv.ML_MODEL_INPUT_DATA_TYPE=float32 \
         --ienv.ML_MODEL_DATA_TYPE=float16 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
@@ -84,8 +84,8 @@ Specific usage examples:
         --extra_tags=maxbatch.2,fp32,ssd-resnet,object-detection,converted-by-nvidia \
         --cus.version=ssd-resnet_nvidia_fp32 \
         --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
-        --ienv.ML_MODEL_MODEL_IMAGE_HEIGHT=1200 \
-        --ienv.ML_MODEL_MODEL_IMAGE_WIDTH=1200 \
+        --ienv.ML_MODEL_IMAGE_HEIGHT=1200 \
+        --ienv.ML_MODEL_IMAGE_WIDTH=1200 \
         --ienv.ML_MODEL_INPUT_DATA_TYPE=float32 \
         --ienv.ML_MODEL_DATA_TYPE=float32 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
