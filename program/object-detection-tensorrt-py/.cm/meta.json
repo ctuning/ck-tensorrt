@@ -39,7 +39,7 @@
     "dataset": {
       "force_target_as_host": "yes",
       "local": "yes",
-      "name": "ImageNet dataset (preprocessed subset)",
+      "name": "Preprocessed subset of COCO dataset",
       "sort": 20,
       "tags": "dataset,preprocessed,object-detection"
     },
