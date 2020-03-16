@@ -143,6 +143,11 @@
         "ML_MODEL_MAX_BATCH_SIZE": "20"
       }
     },
+    "maxbatch.32": {
+      "extra_env": {
+        "ML_MODEL_MAX_BATCH_SIZE": "32"
+      }
+    },
     "fp16": {
       "extra_env": {
         "ML_MODEL_DATA_TYPE": "fp16",
