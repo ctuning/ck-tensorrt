@@ -1,0 +1,74 @@
+{
+  "check_exit_status": "yes",
+  "customize": {
+    "extra_dir": "",
+    "install_env": {
+        "ML_MODEL_INPUT_DATA_TYPE": "int8",
+        "ML_MODEL_DATA_TYPE": "int8",
+
+        "ML_MODEL_COLOUR_CHANNELS_BGR": "NO",
+        "ML_MODEL_DATA_LAYOUT": "NCHW",
+        "PACKAGE_SKIP_CLEAN_PACKAGE": "YES",
+        "PACKAGE_SKIP_LINUX_MAKE": "YES",
+        "PACKAGE_URL": "https://zenodo.org/record/3715067/files",
+        "PACKAGE_WGET": "YES"
+    },
+    "no_os_in_suggested_path": "yes",
+    "no_ver_in_suggested_path": "yes",
+    "skip_file_check": "no"
+  },
+  "end_full_path_universal": [
+    "resnet-MultiStream-gpu-b70-int8-linear.plan",
+    "mobilenet-MultiStream-gpu-b250-int8-linear.plan"
+  ],
+  "process_script": "install",
+  "soft_uoa": "ce8554cdf428aa14",
+  "suggested_path": "model-tensorrt-downloaded",
+  "tags": [
+    "int8",
+    "linear",
+
+    "mlperf",
+    "model",
+    "trt",
+    "tensorrt",
+    "converted-by.nvidia",
+    "for.xavier",
+    "nchw",
+    "rgb",
+    "downloaded"
+  ],
+  "use_scripts_from_another_entry": {
+    "data_uoa": "download-and-install-package",
+    "module_uoa": "script"
+  },
+  "variations": {
+    "resnet": {
+        "on_by_default": "yes",
+        "extra_env": {
+            "ML_MODEL_IMAGE_HEIGHT": 224,
+            "ML_MODEL_IMAGE_WIDTH": 224,
+            "ML_MODEL_MAX_BATCH_SIZE": 70,
+            "ML_MODEL_NORMALIZE_DATA": "NO",
+            "ML_MODEL_SUBTRACT_MEAN": "YES",
+            "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
+            "PACKAGE_NAME": "resnet-MultiStream-gpu-b70-int8-linear.plan",
+            "PACKAGE_VERSION": "0.5.resnet_b70_int8"
+        },
+        "extra_tags": [ "image-classification", "nchw", "resnet50", "maxbatch.70", "side.224" ]
+    },
+    "mobilenet": {
+        "extra_env": {
+            "ML_MODEL_IMAGE_HEIGHT": 224,
+            "ML_MODEL_IMAGE_WIDTH": 224,
+            "ML_MODEL_MAX_BATCH_SIZE": 250,
+            "ML_MODEL_NORMALIZE_DATA": "NO",
+            "ML_MODEL_SUBTRACT_MEAN": "YES",
+            "ML_MODEL_GIVEN_CHANNEL_MEANS": "128 128 128",
+            "PACKAGE_NAME": "mobilenet-MultiStream-gpu-b250-int8-linear.plan",
+            "PACKAGE_VERSION": "0.5.mobilenet_b250_int8"
+        },
+        "extra_tags": [ "image-classification", "nchw", "maxbatch.250", "side.224" ]
+    }
+  }
+}
