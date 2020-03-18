@@ -92,6 +92,9 @@ Preprocess all 5k coco-2017 images using-opencv for SSD-MobileNet:
 ```
 
 
+SSD-MobileNet
+-------------
+
 Detect SSD-MobileNet model for GPU:
 ```bash
     ck detect soft:model.tensorrt --full_path=/datasets/inference_results_v0.5/closed/NVIDIA/build/engines/Xavier/ssd-small/Offline/ssd-small-Offline-gpu-b128-int8.plan \
@@ -112,6 +115,7 @@ Detect SSD-MobileNet model for GPU:
         --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
 ```
 
+
 Standalone SSD-MobileNet without LoadGen:
 ```bash
     time ck run program:object-detection-tensorrt-py \
@@ -130,6 +134,35 @@ Standalone SSD-MobileNet with LoadGen:
         --env.CK_LOADGEN_MULTISTREAMNESS=100 --env.CK_BATCH_SIZE=100
 ```
 
+
+ZeroMQ SSD-MobileNet without LoadGen:
+```bash
+Worker$     ck run program:zpp-worker-tensorrt-py --env.CK_WORKER_OUTPUT_FORMAT=direct_return \
+            --dep_add_tags.weights=ssd-mobilenet,int8,linear
+
+Hub$    time ck run program:object-detection-zpp-hub-py \
+        --skip_print_timers --env.CK_SILENT_MODE \
+        --dep_add_tags.dataset=side.300 --dep_add_tags.weights=ssd-mobilenet,int8,linear \
+        --env.CK_BATCH_SIZE=125 --env.CK_BATCH_COUNT=40
+```
+
+
+ZeroMQ SSD-MobileNet with LoadGen:
+```bash
+Worker$     ck run program:zpp-worker-tensorrt-py --env.CK_WORKER_OUTPUT_FORMAT=direct_return \
+            --dep_add_tags.weights=ssd-mobilenet,int8,linear
+
+Hub$    time ck run program:object-detection-zpp-hub-loadgen-py \
+        --skip_print_timers --env.CK_SILENT_MODE \
+        --dep_add_tags.dataset=side.300 --dep_add_tags.weights=ssd-mobilenet,int8,linear \
+        --env.CK_LOADGEN_SCENARIO=MultiStream --env.CK_LOADGEN_MODE=AccuracyOnly \
+        --env.CK_LOADGEN_BUFFER_SIZE=500 --env.CK_LOADGEN_DATASET_SIZE=5000 \
+        --env.CK_LOADGEN_MULTISTREAMNESS=25 --env.CK_BATCH_SIZE=25
+```
+
+
+SSD-ResNet34
+------------
 
 Detect SSD-ResNet34 model for GPU:
 ```bash
@@ -174,3 +207,29 @@ Standalone SSD-ResNet34 with LoadGen:
         --env.CK_LOADGEN_BUFFER_SIZE=500 --env.CK_LOADGEN_DATASET_SIZE=5000 \
         --env.CK_BATCH_SIZE=2
 ```
+
+
+ZeroMQ SSD-ResNet34 without LoadGen:
+```bash
+Worker$     ck run program:zpp-worker-tensorrt-py --env.CK_WORKER_OUTPUT_FORMAT=direct_return \
+            --dep_add_tags.weights=ssd-resnet,int8,linear
+
+Hub$    time ck run program:object-detection-zpp-hub-py \
+        --skip_print_timers --env.CK_SILENT_MODE \
+        --dep_add_tags.dataset=side.1200 --dep_add_tags.weights=ssd-resnet,int8,linear \
+        --env.CK_BATCH_SIZE=2 --env.CK_BATCH_COUNT=2500
+```
+
+ZeroMQ SSD-ResNet34 with LoadGen:
+```bash
+Worker$     ck run program:zpp-worker-tensorrt-py --env.CK_WORKER_OUTPUT_FORMAT=direct_return \
+            --dep_add_tags.weights=ssd-resnet,int8,linear
+
+Hub$    time ck run program:object-detection-zpp-hub-loadgen-py \
+        --skip_print_timers --env.CK_SILENT_MODE \
+        --dep_add_tags.dataset=side.1200 --dep_add_tags.weights=ssd-resnet,int8,linear \
+        --env.CK_LOADGEN_SCENARIO=MultiStream --env.CK_LOADGEN_MODE=AccuracyOnly \
+        --env.CK_LOADGEN_BUFFER_SIZE=250 --env.CK_LOADGEN_DATASET_SIZE=5000 \
+        --env.CK_LOADGEN_MULTISTREAMNESS=2 --env.CK_BATCH_SIZE=2
+```
+
