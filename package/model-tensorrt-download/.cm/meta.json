@@ -10,7 +10,7 @@
         "ML_MODEL_DATA_LAYOUT": "NCHW",
         "PACKAGE_SKIP_CLEAN_PACKAGE": "YES",
         "PACKAGE_SKIP_LINUX_MAKE": "YES",
-        "PACKAGE_URL": "https://zenodo.org/record/3715067/files",
+        "PACKAGE_URL": "https://zenodo.org/record/3716059/files",
         "PACKAGE_WGET": "YES"
     },
     "no_os_in_suggested_path": "yes",
@@ -19,7 +19,8 @@
   },
   "end_full_path_universal": [
     "resnet-MultiStream-gpu-b70-int8-linear.plan",
-    "mobilenet-MultiStream-gpu-b250-int8-linear.plan"
+    "mobilenet-MultiStream-gpu-b250-int8-linear.plan",
+    "ssd-small-Offline-gpu-b128-int8-linear.plan"
   ],
   "process_script": "install",
   "soft_uoa": "ce8554cdf428aa14",
@@ -55,7 +56,7 @@
             "PACKAGE_NAME": "resnet-MultiStream-gpu-b70-int8-linear.plan",
             "PACKAGE_VERSION": "0.5.resnet_b70_int8"
         },
-        "extra_tags": [ "image-classification", "nchw", "resnet50", "maxbatch.70", "side.224" ]
+        "extra_tags": [ "image-classification", "resnet50", "maxbatch.70", "side.224" ]
     },
     "mobilenet": {
         "extra_env": {
@@ -68,7 +69,23 @@
             "PACKAGE_NAME": "mobilenet-MultiStream-gpu-b250-int8-linear.plan",
             "PACKAGE_VERSION": "0.5.mobilenet_b250_int8"
         },
-        "extra_tags": [ "image-classification", "nchw", "maxbatch.250", "side.224" ]
+        "extra_tags": [ "image-classification", "maxbatch.250", "side.224" ]
+    },
+    "ssd-mobilenet": {
+        "extra_env": {
+            "ML_MODEL_IMAGE_HEIGHT": 300,
+            "ML_MODEL_IMAGE_WIDTH": 300,
+            "ML_MODEL_MAX_BATCH_SIZE": 128,
+            "ML_MODEL_NORMALIZE_DATA": "NO",
+            "ML_MODEL_SUBTRACT_MEAN": "YES",
+            "ML_MODEL_GIVEN_CHANNEL_MEANS": "128 128 128",
+            "ML_MODEL_MAX_PREDICTIONS": 100,
+            "PACKAGE_COPY": "YES",
+            "FLATLABELS_FILE": "coco_flatlabels.txt",
+            "PACKAGE_NAME": "ssd-small-Offline-gpu-b128-int8-linear.plan",
+            "PACKAGE_VERSION": "0.5.ssd-mobilenet_b128_int8"
+        },
+        "extra_tags": [ "object-detection", "maxbatch.250", "side.300" ]
     }
   }
 }
