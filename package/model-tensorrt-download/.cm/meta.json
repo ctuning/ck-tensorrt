@@ -20,7 +20,8 @@
   "end_full_path_universal": [
     "resnet-MultiStream-gpu-b70-int8-linear.plan",
     "mobilenet-MultiStream-gpu-b250-int8-linear.plan",
-    "ssd-small-Offline-gpu-b128-int8-linear.plan"
+    "ssd-small-Offline-gpu-b128-int8-linear.plan",
+    "ssd-large-MultiStream-gpu-b2-int8-linear.plan"
   ],
   "process_script": "install",
   "soft_uoa": "ce8554cdf428aa14",
@@ -85,7 +86,24 @@
             "PACKAGE_NAME": "ssd-small-Offline-gpu-b128-int8-linear.plan",
             "PACKAGE_VERSION": "0.5.ssd-mobilenet_b128_int8"
         },
-        "extra_tags": [ "object-detection", "maxbatch.250", "side.300" ]
+        "extra_tags": [ "object-detection", "maxbatch.128", "side.300" ]
+    },
+    "ssd-resnet": {
+        "extra_env": {
+            "ML_MODEL_IMAGE_HEIGHT": 1200,
+            "ML_MODEL_IMAGE_WIDTH": 1200,
+            "ML_MODEL_MAX_BATCH_SIZE": 2,
+            "ML_MODEL_NORMALIZE_DATA": "NO",
+            "ML_MODEL_SUBTRACT_MEAN": "YES",
+            "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
+            "ML_MODEL_MAX_PREDICTIONS": 200,
+            "ML_MODEL_SKIPS_ORIGINAL_DATASET_CLASSES": "12,26,29,30,45,66,68,69,71,83",
+            "PACKAGE_COPY": "YES",
+            "FLATLABELS_FILE": "coco_flatlabels.txt",
+            "PACKAGE_NAME": "ssd-large-MultiStream-gpu-b2-int8-linear.plan",
+            "PACKAGE_VERSION": "0.5.ssd-resnet_b2_int8"
+        },
+        "extra_tags": [ "object-detection", "maxbatch.2", "side.1200" ]
     }
   }
 }
