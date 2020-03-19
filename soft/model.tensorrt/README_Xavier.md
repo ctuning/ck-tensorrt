@@ -120,7 +120,7 @@ Standalone SSD-MobileNet without LoadGen:
 ```bash
     time ck run program:object-detection-tensorrt-py \
         --skip_print_timers --env.CK_SILENT_MODE \
-        --dep_add_tags.weights=ssd-mobilenet --dep_add_tags.dataset=side.300 \
+        --dep_add_tags.weights=ssd-mobilenet,int8,linear --dep_add_tags.dataset=side.300 \
         --env.CK_BATCH_SIZE=100 --env.CK_BATCH_COUNT=50
 ```
 
@@ -128,7 +128,7 @@ Standalone SSD-MobileNet without LoadGen:
 Standalone SSD-MobileNet with LoadGen:
 ```bash
     time ck run program:object-detection-tensorrt-loadgen-py --skip_print_timers --env.CK_SILENT_MODE \
-        --dep_add_tags.weights=ssd-mobilenet,gpu --dep_add_tags.dataset=side.300 \
+        --dep_add_tags.weights=ssd-mobilenet,int8,linear --dep_add_tags.dataset=side.300 \
         --env.CK_LOADGEN_SCENARIO=MultiStream --env.CK_LOADGEN_MODE=AccuracyOnly \
         --env.CK_LOADGEN_BUFFER_SIZE=500 --env.CK_LOADGEN_DATASET_SIZE=5000 \
         --env.CK_LOADGEN_MULTISTREAMNESS=100 --env.CK_BATCH_SIZE=100
