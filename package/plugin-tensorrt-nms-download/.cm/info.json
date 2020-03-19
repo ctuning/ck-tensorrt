@@ -1,0 +1,15 @@
+{
+  "backup_data_uid": "162af6920fe54fd9",
+  "backup_module_uid": "1dc07ee0f4742028",
+  "backup_module_uoa": "package",
+  "control": {
+    "engine": "CK",
+    "iso_datetime": "2020-03-19T12:54:05.042443",
+    "version": [
+      "1",
+      "12",
+      "2"
+    ]
+  },
+  "data_name": "plugin-tensorrt-nms-download"
+}

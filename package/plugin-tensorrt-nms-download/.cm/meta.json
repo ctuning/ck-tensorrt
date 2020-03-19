@@ -1,0 +1,35 @@
+{
+  "check_exit_status": "yes",
+  "customize": {
+    "extra_dir": "",
+    "install_env": {
+      "PACKAGE_SKIP_CLEAN_PACKAGE": "YES",
+      "PACKAGE_SKIP_LINUX_MAKE": "YES",
+      "PACKAGE_URL": "https://zenodo.org/record/3716059/files",
+      "PACKAGE_NAME": "libnmsoptplugin.so",
+      "PACKAGE_WGET": "YES",
+      "PACKAGE_VERSION": "0.5.mlperf"
+    },
+    "no_os_in_suggested_path": "yes",
+    "no_ver_in_suggested_path": "yes",
+    "skip_file_check": "no",
+    "version": "0.5"
+  },
+  "end_full_path_universal": "libnmsoptplugin.so",
+  "process_script": "install",
+  "soft_uoa": "7929205eba0ebed0",
+  "suggested_path": "plugin-tensorrt-nms-downloaded",
+  "tags": [
+    "plugin",
+    "trt",
+    "tensorrt",
+    "nms",
+    "converted-by.nvidia",
+    "for.xavier",
+    "downloaded"
+  ],
+  "use_scripts_from_another_entry": {
+    "data_uoa": "download-and-install-package",
+    "module_uoa": "script"
+  }
+}
