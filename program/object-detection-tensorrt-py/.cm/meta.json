@@ -67,6 +67,12 @@
       "sort": 60,
       "tags": "lib,python-package,tensorrt"
     },
+    "plugin-nms": {
+      "local": "yes",
+      "name": "TensorRT NMS plugin",
+      "sort": 35,
+      "tags": "tensorrt,plugin,nms"
+    },
     "weights": {
       "local": "yes",
       "name": "TensorRT model",
