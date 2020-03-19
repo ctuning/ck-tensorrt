@@ -13,7 +13,7 @@ Detect preprocessed ImageNet:
 ```
 
 
-Detect ResNet model for GPU:
+(If generated on this machine:) Detect ResNet50 model for GPU:
 ```bash
     ck detect soft:model.tensorrt --full_path=/datasets/inference_results_v0.5/closed/NVIDIA/build/engines/Xavier/resnet/MultiStream/resnet-MultiStream-gpu-b70-int8.plan \
         --extra_tags=int8,linear,gpu,maxbatch.70,resnet,resnet50,image-classification,converted-by-nvidia \
@@ -30,8 +30,13 @@ Detect ResNet model for GPU:
         --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="123.68 116.78 103.94"
 ```
 
+(Otherwise:) Install ResNet50 model:
+```bash
+    ck install package --tags=downloaded,tensorrt,model,resnet
+```
 
-Detect MobileNet model for GPU:
+
+(If generated on this machine:) Detect MobileNet model for GPU:
 ```bash
     ck detect soft:model.tensorrt --full_path=/datasets/inference_results_v0.5/closed/NVIDIA/build/engines/Xavier/mobilenet/MultiStream/mobilenet-MultiStream-gpu-b250-int8.plan \
         --extra_tags=maxbatch.250,int8,linear,mobilenet,gpu,image-classification,converted-by-nvidia \
@@ -47,6 +52,12 @@ Detect MobileNet model for GPU:
         --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
         --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
 ```
+
+(Otherwise:) Install MobileNet model:
+```bash
+    ck install package --tags=downloaded,tensorrt,model,mobilenet
+```
+
 
 Standalone MobileNet without Loadgen:
 ```bash
@@ -95,7 +106,7 @@ Preprocess all 5k coco-2017 images using-opencv for SSD-MobileNet:
 SSD-MobileNet
 -------------
 
-Detect SSD-MobileNet model for GPU:
+(If generated on this machine:) Detect SSD-MobileNet model for GPU:
 ```bash
     ck detect soft:model.tensorrt --full_path=/datasets/inference_results_v0.5/closed/NVIDIA/build/engines/Xavier/ssd-small/Offline/ssd-small-Offline-gpu-b128-int8.plan \
         --extra_tags=maxbatch.128,int8,linear,ssd-mobilenet,gpu,object-detection,converted-by-nvidia,side.300 \
@@ -113,6 +124,11 @@ Detect SSD-MobileNet model for GPU:
         --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
         --ienv.ML_MODEL_MAX_PREDICTIONS=100 \
         --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
+```
+
+(Otherwise:) Install SSD-MobileNet model:
+```bash
+    ck install package --tags=downloaded,tensorrt,model,ssd-mobilenet
 ```
 
 
@@ -164,7 +180,7 @@ Hub$    time ck run program:object-detection-zpp-hub-loadgen-py \
 SSD-ResNet34
 ------------
 
-Detect SSD-ResNet34 model for GPU:
+(If generated on this machine:) Detect SSD-ResNet34 model for GPU:
 ```bash
     ck detect soft:model.tensorrt --full_path=/datasets/inference_results_v0.5/closed/NVIDIA/build/engines/Xavier/ssd-large/MultiStream/ssd-large-MultiStream-gpu-b2-int8.plan \
         --extra_tags=maxbatch.2,int8,linear,gpu,ssd-resnet,object-detection,converted-by-nvidia,side.1200 \
@@ -184,6 +200,12 @@ Detect SSD-ResNet34 model for GPU:
         --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="123.68 116.78 103.94" \
         --ienv.ML_MODEL_MAX_PREDICTIONS=200
 ```
+
+(Otherwise:) Install SSD-ResNet34 model:
+```bash
+    ck install package --tags=downloaded,tensorrt,model,ssd-resnet
+```
+
 
 Preprocess all 5k coco-2017 images using-opencv for SSD-ResNet34:
 ```bash
