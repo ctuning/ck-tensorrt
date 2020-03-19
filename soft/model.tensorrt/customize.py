@@ -62,6 +62,15 @@ def setup(i):
     env[env_prefix + '_ROOT'] = install_root
     env[env_prefix + '_FILENAME'] = full_path
 
+    # This group should end with _FILE prefix e.g. FLATLABELS_FILE
+    # This suffix will be cut off and prefixed by cus['env_prefix']
+    # so we'll get vars like CK_ENV_TENSORRT_MODEL_FLATLABELS_FILE
+    for varname in install_env.keys():
+        if varname.endswith('_FILE'):
+            file_path = os.path.join(install_root, install_env[varname])
+            if os.path.exists(file_path):
+                env[env_prefix + '_' + varname] = file_path
+
     # Just copy those without any change in the name:
     #
     for varname in install_env.keys():
