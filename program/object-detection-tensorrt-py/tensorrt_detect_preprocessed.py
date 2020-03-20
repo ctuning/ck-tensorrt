@@ -125,13 +125,17 @@ def load_preprocessed_batch(image_list, image_index):
         image_index += 1
 
     nhwc_data = np.concatenate(batch_data, axis=0)
+    #print('NHWC shape: {}'.format(nhwc_data.shape))
 
     if MODEL_DATA_LAYOUT == 'NHWC':
-        #print(nhwc_data.shape)
         return nhwc_data, image_index
-    else:
+    elif MODEL_DATA_LAYOUT == 'CHW4':
+        chw4_data = np.pad(nhwc_data, ((0,0), (0,0), (0,0), (0,1)), 'constant')
+        #print('CHW4 shape: {}'.format(chw4_data.shape))
+        return chw4_data, image_index
+    elif MODEL_DATA_LAYOUT == 'NCHW':
         nchw_data = nhwc_data.transpose(0,3,1,2)
-        #print(nchw_data.shape)
+        #print('NCHW shape: {}'.format(nchw_data.shape))
         return nchw_data, image_index
 
 
@@ -194,6 +198,10 @@ def main():
     for interface_layer in trt_engine:
         dtype   = trt_engine.get_binding_dtype(interface_layer)
         shape   = trt_engine.get_binding_shape(interface_layer)
+        fmt     = trt_engine.get_binding_format(trt_engine.get_binding_index(interface_layer))
+
+        if fmt == trt.TensorFormat.CHW4:
+            shape[-3] = ((shape[-3] - 1) // 4 + 1) * 4
         size    = trt.volume(shape) * max_batch_size
 
         dev_mem = cuda.mem_alloc(size * dtype.itemsize)
