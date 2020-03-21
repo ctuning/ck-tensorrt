@@ -62,6 +62,7 @@ Detect preprocessed ImageNet:
         --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_LAYOUT=CHW4 \
+        --ienv.ML_MODEL_USE_DLA=NO \
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \
         --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
         --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
@@ -76,6 +77,7 @@ Detect preprocessed ImageNet:
         --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_LAYOUT=CHW4 \
+        --ienv.ML_MODEL_USE_DLA=YES \
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \
         --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
         --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
