@@ -51,6 +51,34 @@ Detect preprocessed ImageNet:
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \
         --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
         --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
+
+    ck detect soft:model.tensorrt --full_path=/datasets/xavier-original-zenodo/mobilenet-Offline-gpu-b512-int8-chw4.plan \
+        --extra_tags=maxbatch.512,int8,chw4,mobilenet,gpu,image-classification,converted-by-nvidia \
+        --cus.version=mobilenet_gpu_b512_int8_chw4 \
+        --ienv.ML_MODEL_MAX_BATCH_SIZE=512 \
+        --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
+        --ienv.ML_MODEL_IMAGE_HEIGHT=224 \
+        --ienv.ML_MODEL_IMAGE_WIDTH=224 \
+        --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
+        --ienv.ML_MODEL_DATA_TYPE=int8 \
+        --ienv.ML_MODEL_DATA_LAYOUT=CHW4 \
+        --ienv.ML_MODEL_NORMALIZE_DATA=NO \
+        --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
+        --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
+
+    ck detect soft:model.tensorrt --full_path=/datasets/xavier-original-zenodo/mobilenet-Offline-dla-b32-int8-chw4.plan \
+        --extra_tags=maxbatch.32,int8,chw4,mobilenet,dla,image-classification,converted-by-nvidia \
+        --cus.version=mobilenet_dla_b32_int8_chw4 \
+        --ienv.ML_MODEL_MAX_BATCH_SIZE=32 \
+        --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
+        --ienv.ML_MODEL_IMAGE_HEIGHT=224 \
+        --ienv.ML_MODEL_IMAGE_WIDTH=224 \
+        --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
+        --ienv.ML_MODEL_DATA_TYPE=int8 \
+        --ienv.ML_MODEL_DATA_LAYOUT=CHW4 \
+        --ienv.ML_MODEL_NORMALIZE_DATA=NO \
+        --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
+        --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
 ```
 
 (Otherwise:) Install MobileNet model:
