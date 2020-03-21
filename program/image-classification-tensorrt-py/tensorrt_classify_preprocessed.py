@@ -20,6 +20,7 @@ LABELS_PATH             = os.environ['CK_CAFFE_IMAGENET_SYNSET_WORDS_TXT']
 MODEL_COLOURS_BGR       = os.getenv('ML_MODEL_COLOUR_CHANNELS_BGR', 'NO') in ('YES', 'yes', 'ON', 'on', '1')
 MODEL_INPUT_DATA_TYPE   = os.getenv('ML_MODEL_INPUT_DATA_TYPE', 'float32')
 MODEL_DATA_TYPE         = os.getenv('ML_MODEL_DATA_TYPE', '(unknown)')
+MODEL_USE_DLA           = os.getenv('ML_MODEL_USE_DLA', 'NO') in ('YES', 'yes', 'ON', 'on', '1')
 MODEL_SOFTMAX_LAYER     = os.getenv('CK_ENV_ONNX_MODEL_OUTPUT_LAYER_NAME', os.getenv('CK_ENV_TENSORFLOW_MODEL_OUTPUT_LAYER_NAME', ''))
 
 
@@ -90,7 +91,8 @@ def load_preprocessed_batch(image_list, image_index):
     if MODEL_DATA_LAYOUT == 'NHWC':
         return nhwc_data, image_index
     elif MODEL_DATA_LAYOUT == 'CHW4':
-        chw4_data = np.pad(nhwc_data, ((0,0), (0,0), (0,0), (0,1)), 'constant')
+        dla_batch_padding = max_batch_size-len(batch_data) if MODEL_USE_DLA else 0
+        chw4_data = np.pad(nhwc_data, ((0,dla_batch_padding), (0,0), (0,0), (0,1)), 'constant')
         #print('CHW4 shape: {}'.format(chw4_data.shape))
         return chw4_data, image_index
     elif MODEL_DATA_LAYOUT == 'NCHW':
@@ -113,6 +115,7 @@ def main():
     global MODEL_DATA_LAYOUT
     global MODEL_IMAGE_HEIGHT
     global MODEL_IMAGE_WIDTH
+    global max_batch_size
 
     setup_time_begin = time.time()
 
@@ -146,7 +149,7 @@ def main():
         shape   = trt_engine.get_binding_shape(interface_layer)
         fmt     = trt_engine.get_binding_format(trt_engine.get_binding_index(interface_layer))
 
-        if fmt == trt.TensorFormat.CHW4:
+        if trt_engine.binding_is_input(interface_layer) and fmt == trt.TensorFormat.CHW4:
             shape[-3] = ((shape[-3] - 1) // 4 + 1) * 4
         size    = trt.volume(shape) * max_batch_size
 
@@ -218,6 +221,8 @@ def main():
           
             begin_time = time.time()
             batch_data, image_index = load_preprocessed_batch(image_list, image_index)
+            cuda_batch_size = batch_data.shape[0]
+
             vectored_batch = np.array(batch_data).ravel().astype(MODEL_INPUT_DATA_TYPE)
 
             load_time = time.time() - begin_time
@@ -228,7 +233,7 @@ def main():
             begin_time = time.time()
 
             cuda.memcpy_htod_async(d_inputs[0], vectored_batch, cuda_stream)    # assuming one input layer for image classification
-            context.execute_async(bindings=model_bindings, batch_size=BATCH_SIZE, stream_handle=cuda_stream.handle)
+            context.execute_async(bindings=model_bindings, batch_size=cuda_batch_size, stream_handle=cuda_stream.handle)
             for output in h_d_outputs:
                 cuda.memcpy_dtoh_async(output['host_mem'], output['dev_mem'], cuda_stream)
 
