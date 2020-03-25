@@ -136,7 +136,8 @@ def main():
         with open(MODEL_PATH, "rb") as f, trt.Runtime(TRT_LOGGER) as runtime:
             serialized_engine = f.read()
             trt_engine = runtime.deserialize_cuda_engine(serialized_engine)
-            print('[TRT] successfully loaded')
+            trt_version = [ int(v) for v in trt.__version__.split('.') ]
+            print('[TensorRT v{}.{}] successfully loaded'.format(trt_version[0], trt_version[1]))
     except:
         default_context.pop()
         raise RuntimeError('TensorRT model file {} is not found or corrupted'.format(MODEL_PATH))
@@ -147,9 +148,9 @@ def main():
     for interface_layer in trt_engine:
         dtype   = trt_engine.get_binding_dtype(interface_layer)
         shape   = trt_engine.get_binding_shape(interface_layer)
-        fmt     = trt_engine.get_binding_format(trt_engine.get_binding_index(interface_layer))
+        fmt     = trt_engine.get_binding_format(trt_engine.get_binding_index(interface_layer)) if trt_version[0] >= 6 else None
 
-        if trt_engine.binding_is_input(interface_layer) and fmt == trt.TensorFormat.CHW4:
+        if fmt and fmt == trt.TensorFormat.CHW4 and trt_engine.binding_is_input(interface_layer):
             shape[-3] = ((shape[-3] - 1) // 4 + 1) * 4
         size    = trt.volume(shape) * max_batch_size
 
