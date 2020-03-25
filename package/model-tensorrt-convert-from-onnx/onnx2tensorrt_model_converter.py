@@ -18,14 +18,13 @@ def convert_onnx_model_to_trt(onnx_model_filename, trt_model_filename,
     TRT_LOGGER = trt.Logger(trt.Logger.WARNING)
 
     TRT_VERSION_MAJOR = int(trt.__version__.split('.')[0])
-    flag = 1 << int(trt.NetworkDefinitionCreationFlag.EXPLICIT_PRECISION)
-    if TRT_VERSION_MAJOR >= 7:
-        flag |= 1 << int(trt.NetworkDefinitionCreationFlag.EXPLICIT_BATCH)
+    flag = (1 << int(trt.NetworkDefinitionCreationFlag.EXPLICIT_PRECISION)) | (1 << int(trt.NetworkDefinitionCreationFlag.EXPLICIT_BATCH)) if TRT_VERSION_MAJOR >= 7 else 0
 
     with trt.Builder(TRT_LOGGER) as builder, builder.create_network(flag) as network, trt.OnnxParser(network, TRT_LOGGER) as parser:
 
         if (output_data_type=='fp32'):
             print('Converting into fp32 (default), max_batch_size={}'.format(max_batch_size))
+            builder.fp16_mode = False
         else:
             if not builder.platform_has_fast_fp16:
                 print('Warning: This platform is not optimized for fast fp16 mode')
