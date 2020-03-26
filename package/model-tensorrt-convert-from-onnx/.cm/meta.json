@@ -11,6 +11,12 @@
     "skip_file_check": "yes"
   },
   "deps": {
+    "cuda": {
+      "local": "yes",
+      "name": "CUDA runtime",
+      "sort": 10,
+      "tags": "compiler,cuda"
+    },
     "lib-python-tensorrt": {
       "local": "yes",
       "name": "Python TensorRT library",
