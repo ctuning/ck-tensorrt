@@ -1,0 +1,65 @@
+{
+  "check_exit_status": "yes", 
+  "customize": {
+    "extra_dir": "", 
+    "install_env": {
+      "ML_MODEL_COLOUR_CHANNELS_BGR": "NO", 
+      "ML_MODEL_DATA_LAYOUT": "NCHW", 
+      "ML_MODEL_DATA_TYPE": "int8", 
+      "ML_MODEL_INPUT_DATA_TYPE": "int8", 
+      "PACKAGE_SKIP_CLEAN_PACKAGE": "YES", 
+      "PACKAGE_SKIP_LINUX_MAKE": "YES", 
+      "PACKAGE_URL": "https://www.dropbox.com/s/f3v6mxi721b5lti/",
+      "PACKAGE_WGET": "YES"
+    }, 
+    "no_os_in_suggested_path": "yes", 
+    "no_ver_in_suggested_path": "yes", 
+    "skip_file_check": "no"
+  }, 
+  "end_full_path_universal": [
+    "resnet-MultiStream-dla-b15-int8.plan"
+  ], 
+  "process_script": "install", 
+  "soft_uoa": "ce8554cdf428aa14", 
+  "suggested_path": "model-tensorrt-downloaded-for.gtx1080", 
+  "tags": [
+    "image-classification",
+    "int8", 
+    "linear", 
+    "mlperf", 
+    "model", 
+    "trt", 
+    "tensorrt", 
+    "tensorrt.6", 
+    "converted-by.nvidia", 
+    "for.gtx1080", 
+    "nchw", 
+    "rgb", 
+    "downloaded"
+  ], 
+  "use_scripts_from_another_entry": {
+    "data_uoa": "download-and-install-package", 
+    "module_uoa": "script"
+  }, 
+  "variations": {
+    "resnet": {
+      "extra_env": {
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94", 
+        "ML_MODEL_IMAGE_HEIGHT": 224, 
+        "ML_MODEL_IMAGE_WIDTH": 224, 
+        "ML_MODEL_MAX_BATCH_SIZE": 15, 
+        "ML_MODEL_NORMALIZE_DATA": "NO", 
+        "ML_MODEL_SUBTRACT_MEAN": "YES", 
+        "PACKAGE_NAME": "resnet-MultiStream-dla-b15-int8.plan", 
+        "PACKAGE_VERSION": "0.5.resnet_b15_int8"
+      }, 
+      "extra_tags": [
+        "image-classification", 
+        "resnet50", 
+        "maxbatch.15", 
+        "side.224"
+      ], 
+      "on_by_default": "yes"
+    }
+  }
+}
