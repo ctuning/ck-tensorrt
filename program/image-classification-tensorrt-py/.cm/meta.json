@@ -36,6 +36,12 @@
       "sort": 20, 
       "tags": "dataset,imagenet,preprocessed"
     }, 
+    "imagenet-helper": {
+      "local": "yes",
+      "name": "Python ImageNet helper functions and metadata",
+      "sort": 35,
+      "tags": "lib,python-package,imagenet-helper"
+    },
     "lib-python-numpy": {
       "local": "yes", 
       "name": "Python NumPy library", 
