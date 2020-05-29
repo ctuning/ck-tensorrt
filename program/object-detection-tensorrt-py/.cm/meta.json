@@ -43,6 +43,12 @@
       "sort": 20,
       "tags": "dataset,preprocessed,object-detection"
     },
+    "coco-helper": {
+      "local": "yes",
+      "name": "Python COCO helper functions and metadata",
+      "sort": 35,
+      "tags": "lib,python-package,coco-helper"
+    },
     "lib-python-numpy": {
       "local": "yes",
       "name": "Python NumPy library",
