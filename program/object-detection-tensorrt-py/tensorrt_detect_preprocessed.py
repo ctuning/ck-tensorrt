@@ -107,9 +107,9 @@ def main():
         print("[batch {} of {}] loading={:.2f} ms, inference={:.2f} ms".format(
                       batch_number, BATCH_COUNT, load_time*1000, inference_time_s*1000))
 
-        print("OLD SHAPE={}".format(np.shape(trimmed_batch_results)))
-        batch_results = np.reshape(trimmed_batch_results, (BATCH_SIZE, MODEL_MAX_PREDICTIONS*7+1))
-        print("NEW SHAPE={}".format(np.shape(batch_results)))
+#        print("OLD SHAPE={}".format(np.shape(trimmed_batch_results)))
+#        batch_results = np.reshape(trimmed_batch_results, (BATCH_SIZE, MODEL_MAX_PREDICTIONS*7+1))
+#        print("NEW SHAPE={}".format(np.shape(batch_results)))
 
         total_inference_time += inference_time_s
         # Remember inference_time for the first batch
@@ -118,7 +118,7 @@ def main():
 
         # Process results
         for index_in_batch in range(BATCH_SIZE):
-            single_image_predictions = batch_results[index_in_batch]
+            single_image_predictions = trimmed_batch_results[index_in_batch]
             num_boxes = single_image_predictions[MODEL_MAX_PREDICTIONS*7].view('int32')
             global_image_index = current_batch_offset + index_in_batch
             width_orig, height_orig = original_w_h[global_image_index]
