@@ -69,6 +69,7 @@ def main():
     print('Per-channel means to subtract: {}'.format(GIVEN_CHANNEL_MEANS))
 
     print("Data layout: {}".format(MODEL_DATA_LAYOUT) )
+    print("DLA mode used: {}".format(MODEL_USE_DLA) )
     print('Model image height: {}'.format(MODEL_IMAGE_HEIGHT))
     print('Model image width: {}'.format(MODEL_IMAGE_WIDTH))
     print('Model image channels: {}'.format(MODEL_IMAGE_CHANNELS))
