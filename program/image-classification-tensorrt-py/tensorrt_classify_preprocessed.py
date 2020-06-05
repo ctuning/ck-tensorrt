@@ -8,12 +8,10 @@ import numpy as np
 
 from imagenet_helper import (load_preprocessed_batch, image_list, class_labels,
     MODEL_DATA_LAYOUT, MODEL_COLOURS_BGR, MODEL_INPUT_DATA_TYPE, MODEL_DATA_TYPE, MODEL_USE_DLA,
+    MODEL_IMAGE_WIDTH, MODEL_IMAGE_HEIGHT, MODEL_IMAGE_CHANNELS,
     IMAGE_DIR, IMAGE_LIST_FILE, MODEL_NORMALIZE_DATA, SUBTRACT_MEAN, GIVEN_CHANNEL_MEANS, BATCH_SIZE)
 
-import tensorrt as trt
-import pycuda.driver as cuda
-import pycuda.autoinit
-import pycuda.tools
+from tensorrt_helper import (initialize_predictor, inference_for_given_batch)
 
 
 ## Model properties:
@@ -33,13 +31,6 @@ BATCH_COUNT             = int(os.getenv('CK_BATCH_COUNT', 1))
 
 
 def main():
-    global BATCH_SIZE
-    global BATCH_COUNT
-    global MODEL_DATA_LAYOUT
-    global MODEL_IMAGE_HEIGHT
-    global MODEL_IMAGE_WIDTH
-    global max_batch_size
-
     setup_time_begin = time.time()
 
     # Cleanup results directory
@@ -47,58 +38,7 @@ def main():
         shutil.rmtree(RESULTS_DIR)
     os.mkdir(RESULTS_DIR)
 
-    # Load the TensorRT model from file
-    default_context = pycuda.tools.make_default_context()
-
-    TRT_LOGGER = trt.Logger(trt.Logger.WARNING)
-    try:
-        with open(MODEL_PATH, "rb") as f, trt.Runtime(TRT_LOGGER) as runtime:
-            serialized_engine = f.read()
-            trt_engine = runtime.deserialize_cuda_engine(serialized_engine)
-            trt_version = [ int(v) for v in trt.__version__.split('.') ]
-            print('[TensorRT v{}.{}] successfully loaded'.format(trt_version[0], trt_version[1]))
-    except:
-        default_context.pop()
-        raise RuntimeError('TensorRT model file {} is not found or corrupted'.format(MODEL_PATH))
-
-    max_batch_size      = trt_engine.max_batch_size
-
-    d_inputs, h_d_outputs, model_bindings = [], [], []
-    for interface_layer in trt_engine:
-        dtype   = trt_engine.get_binding_dtype(interface_layer)
-        shape   = trt_engine.get_binding_shape(interface_layer)
-        fmt     = trt_engine.get_binding_format(trt_engine.get_binding_index(interface_layer)) if trt_version[0] >= 6 else None
-
-        if fmt and fmt == trt.TensorFormat.CHW4 and trt_engine.binding_is_input(interface_layer):
-            shape[-3] = ((shape[-3] - 1) // 4 + 1) * 4
-        size    = trt.volume(shape) * max_batch_size
-
-        dev_mem = cuda.mem_alloc(size * dtype.itemsize)
-        model_bindings.append( int(dev_mem) )
-
-        if trt_engine.binding_is_input(interface_layer):
-            interface_type = 'Input'
-            d_inputs.append(dev_mem)
-            model_input_shape   = shape
-        else:
-            interface_type = 'Output'
-            host_mem    = cuda.pagelocked_empty(size, trt.nptype(dtype))
-            h_d_outputs.append({ 'host_mem': host_mem, 'dev_mem': dev_mem })
-            if MODEL_SOFTMAX_LAYER=='' or interface_layer == MODEL_SOFTMAX_LAYER:
-                model_output_shape  = shape
-                h_output            = host_mem
-
-        print("{} layer {}: dtype={}, shape={}, elements_per_max_batch={}".format(interface_type, interface_layer, dtype, shape, size))
-
-    cuda_stream         = cuda.Stream()
-
-    model_classes       = trt.volume(model_output_shape)
-    num_layers          = trt_engine.num_layers
-
-    if MODEL_DATA_LAYOUT == 'NHWC':
-        (MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH, MODEL_IMAGE_CHANNELS) = model_input_shape
-    else:
-        (MODEL_IMAGE_CHANNELS, MODEL_IMAGE_HEIGHT, MODEL_IMAGE_WIDTH) = model_input_shape
+    pycuda_context, max_batch_size, model_classes, num_layers = initialize_predictor()
 
     print('Images dir: ' + IMAGE_DIR)
     print('Image list file: ' + IMAGE_LIST_FILE)
@@ -117,12 +57,10 @@ def main():
     print('Model (internal) data type: {}'.format(MODEL_DATA_TYPE))
     print('Model BGR colours: {}'.format(MODEL_COLOURS_BGR))
     print('Model max_batch_size: {}'.format(max_batch_size))
+    print('Model classes: {}'.format(model_classes))
     print('Model num_layers: {}'.format(num_layers))
     print("")
 
-    if BATCH_SIZE>max_batch_size:
-        default_context.pop()
-        raise RuntimeError("Desired batch_size ({}) exceeds max_batch_size of the model ({})".format(BATCH_SIZE,max_batch_size))
 
     setup_time = time.time() - setup_time_begin
 
@@ -134,57 +72,41 @@ def main():
     first_classification_time = 0
     images_loaded = 0
 
-    with trt_engine.create_execution_context() as context:
-        for batch_index in range(BATCH_COUNT):
-            batch_number = batch_index+1
-          
-            begin_time = time.time()
-            batch_data, image_index = load_preprocessed_batch(image_list, image_index)
-            cuda_batch_size = batch_data.shape[0]
+    for batch_index in range(BATCH_COUNT):
+        batch_number = batch_index+1
 
-            vectored_batch = np.array(batch_data).ravel().astype(MODEL_INPUT_DATA_TYPE)
+        begin_time = time.time()
+        batch_data, image_index = load_preprocessed_batch(image_list, image_index)
 
-            load_time = time.time() - begin_time
-            total_load_time += load_time
-            images_loaded += BATCH_SIZE
+        load_time = time.time() - begin_time
+        total_load_time += load_time
+        images_loaded += BATCH_SIZE
 
-            # Classify image
-            begin_time = time.time()
+        trimmed_batch_results, inference_time_s = inference_for_given_batch(batch_data)
 
-            cuda.memcpy_htod_async(d_inputs[0], vectored_batch, cuda_stream)    # assuming one input layer for image classification
-            context.execute_async(bindings=model_bindings, batch_size=cuda_batch_size, stream_handle=cuda_stream.handle)
-            for output in h_d_outputs:
-                cuda.memcpy_dtoh_async(output['host_mem'], output['dev_mem'], cuda_stream)
+        print("[batch {} of {}] loading={:.2f} ms, inference={:.2f} ms".format(
+                      batch_number, BATCH_COUNT, load_time*1000, inference_time_s*1000))
 
-            cuda_stream.synchronize()
+        total_classification_time += inference_time_s
+        # Remember first batch prediction time
+        if batch_index == 0:
+            first_classification_time = inference_time_s
 
-            classification_time = time.time() - begin_time
-
-            print("[batch {} of {}] loading={:.2f} ms, inference={:.2f} ms".format(
-                          batch_number, BATCH_COUNT, load_time*1000, classification_time*1000))
-
-            batch_results = np.split(h_output, max_batch_size)
-
-            total_classification_time += classification_time
-            # Remember first batch prediction time
-            if batch_index == 0:
-                first_classification_time = classification_time
-
-            # Process results
-            for index_in_batch in range(BATCH_SIZE):
-                one_batch_result = batch_results[index_in_batch]
-                if model_classes==1:
-                    arg_max = one_batch_result[0]
-                    softmax_vector = [0]*arg_max + [1] + [0]*(1000-arg_max-1)
-                else:
-                    softmax_vector = one_batch_result[-1000:]    # skipping the background class on the left (if present)
-                global_index = batch_index * BATCH_SIZE + index_in_batch
-                res_file = os.path.join(RESULTS_DIR, image_list[global_index])
-                with open(res_file + '.txt', 'w') as f:
-                    for prob in softmax_vector:
-                        f.write('{}\n'.format(prob))
+        # Process results
+        for index_in_batch in range(BATCH_SIZE):
+            one_batch_result = trimmed_batch_results[index_in_batch]
+            if model_classes==1:
+                arg_max = one_batch_result[0]
+                softmax_vector = [0]*arg_max + [1] + [0]*(1000-arg_max-1)
+            else:
+                softmax_vector = one_batch_result[-1000:]    # skipping the background class on the left (if present)
+            global_index = batch_index * BATCH_SIZE + index_in_batch
+            res_file = os.path.join(RESULTS_DIR, image_list[global_index])
+            with open(res_file + '.txt', 'w') as f:
+                for prob in softmax_vector:
+                    f.write('{}\n'.format(prob))
                 
-    default_context.pop()
+    pycuda_context.pop()
 
     test_time = time.time() - test_time_begin
  

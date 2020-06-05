@@ -60,6 +60,12 @@
       "sort": 60,
       "tags": "lib,python-package,tensorrt"
     },
+    "tensorrt-helper": {
+      "local": "yes",
+      "name": "Python TensorRT helper functions and metadata",
+      "sort": 70,
+      "tags": "lib,python-package,tensorrt-helper"
+    },
     "weights": {
       "local": "yes", 
       "name": "TensorRT model", 
