@@ -35,7 +35,7 @@ if MODEL_PLUGIN_PATH:
 def initialize_predictor():
     global pycuda_context
     global d_inputs, h_d_outputs, h_output, model_bindings, cuda_stream
-    global num_labels, model_classes
+    global input_volume, output_volume
     global trt_context
     global BATCH_SIZE
     global max_batch_size
@@ -89,17 +89,18 @@ def initialize_predictor():
         print("{} layer {}: dtype={}, shape={}, elements_per_max_batch={}".format(interface_type, interface_layer, dtype, shape, size))
 
     cuda_stream     = cuda.Stream()
-    model_classes   = trt.volume(model_output_shape)
+    input_volume    = trt.volume(model_input_shape)     # total number of monochromatic subpixels (before batching)
+    output_volume   = trt.volume(model_output_shape)    # total number of elements in one image prediction (before batching)
     num_layers      = trt_engine.num_layers
 
     trt_context     = trt_engine.create_execution_context()
 
-    return pycuda_context, max_batch_size, model_classes, num_layers
+    return pycuda_context, max_batch_size, input_volume, output_volume, num_layers
 
 
 def inference_for_given_batch(batch_data):
     global d_inputs, h_d_outputs, h_output, model_bindings, cuda_stream
-    global num_labels, model_classes
+    global input_volume, output_volume
     global trt_context
     global max_batch_size
 

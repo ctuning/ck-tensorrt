@@ -38,7 +38,8 @@ def main():
         shutil.rmtree(RESULTS_DIR)
     os.mkdir(RESULTS_DIR)
 
-    pycuda_context, max_batch_size, model_classes, num_layers = initialize_predictor()
+    pycuda_context, max_batch_size, input_volume, output_volume, num_layers = initialize_predictor()
+    num_classes = len(class_labels)
 
     print('Images dir: ' + IMAGE_DIR)
     print('Image list file: ' + IMAGE_LIST_FILE)
@@ -58,8 +59,9 @@ def main():
     print('Model (internal) data type: {}'.format(MODEL_DATA_TYPE))
     print('Model BGR colours: {}'.format(MODEL_COLOURS_BGR))
     print('Model max_batch_size: {}'.format(max_batch_size))
-    print('Model classes: {}'.format(model_classes))
+    print('Model output volume (number of outputs per one prediction): {}'.format(output_volume))
     print('Model num_layers: {}'.format(num_layers))
+    print('Number of class_labels: {}'.format(num_classes))
     print("")
 
 
@@ -96,11 +98,11 @@ def main():
         # Process results
         for index_in_batch in range(BATCH_SIZE):
             one_batch_result = trimmed_batch_results[index_in_batch]
-            if model_classes==1:
+            if output_volume==1:
                 arg_max = one_batch_result[0]
-                softmax_vector = [0]*arg_max + [1] + [0]*(1000-arg_max-1)
+                softmax_vector = [0]*arg_max + [1] + [0]*(num_classes-arg_max-1)
             else:
-                softmax_vector = one_batch_result[-1000:]    # skipping the background class on the left (if present)
+                softmax_vector = one_batch_result[-num_classes:]    # skipping the background class on the left (if present)
             global_index = batch_index * BATCH_SIZE + index_in_batch
             res_file = os.path.join(RESULTS_DIR, image_list[global_index])
             with open(res_file + '.txt', 'w') as f:

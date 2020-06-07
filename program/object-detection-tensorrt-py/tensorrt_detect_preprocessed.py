@@ -47,7 +47,8 @@ def main():
         shutil.rmtree(DETECTIONS_OUT_DIR)
     os.mkdir(DETECTIONS_OUT_DIR)
 
-    pycuda_context, max_batch_size, model_classes, num_layers = initialize_predictor()
+    pycuda_context, max_batch_size, input_volume, output_volume, num_layers = initialize_predictor()
+    num_classes = len(class_labels)
 
     bg_class_offset     = 1
 
@@ -55,7 +56,7 @@ def main():
     class_map = None
     if (SKIPPED_CLASSES):
         class_map = []
-        for i in range(len(class_labels) + bg_class_offset):
+        for i in range(num_classes + bg_class_offset):
             if i not in SKIPPED_CLASSES:
                 class_map.append(i)
 
@@ -77,8 +78,9 @@ def main():
     print('Model (internal) data type: {}'.format(MODEL_DATA_TYPE))
     print('Model BGR colours: {}'.format(MODEL_COLOURS_BGR))
     print('Model max_batch_size: {}'.format(max_batch_size))
-    print('Model classes: {}'.format(model_classes))
+    print('Model output volume (number of outputs per one prediction): {}'.format(output_volume))
     print('Model num_layers: {}'.format(num_layers))
+    print('Number of class_labels: {}'.format(num_classes))
     print('Post-detection confidence score threshold: {}'.format(SCORE_THRESHOLD))
     print("")
 
@@ -107,10 +109,6 @@ def main():
 
         print("[batch {} of {}] loading={:.2f} ms, inference={:.2f} ms".format(
                       batch_number, BATCH_COUNT, load_time*1000, inference_time_s*1000))
-
-#        print("OLD SHAPE={}".format(np.shape(trimmed_batch_results)))
-#        batch_results = np.reshape(trimmed_batch_results, (BATCH_SIZE, MODEL_MAX_PREDICTIONS*7+1))
-#        print("NEW SHAPE={}".format(np.shape(batch_results)))
 
         total_inference_time += inference_time_s
         # Remember inference_time for the first batch
