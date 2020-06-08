@@ -6,7 +6,8 @@ import os
 import shutil
 import numpy as np
 
-from coco_helper import (load_preprocessed_batch, image_filenames, original_w_h, class_labels,
+from coco_helper import (load_preprocessed_batch, image_filenames, original_w_h,
+    class_labels, num_classes, bg_class_offset, class_map,
     MODEL_DATA_LAYOUT, MODEL_COLOURS_BGR, MODEL_INPUT_DATA_TYPE, MODEL_DATA_TYPE, MODEL_USE_DLA,
     MODEL_IMAGE_WIDTH, MODEL_IMAGE_HEIGHT, MODEL_IMAGE_CHANNELS,
     IMAGE_DIR, IMAGE_LIST_FILE, MODEL_NORMALIZE_DATA, SUBTRACT_MEAN, GIVEN_CHANNEL_MEANS, BATCH_SIZE, BATCH_COUNT)
@@ -22,12 +23,6 @@ SCORE_THRESHOLD = float(os.getenv('CK_DETECTION_THRESHOLD', 0.0))
 ## Model properties:
 #
 MODEL_MAX_PREDICTIONS   = int(os.getenv('ML_MODEL_MAX_PREDICTIONS', 100))
-MODEL_SKIPPED_CLASSES   = os.getenv("ML_MODEL_SKIPS_ORIGINAL_DATASET_CLASSES", None)
-
-if (MODEL_SKIPPED_CLASSES):
-    SKIPPED_CLASSES = [int(x) for x in MODEL_SKIPPED_CLASSES.split(",")]
-else:
-    SKIPPED_CLASSES = None
 
 
 ## Writing the results out:
@@ -48,17 +43,6 @@ def main():
     os.mkdir(DETECTIONS_OUT_DIR)
 
     pycuda_context, max_batch_size, input_volume, output_volume, num_layers = initialize_predictor()
-    num_classes = len(class_labels)
-
-    bg_class_offset     = 1
-
-    ## Workaround for SSD-Resnet34 model incorrectly trained on filtered labels
-    class_map = None
-    if (SKIPPED_CLASSES):
-        class_map = []
-        for i in range(num_classes + bg_class_offset):
-            if i not in SKIPPED_CLASSES:
-                class_map.append(i)
 
     print('Images dir: ' + IMAGE_DIR)
     print('Image list file: ' + IMAGE_LIST_FILE)
