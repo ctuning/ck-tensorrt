@@ -36,15 +36,21 @@
     "module_uoa": "package"
   }, 
   "variations": {
-    "tensorrt-v5": {
+    "tensorrt-5.1.5.0-cp36": {
       "extra_env": {
         "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-5.1.5.0/python/tensorrt-5.1.5.0-cp36-none-linux_x86_64.whl"
       }
     },
-    "tensorrt-v6": {
+    "tensorrt-6.0.1.5-cp36": {
       "on_by_default": "yes",
       "extra_env": {
         "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-6.0.1.5/python/tensorrt-6.0.1.5-cp36-none-linux_x86_64.whl"
+      }
+    },
+    "tensorrt-6.0.1.8-cp37": {
+      "on_by_default": "no",
+      "extra_env": {
+        "PYTHON_PACKAGE_NAME": "/data/tensorrt-6/python/tensorrt-6.0.1.8-cp37-none-linux_x86_64.whl"
       }
     }
   }
