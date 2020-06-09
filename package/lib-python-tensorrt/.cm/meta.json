@@ -47,6 +47,12 @@
         "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-6.0.1.5/python/tensorrt-6.0.1.5-cp36-none-linux_x86_64.whl"
       }
     },
+    "tensorrt-7.0.0.11-cp36": {
+      "on_by_default": "yes",
+      "extra_env": {
+        "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-7.0.0.11/python/tensorrt-7.0.0.11-cp36-none-linux_x86_64.whl"
+      }
+    },
     "tensorrt-6.0.1.8-cp37": {
       "on_by_default": "no",
       "extra_env": {
