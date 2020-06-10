@@ -50,7 +50,7 @@ def convert_onnx_model_to_trt(onnx_model_filename, trt_model_filename,
             # Create an optimization profile (see Section 7.2 of https://docs.nvidia.com/deeplearning/sdk/pdf/TensorRT-Developer-Guide.pdf).
             profile = builder.create_optimization_profile()
             # FIXME: Hardcoded for ImageNet. The minimum/optimum/maximum dimensions of a dynamic input tensor are the same.
-            profile.set_shape(input_tensor_name, (max_batch_size, 3, 224, 224), (max_batch_size, 3, 224, 224), (max_batch_size, 3, 224, 224))
+            profile.set_shape(input_tensor_name, (1, 3, 224, 224), (max_batch_size, 3, 224, 224), (max_batch_size, 3, 224, 224))
 
             config = builder.create_builder_config()
             config.add_optimization_profile(profile)
