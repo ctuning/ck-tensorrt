@@ -48,7 +48,7 @@
       }
     },
     "tensorrt-7.0.0.11-cp36": {
-      "on_by_default": "yes",
+      "on_by_default": "no",
       "extra_env": {
         "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-7.0.0.11/python/tensorrt-7.0.0.11-cp36-none-linux_x86_64.whl"
       }
