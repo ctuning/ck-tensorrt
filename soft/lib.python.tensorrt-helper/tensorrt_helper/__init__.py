@@ -39,6 +39,7 @@ def initialize_predictor():
     global trt_context
     global BATCH_SIZE
     global max_batch_size
+    global trt_version
 
     # Load the TensorRT model from file
     pycuda_context = pycuda.tools.make_default_context()
@@ -57,15 +58,22 @@ def initialize_predictor():
 
     max_batch_size      = trt_engine.max_batch_size
 
+    if trt_version[0] >= 7 and BATCH_SIZE>1:
+        pycuda_context.pop()
+        raise RuntimeError("Desired batch_size ({}) is not yet supported in TensorRT {}".format(BATCH_SIZE,trt_version[0]))
+
     if BATCH_SIZE>max_batch_size:
         pycuda_context.pop()
         raise RuntimeError("Desired batch_size ({}) exceeds max_batch_size of the model ({})".format(BATCH_SIZE,max_batch_size))
 
+    trt_context     = trt_engine.create_execution_context()
+
     d_inputs, h_d_outputs, model_bindings = [], [], []
     for interface_layer in trt_engine:
+        idx     = trt_engine.get_binding_index(interface_layer)
         dtype   = trt_engine.get_binding_dtype(interface_layer)
-        shape   = trt_engine.get_binding_shape(interface_layer)
-        fmt     = trt_engine.get_binding_format(trt_engine.get_binding_index(interface_layer)) if trt_version[0] >= 6 else None
+        shape   = tuple(abs(i) for i in trt_engine.get_binding_shape(interface_layer))
+        fmt     = trt_engine.get_binding_format(idx) if trt_version[0] >= 6 else None
 
         if fmt and fmt == trt.TensorFormat.CHW4 and trt_engine.binding_is_input(interface_layer):
             shape[-3] = ((shape[-3] - 1) // 4 + 1) * 4
@@ -75,6 +83,8 @@ def initialize_predictor():
         model_bindings.append( int(dev_mem) )
 
         if trt_engine.binding_is_input(interface_layer):
+            if trt_version[0] >= 6:
+                trt_context.set_binding_shape(idx, shape)
             interface_type = 'Input'
             d_inputs.append(dev_mem)
             model_input_shape   = shape
@@ -93,16 +103,14 @@ def initialize_predictor():
     output_volume   = trt.volume(model_output_shape)    # total number of elements in one image prediction (before batching)
     num_layers      = trt_engine.num_layers
 
-    trt_context     = trt_engine.create_execution_context()
-
     return pycuda_context, max_batch_size, input_volume, output_volume, num_layers
 
 
 def inference_for_given_batch(batch_data):
     global d_inputs, h_d_outputs, h_output, model_bindings, cuda_stream
-    global input_volume, output_volume
     global trt_context
     global max_batch_size
+    global trt_version
 
     actual_batch_size  = len(batch_data)
     if MODEL_USE_DLA and max_batch_size>actual_batch_size:
@@ -116,7 +124,11 @@ def inference_for_given_batch(batch_data):
     begin_inference_timestamp   = time.time()
 
     cuda.memcpy_htod_async(d_inputs[0], flat_batch, cuda_stream)  # assuming one input layer for image classification
-    trt_context.execute_async(bindings=model_bindings, batch_size=pseudo_batch_size, stream_handle=cuda_stream.handle)
+    if trt_version[0] >= 7:
+        trt_context.execute_async_v2(bindings=model_bindings, stream_handle=cuda_stream.handle)
+    else:
+        trt_context.execute_async(bindings=model_bindings, batch_size=pseudo_batch_size, stream_handle=cuda_stream.handle)
+
     for output in h_d_outputs:
         cuda.memcpy_dtoh_async(output['host_mem'], output['dev_mem'], cuda_stream)
     cuda_stream.synchronize()
