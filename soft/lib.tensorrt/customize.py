@@ -118,6 +118,7 @@ def setup(i):
     if not os.path.isdir(path_include):
         return {'return':1, 'error':'can\'t find installation include dir'}
 
+    path_bin=path_lib.replace('lib', 'bin')
     env=i['env']
 
     ep=cus['env_prefix']
@@ -134,10 +135,12 @@ def setup(i):
 
     cus['path_lib']=path_lib
     cus['path_include']=path_include
+    cus['path_bin']=path_bin
 
     r = ck.access({'action': 'lib_path_export_script', 'module_uoa': 'os', 'host_os_dict': hosd,
       'lib_path': cus.get('path_lib','')})
     if r['return']>0: return r
     s += r['script']
+    s += 'PATH={}:$PATH\n\n'.format(path_bin)
 
     return {'return':0, 'bat':s}
