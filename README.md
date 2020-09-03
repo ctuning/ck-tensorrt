@@ -1,24 +1,20 @@
 # Collective Knowledge repository for collaboratively benchmarking and optimising embedded deep vision runtime library for Jetson TX1
 
+*This project is hosted by the [cTuning foundation (non-profit R&D organization)](https://cTuning.org)*
+
 [![compatibility](https://github.com/ctuning/ck-guide-images/blob/master/ck-compatible.svg)](https://github.com/ctuning/ck)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 
 ## Introduction
 
 [CK-TensorRT](https://github.com/ctuning/ck-tensorrt) is an open framework for
-collaborative and reproducible optimisation of convolutional neural networks for Jetson TX1.
+collaborative and reproducible optimisation of convolutional neural networks for Jetson TX1
+based on the [Collective Knowledge](http://cknowledge.org) framework. 
 It's based on the [Deep Inference](https://github.com/dusty-nv/jetson-inference) framework from
-Dustin Franklin (a [Jetson developer @ NVIDIA](https://github.com/dusty-nv)) and
-the [Collective Knowledge](http://cknowledge.org) framework for customizable
-cross-platform experimental workflows
- from the [cTuning Foundation](http://ctuning.org). In essence, CK-TensorRT 
-is simply a suite of convenient wrappers with unified JSON API 
+Dustin Franklin (a [Jetson developer @ NVIDIA](https://github.com/dusty-nv)).
+In essence, CK-TensorRT is simply a suite of convenient wrappers with unified JSON API 
 for customizable building, evaluating and multi-objective optimisation 
 of Jetson Inference runtime library for Jetson TX1.
-
-See [project page](http://cKnowledge.org/ai) for more details.
-
-![](http://cKnowledge.org/images/ai-cloud-resize.png)
 
 ## Authors/contributors
 
@@ -76,20 +72,8 @@ $ ck run program:tensorrt-test
 
 We are working with the community to unify and crowdsource performance analysis 
 and tuning of various DNN frameworks (or any realistic workload) 
-using Collective Knowledge Technology:
+using the Collective Knowledge Technology:
+* [Open repository of AI, ML, and systems knowledge](https://cKnowledge.io)
 * [CK-Caffe](https://github.com/dividiti/ck-caffe)
 * [CK-Caffe2](https://github.com/ctuning/ck-caffe2)
-* [Reusable AI artifacts](http://cKnowledge.org/ai-artifacts)
-* [CK-TinyDNN](https://github.com/ctuning/ck-tiny-dnn)
-* [Android app for DNN crowd-benchmarking and crowd-tuning](http://cKnowledge.org/android-apps.html)
-* [CK-powered ARM workload automation](https://github.com/ctuning/ck-wa)
-
-## Open R&D challenges
-
-We use crowd-benchmarking and crowd-tuning of such realistic workloads across diverse hardware for 
-[open academic and industrial R&D challenges](https://github.com/ctuning/ck/wiki/Research-and-development-challenges.mediawiki) - 
-join this community effort!
-
-## Related publications with long term vision
-
-* <a href="https://github.com/ctuning/ck/wiki/Publications">All references with BibTeX</a>
+* [Android app for DNN crowd-benchmarking and crowd-tuning]( https://cKnowledge.org/android-apps.html )
