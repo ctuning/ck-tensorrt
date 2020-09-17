@@ -46,9 +46,10 @@
     "module_uoa": "script"
   },
   "variations": {
-    "resnet": {
+    "resnet50": {
       "on_by_default": "yes",
       "extra_env": {
+        "ML_MODEL_MODEL_NAME": "resnet50",
         "ML_MODEL_IMAGE_HEIGHT": 224,
         "ML_MODEL_IMAGE_WIDTH": 224,
         "ML_MODEL_MAX_BATCH_SIZE": 70,
@@ -58,10 +59,11 @@
         "PACKAGE_NAME": "resnet-MultiStream-gpu-b70-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.resnet_b70_int8"
       },
-      "extra_tags": [ "image-classification", "resnet50", "maxbatch.70", "side.224" ]
+      "extra_tags": [ "image-classification", "resnet", "maxbatch.70", "side.224" ]
     },
     "mobilenet": {
       "extra_env": {
+        "ML_MODEL_MODEL_NAME": "mobilenet",
         "ML_MODEL_IMAGE_HEIGHT": 224,
         "ML_MODEL_IMAGE_WIDTH": 224,
         "ML_MODEL_MAX_BATCH_SIZE": 250,
@@ -75,6 +77,7 @@
     },
     "ssd-mobilenet": {
       "extra_env": {
+        "ML_MODEL_MODEL_NAME": "ssd-mobilenet",
         "ML_MODEL_IMAGE_HEIGHT": 300,
         "ML_MODEL_IMAGE_WIDTH": 300,
         "ML_MODEL_MAX_BATCH_SIZE": 128,
@@ -91,6 +94,7 @@
     },
     "ssd-resnet.singlestream": {
       "extra_env": {
+        "ML_MODEL_MODEL_NAME": "ssd-resnet34",
         "ML_MODEL_IMAGE_HEIGHT": 1200,
         "ML_MODEL_IMAGE_WIDTH": 1200,
         "ML_MODEL_MAX_BATCH_SIZE": 1,
@@ -104,10 +108,11 @@
         "PACKAGE_NAME": "ssd-large-SingleStream-gpu-b1-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.ssd-resnet_b1_int8"
       },
-      "extra_tags": [ "object-detection", "maxbatch.1", "side.1200" ]
+      "extra_tags": [ "object-detection", "ssd-resnet", "ssd-resnet34", "maxbatch.1", "side.1200" ]
     },
     "ssd-resnet": {
       "extra_env": {
+        "ML_MODEL_MODEL_NAME": "ssd-resnet34",
         "ML_MODEL_IMAGE_HEIGHT": 1200,
         "ML_MODEL_IMAGE_WIDTH": 1200,
         "ML_MODEL_MAX_BATCH_SIZE": 2,
@@ -121,7 +126,7 @@
         "PACKAGE_NAME": "ssd-large-MultiStream-gpu-b2-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.ssd-resnet_b2_int8"
       },
-      "extra_tags": [ "object-detection", "maxbatch.2", "side.1200" ]
+      "extra_tags": [ "object-detection", "ssd-resnet34", "maxbatch.2", "side.1200" ]
     }
   }
 }
