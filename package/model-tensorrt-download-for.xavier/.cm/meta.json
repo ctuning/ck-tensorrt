@@ -21,14 +21,22 @@
     "resnet-MultiStream-gpu-b70-int8-linear.plan",
     "resnet-Offline-gpu-b64-int8-linear.plan",
     "resnet-SingleStream-gpu-b1-int8-linear.plan",
+
     "mobilenet-MultiStream-gpu-b250-int8-linear.plan",
+    "mobilenet-Offline-gpu-b512-int8-linear.plan",
+    "mobilenet-SingleStream-gpu-b1-int8-linear.plan",
+
+    "ssd-small-MultiStream-gpu-b80-int8-linear.plan",
     "ssd-small-Offline-gpu-b128-int8-linear.plan",
-    "ssd-large-SingleStream-gpu-b1-int8-linear.plan",
-    "ssd-large-MultiStream-gpu-b2-int8-linear.plan"
+    "ssd-small-SingleStream-gpu-b1-int8-linear.plan",
+
+    "ssd-large-MultiStream-gpu-b2-int8-linear.plan",
+    "ssd-large-Offline-gpu-b2-int8-linear.plan",
+    "ssd-large-SingleStream-gpu-b1-int8-linear.plan"
   ],
   "process_script": "install",
   "soft_uoa": "ce8554cdf428aa14",
-  "suggested_path": "model-tensorrt-downloaded",
+  "suggested_path": "model-tensorrt-downloaded-for.xavier",
   "tags": [
     "int8",
     "linear",
@@ -61,7 +69,7 @@
         "PACKAGE_NAME": "resnet-MultiStream-gpu-b70-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.resnet_b70_int8"
       },
-      "extra_tags": [ "image-classification", "resnet50", "resnet", "maxbatch.70", "side.224", "gpu" ]
+      "extra_tags": [ "image-classification", "resnet50", "resnet", "maxbatch.70", "side.224", "gpu", "scenario.multistream" ]
     },
     "resnet50.offline": {
       "extra_env": {
@@ -75,7 +83,7 @@
         "PACKAGE_NAME": "resnet-Offline-gpu-b64-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.resnet_b64_int8"
       },
-      "extra_tags": [ "image-classification", "resnet50", "resnet", "maxbatch.64", "side.224", "gpu" ]
+      "extra_tags": [ "image-classification", "resnet50", "resnet", "maxbatch.64", "side.224", "gpu", "scenario.offline" ]
     },
     "resnet50.singlestream": {
       "extra_env": {
@@ -89,9 +97,10 @@
         "PACKAGE_NAME": "resnet-SingleStream-gpu-b1-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.resnet_b1_int8"
       },
-      "extra_tags": [ "image-classification", "resnet50", "resnet", "maxbatch.1", "side.224", "gpu" ]
+      "extra_tags": [ "image-classification", "resnet50", "resnet", "maxbatch.1", "side.224", "gpu", "scenario.singlestream" ]
     },
-    "mobilenet": {
+
+    "mobilenet.multistream": {
       "extra_env": {
         "ML_MODEL_MODEL_NAME": "mobilenet",
         "ML_MODEL_IMAGE_HEIGHT": 224,
@@ -103,9 +112,55 @@
         "PACKAGE_NAME": "mobilenet-MultiStream-gpu-b250-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.mobilenet_b250_int8"
       },
-      "extra_tags": [ "image-classification", "maxbatch.250", "side.224" ]
+      "extra_tags": [ "image-classification", "mobilenet", "maxbatch.250", "side.224", "gpu", "scenario.multistream" ]
     },
-    "ssd-mobilenet": {
+    "mobilenet.offline": {
+      "extra_env": {
+        "ML_MODEL_MODEL_NAME": "mobilenet",
+        "ML_MODEL_IMAGE_HEIGHT": 224,
+        "ML_MODEL_IMAGE_WIDTH": 224,
+        "ML_MODEL_MAX_BATCH_SIZE": 512,
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "128 128 128",
+        "PACKAGE_NAME": "mobilenet-Offline-gpu-b512-int8-linear.plan",
+        "PACKAGE_VERSION": "0.5.mobilenet_b512_int8"
+      },
+      "extra_tags": [ "image-classification", "mobilenet", "maxbatch.512", "side.224", "gpu", "scenario.offline" ]
+    },
+    "mobilenet.singlestream": {
+      "extra_env": {
+        "ML_MODEL_MODEL_NAME": "mobilenet",
+        "ML_MODEL_IMAGE_HEIGHT": 224,
+        "ML_MODEL_IMAGE_WIDTH": 224,
+        "ML_MODEL_MAX_BATCH_SIZE": 1,
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "128 128 128",
+        "PACKAGE_NAME": "mobilenet-SingleStream-gpu-b1-int8-linear.plan",
+        "PACKAGE_VERSION": "0.5.mobilenet_b1_int8"
+      },
+      "extra_tags": [ "image-classification", "mobilenet", "maxbatch.1", "side.224", "gpu", "scenario.singlestream" ]
+    },
+
+    "ssd-mobilenet.multistream": {
+      "extra_env": {
+        "ML_MODEL_MODEL_NAME": "ssd-mobilenet",
+        "ML_MODEL_IMAGE_HEIGHT": 300,
+        "ML_MODEL_IMAGE_WIDTH": 300,
+        "ML_MODEL_MAX_BATCH_SIZE": 80,
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "128 128 128",
+        "ML_MODEL_MAX_PREDICTIONS": 100,
+        "PACKAGE_COPY": "YES",
+        "FLATLABELS_FILE": "coco_flatlabels.txt",
+        "PACKAGE_NAME": "ssd-small-MultiStream-gpu-b80-int8-linear.plan",
+        "PACKAGE_VERSION": "0.5.ssd-mobilenet_b80_int8"
+      },
+      "extra_tags": [ "object-detection", "ssd-mobilenet", "maxbatch.80", "side.300", "gpu", "scenario.multistream" ]
+    },
+    "ssd-mobilenet.offline": {
       "extra_env": {
         "ML_MODEL_MODEL_NAME": "ssd-mobilenet",
         "ML_MODEL_IMAGE_HEIGHT": 300,
@@ -120,7 +175,61 @@
         "PACKAGE_NAME": "ssd-small-Offline-gpu-b128-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.ssd-mobilenet_b128_int8"
       },
-      "extra_tags": [ "object-detection", "maxbatch.128", "side.300" ]
+      "extra_tags": [ "object-detection", "ssd-mobilenet", "maxbatch.128", "side.300", "gpu", "scenario.offline" ]
+    },
+    "ssd-mobilenet.singlestream": {
+      "extra_env": {
+        "ML_MODEL_MODEL_NAME": "ssd-mobilenet",
+        "ML_MODEL_IMAGE_HEIGHT": 300,
+        "ML_MODEL_IMAGE_WIDTH": 300,
+        "ML_MODEL_MAX_BATCH_SIZE": 128,
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "128 128 128",
+        "ML_MODEL_MAX_PREDICTIONS": 100,
+        "PACKAGE_COPY": "YES",
+        "FLATLABELS_FILE": "coco_flatlabels.txt",
+        "PACKAGE_NAME": "ssd-small-SingleStream-gpu-b1-int8-linear.plan",
+        "PACKAGE_VERSION": "0.5.ssd-mobilenet_b1_int8"
+      },
+      "extra_tags": [ "object-detection", "ssd-mobilenet", "maxbatch.1", "side.300", "gpu", "scenario.singlestream" ]
+    },
+
+    "ssd-resnet.multistream": {
+      "extra_env": {
+        "ML_MODEL_MODEL_NAME": "ssd-resnet34",
+        "ML_MODEL_IMAGE_HEIGHT": 1200,
+        "ML_MODEL_IMAGE_WIDTH": 1200,
+        "ML_MODEL_MAX_BATCH_SIZE": 2,
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
+        "ML_MODEL_MAX_PREDICTIONS": 200,
+        "ML_MODEL_SKIPS_ORIGINAL_DATASET_CLASSES": "12,26,29,30,45,66,68,69,71,83",
+        "PACKAGE_COPY": "YES",
+        "FLATLABELS_FILE": "coco_flatlabels.txt",
+        "PACKAGE_NAME": "ssd-large-MultiStream-gpu-b2-int8-linear.plan",
+        "PACKAGE_VERSION": "0.5.ssd-resnet_b2_int8"
+      },
+      "extra_tags": [ "object-detection", "ssd-resnet", "ssd-resnet34", "maxbatch.2", "side.1200", "gpu", "scenario.multistream" ]
+    },
+    "ssd-resnet.offline": {
+      "extra_env": {
+        "ML_MODEL_MODEL_NAME": "ssd-resnet34",
+        "ML_MODEL_IMAGE_HEIGHT": 1200,
+        "ML_MODEL_IMAGE_WIDTH": 1200,
+        "ML_MODEL_MAX_BATCH_SIZE": 2,
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
+        "ML_MODEL_MAX_PREDICTIONS": 200,
+        "ML_MODEL_SKIPS_ORIGINAL_DATASET_CLASSES": "12,26,29,30,45,66,68,69,71,83",
+        "PACKAGE_COPY": "YES",
+        "FLATLABELS_FILE": "coco_flatlabels.txt",
+        "PACKAGE_NAME": "ssd-large-Offline-gpu-b2-int8-linear.plan",
+        "PACKAGE_VERSION": "0.5.ssd-resnet_b2_int8"
+      },
+      "extra_tags": [ "object-detection", "ssd-resnet", "ssd-resnet34", "maxbatch.2", "side.1200", "gpu", "scenario.offline" ]
     },
     "ssd-resnet.singlestream": {
       "extra_env": {
@@ -138,25 +247,7 @@
         "PACKAGE_NAME": "ssd-large-SingleStream-gpu-b1-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.ssd-resnet_b1_int8"
       },
-      "extra_tags": [ "object-detection", "ssd-resnet", "ssd-resnet34", "maxbatch.1", "side.1200" ]
-    },
-    "ssd-resnet": {
-      "extra_env": {
-        "ML_MODEL_MODEL_NAME": "ssd-resnet34",
-        "ML_MODEL_IMAGE_HEIGHT": 1200,
-        "ML_MODEL_IMAGE_WIDTH": 1200,
-        "ML_MODEL_MAX_BATCH_SIZE": 2,
-        "ML_MODEL_NORMALIZE_DATA": "NO",
-        "ML_MODEL_SUBTRACT_MEAN": "YES",
-        "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
-        "ML_MODEL_MAX_PREDICTIONS": 200,
-        "ML_MODEL_SKIPS_ORIGINAL_DATASET_CLASSES": "12,26,29,30,45,66,68,69,71,83",
-        "PACKAGE_COPY": "YES",
-        "FLATLABELS_FILE": "coco_flatlabels.txt",
-        "PACKAGE_NAME": "ssd-large-MultiStream-gpu-b2-int8-linear.plan",
-        "PACKAGE_VERSION": "0.5.ssd-resnet_b2_int8"
-      },
-      "extra_tags": [ "object-detection", "ssd-resnet34", "maxbatch.2", "side.1200" ]
+      "extra_tags": [ "object-detection", "ssd-resnet", "ssd-resnet34", "maxbatch.1", "side.1200", "gpu", "scenario.singlestream" ]
     }
   }
 }
