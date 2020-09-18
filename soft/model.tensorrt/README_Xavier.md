@@ -103,6 +103,16 @@ Standalone MobileNet with Loadgen:
         --env.CK_LOADGEN_MULTISTREAMNESS=250 --env.CK_BATCH_SIZE=250
 ```
 
+ZeroMQ MobileNet without LoadGen:
+```bash
+Worker$     ck run program:zpp-worker-tensorrt-py --env.CK_WORKER_OUTPUT_FORMAT=argmax \
+            --dep_add_tags.weights=mobilenet,chw4,gpu
+
+Hub$    time ck run program:image-classification-zpp-hub-py \
+        --skip_print_timers --env.CK_SILENT_MODE \
+        --dep_add_tags.dataset=side.224 --dep_add_tags.weights=mobilenet,chw4,gpu \
+        --env.CK_BATCH_SIZE=125 --env.CK_BATCH_COUNT=40
+```
 
 OBJECT DETECTION:
 =================
@@ -127,14 +137,15 @@ Detect OpenCV python package:
     ck detect soft --tags=python-package,cv2 --full_path=/usr/lib/python3.6/dist-packages/cv2/__init__.py
 ```
 
-Preprocess all 5k coco-2017 images using-opencv for SSD-MobileNet:
-```bash
-    ck install package --tags=dataset,preprocessed,using-opencv,coco.2017,full,side.300
-```
 
 
 SSD-MobileNet
 -------------
+
+Preprocess all 5k coco-2017 images using-opencv for SSD-MobileNet:
+```bash
+    ck install package --tags=dataset,preprocessed,using-opencv,coco.2017,full,side.300
+```
 
 (If generated on this machine:) Detect SSD-MobileNet model for GPU:
 ```bash
@@ -150,6 +161,42 @@ SSD-MobileNet
         --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_TYPE=int8 \
         --ienv.ML_MODEL_DATA_LAYOUT=NCHW \
+        --ienv.ML_MODEL_NORMALIZE_DATA=NO \
+        --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
+        --ienv.ML_MODEL_MAX_PREDICTIONS=100 \
+        --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
+
+    ck detect soft:model.tensorrt --full_path=/datasets/xavier-original-zenodo/ssd-small-Offline-gpu-b128-int8-chw4.plan \
+        --extra_tags=maxbatch.128,int8,chw4,ssd-mobilenet,gpu,object-detection,converted-by-nvidia,side.300 \
+        --cus.version=ssd-mobilenet_nvidia_gpu_int8_chw4 \
+        --ienv.ML_MODEL_TENSORRT_PLUGIN=/datasets/xavier-original-zenodo/libnmsoptplugin.so \
+        --ienv.ML_MODEL_CLASS_LABELS=/datasets/coco_flatlabels.txt \
+        --ienv.ML_MODEL_MAX_BATCH_SIZE=128 \
+        --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
+        --ienv.ML_MODEL_IMAGE_HEIGHT=300 \
+        --ienv.ML_MODEL_IMAGE_WIDTH=300 \
+        --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
+        --ienv.ML_MODEL_DATA_TYPE=int8 \
+        --ienv.ML_MODEL_DATA_LAYOUT=CHW4 \
+        --ienv.ML_MODEL_USE_DLA=NO \
+        --ienv.ML_MODEL_NORMALIZE_DATA=NO \
+        --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
+        --ienv.ML_MODEL_MAX_PREDICTIONS=100 \
+        --ienv.ML_MODEL_GIVEN_CHANNEL_MEANS="128 128 128"
+
+    ck detect soft:model.tensorrt --full_path=/datasets/xavier-original-zenodo/ssd-small-Offline-dla-b32-int8-chw4.plan \
+        --extra_tags=maxbatch.32,int8,chw4,ssd-mobilenet,dla,object-detection,converted-by-nvidia,side.300 \
+        --cus.version=ssd-mobilenet_nvidia_dla_int8_chw4 \
+        --ienv.ML_MODEL_TENSORRT_PLUGIN=/datasets/xavier-original-zenodo/libnmsoptplugin.so \
+        --ienv.ML_MODEL_CLASS_LABELS=/datasets/coco_flatlabels.txt \
+        --ienv.ML_MODEL_MAX_BATCH_SIZE=32 \
+        --ienv.ML_MODEL_COLOUR_CHANNELS_BGR=NO \
+        --ienv.ML_MODEL_IMAGE_HEIGHT=300 \
+        --ienv.ML_MODEL_IMAGE_WIDTH=300 \
+        --ienv.ML_MODEL_INPUT_DATA_TYPE=int8 \
+        --ienv.ML_MODEL_DATA_TYPE=int8 \
+        --ienv.ML_MODEL_DATA_LAYOUT=CHW4 \
+        --ienv.ML_MODEL_USE_DLA=YES \
         --ienv.ML_MODEL_NORMALIZE_DATA=NO \
         --ienv.ML_MODEL_SUBTRACT_MEAN=YES \
         --ienv.ML_MODEL_MAX_PREDICTIONS=100 \
