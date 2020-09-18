@@ -19,6 +19,8 @@
   },
   "end_full_path_universal": [
     "resnet-MultiStream-gpu-b70-int8-linear.plan",
+    "resnet-Offline-gpu-b64-int8-linear.plan",
+    "resnet-SingleStream-gpu-b1-int8-linear.plan",
     "mobilenet-MultiStream-gpu-b250-int8-linear.plan",
     "ssd-small-Offline-gpu-b128-int8-linear.plan",
     "ssd-large-SingleStream-gpu-b1-int8-linear.plan",
@@ -46,7 +48,7 @@
     "module_uoa": "script"
   },
   "variations": {
-    "resnet50": {
+    "resnet50.multistream": {
       "on_by_default": "yes",
       "extra_env": {
         "ML_MODEL_MODEL_NAME": "resnet50",
@@ -59,7 +61,35 @@
         "PACKAGE_NAME": "resnet-MultiStream-gpu-b70-int8-linear.plan",
         "PACKAGE_VERSION": "0.5.resnet_b70_int8"
       },
-      "extra_tags": [ "image-classification", "resnet", "maxbatch.70", "side.224" ]
+      "extra_tags": [ "image-classification", "resnet50", "resnet", "maxbatch.70", "side.224", "gpu" ]
+    },
+    "resnet50.offline": {
+      "extra_env": {
+        "ML_MODEL_MODEL_NAME": "resnet50",
+        "ML_MODEL_IMAGE_HEIGHT": 224,
+        "ML_MODEL_IMAGE_WIDTH": 224,
+        "ML_MODEL_MAX_BATCH_SIZE": 64,
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
+        "PACKAGE_NAME": "resnet-Offline-gpu-b64-int8-linear.plan",
+        "PACKAGE_VERSION": "0.5.resnet_b64_int8"
+      },
+      "extra_tags": [ "image-classification", "resnet50", "resnet", "maxbatch.64", "side.224", "gpu" ]
+    },
+    "resnet50.singlestream": {
+      "extra_env": {
+        "ML_MODEL_MODEL_NAME": "resnet50",
+        "ML_MODEL_IMAGE_HEIGHT": 224,
+        "ML_MODEL_IMAGE_WIDTH": 224,
+        "ML_MODEL_MAX_BATCH_SIZE": 1,
+        "ML_MODEL_NORMALIZE_DATA": "NO",
+        "ML_MODEL_SUBTRACT_MEAN": "YES",
+        "ML_MODEL_GIVEN_CHANNEL_MEANS": "123.68 116.78 103.94",
+        "PACKAGE_NAME": "resnet-SingleStream-gpu-b1-int8-linear.plan",
+        "PACKAGE_VERSION": "0.5.resnet_b1_int8"
+      },
+      "extra_tags": [ "image-classification", "resnet50", "resnet", "maxbatch.1", "side.224", "gpu" ]
     },
     "mobilenet": {
       "extra_env": {
