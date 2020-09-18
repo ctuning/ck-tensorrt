@@ -195,7 +195,7 @@
       "extra_tags": [ "object-detection", "ssd-mobilenet", "maxbatch.1", "side.300", "gpu", "scenario.singlestream" ]
     },
 
-    "ssd-resnet.multistream": {
+    "ssd-resnet34.multistream": {
       "extra_env": {
         "ML_MODEL_MODEL_NAME": "ssd-resnet34",
         "ML_MODEL_IMAGE_HEIGHT": 1200,
@@ -213,7 +213,7 @@
       },
       "extra_tags": [ "object-detection", "ssd-resnet", "ssd-resnet34", "maxbatch.2", "side.1200", "gpu", "scenario.multistream" ]
     },
-    "ssd-resnet.offline": {
+    "ssd-resnet34.offline": {
       "extra_env": {
         "ML_MODEL_MODEL_NAME": "ssd-resnet34",
         "ML_MODEL_IMAGE_HEIGHT": 1200,
@@ -231,7 +231,7 @@
       },
       "extra_tags": [ "object-detection", "ssd-resnet", "ssd-resnet34", "maxbatch.2", "side.1200", "gpu", "scenario.offline" ]
     },
-    "ssd-resnet.singlestream": {
+    "ssd-resnet34.singlestream": {
       "extra_env": {
         "ML_MODEL_MODEL_NAME": "ssd-resnet34",
         "ML_MODEL_IMAGE_HEIGHT": 1200,
