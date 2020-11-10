@@ -12,7 +12,36 @@
       "local": "yes", 
       "name": "Python interpreter", 
       "sort": 10, 
-      "tags": "compiler,python"
+      "tags": "compiler,python",
+      "update_tags_if_env" : {
+        "v3.6": [ { "_CP": "cp36" } ],
+        "v3.7": [ { "_CP": "cp37" } ],
+        "v3.8": [ { "_CP": "cp38" } ]
+      }
+    },
+    "cuda": {
+      "add_to_path": "no",
+      "local": "yes",
+      "name": "CUDA runtime",
+      "sort": 30,
+      "tags": "compiler,cuda",
+      "update_tags_if_env" : {
+        "v10.1": [ { "_CUDA_VER": "v10.1" } ],
+        "v10.2": [ { "_CUDA_VER": "v10.2" } ],
+        "v11.0": [ { "_CUDA_VER": "v11.0" } ],
+        "v11.1": [ { "_CUDA_VER": "v11.1" } ]
+      }
+    },
+    "cudnn": {
+      "add_to_path": "no",
+      "local": "yes",
+      "name": "cuDNN library",
+      "sort": 40,
+      "tags": "lib,cudnn",
+      "update_tags_if_env" : {
+        "v0": [ { "_CUDNN_VER": ".." } ]
+      },
+      "comment": "FIXME: CK currently detects the version of cuDNN 8 as '..'."
     }
   }, 
   "end_full_path_universal": "build$#sep#$tensorrt$#sep#$__init__.py", 
@@ -38,31 +67,45 @@
   "variations": {
     "tensorrt-5.1.5.0-cp36": {
       "extra_env": {
+        "_CP": "cp36",
         "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-5.1.5.0/python/tensorrt-5.1.5.0-cp36-none-linux_x86_64.whl"
       }
     },
     "tensorrt-6.0.1.5-cp36": {
       "on_by_default": "yes",
       "extra_env": {
+        "_CP": "cp36",
         "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-6.0.1.5/python/tensorrt-6.0.1.5-cp36-none-linux_x86_64.whl"
       }
     },
     "tensorrt-7.0.0.11-cp36": {
       "on_by_default": "no",
       "extra_env": {
+        "_CP": "cp36",
         "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-7.0.0.11/python/tensorrt-7.0.0.11-cp36-none-linux_x86_64.whl"
       }
     },
     "tensorrt-6.0.1.8-cp37": {
       "on_by_default": "no",
       "extra_env": {
+        "_CP": "cp37",
         "PYTHON_PACKAGE_NAME": "/data/tensorrt-6/python/tensorrt-6.0.1.8-cp37-none-linux_x86_64.whl"
       }
     },
     "tensorrt-7.0.0.11-cp37": {
       "on_by_default": "no",
       "extra_env": {
+        "_CP": "cp37",
         "PYTHON_PACKAGE_NAME": "/data/tensorrt-7/python/tensorrt-7.0.0.11-cp37-none-linux_x86_64.whl"
+      }
+    },
+    "tensorrt-7.2.1.6-cp37": {
+      "on_by_default": "no",
+      "extra_env": {
+        "_CUDA_VER": "v11.1",
+        "_CUDNN_VER": "..",
+        "_CP": "cp37",
+        "PYTHON_PACKAGE_NAME": "/usr/local/tensorrt-7.2.1.6.cuda-11.1.cudnn-8.0/python/tensorrt-7.2.1.6-cp37-none-linux_x86_64.whl"
       }
     }
   }
