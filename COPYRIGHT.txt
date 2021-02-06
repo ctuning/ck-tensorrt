@@ -1,1 +1,1 @@
-Copyright (c) 2016 cTuning foundation
+Copyright (c) 2016-2021 cTuning foundation
